@@ -1,2 +1,2 @@
-# bgtoo
-A script to install gentoo
+# Getch
+A script to install Gentoo.
