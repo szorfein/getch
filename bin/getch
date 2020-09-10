@@ -2,4 +2,8 @@
 
 require 'getch'
 
-Getch::main(ARGV)
+def main(argv)
+  Getch::main(argv)
+end
+
+main(ARGV)

@@ -8,6 +8,7 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/test_*.rb"]
 end
 
+# Usage: rake gem:build
 namespace :gem do
   desc "build the gem"
   task :build do

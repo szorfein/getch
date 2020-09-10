@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + "/lib/getch/version"
 Gem::Specification.new do |s|
   s.name = "getch"
   s.version = Getch::VERSION
-  s.summary = "A script to install Gentoo"
+  s.summary = "A CLI tool to install Gentoo"
   s.authors = ["szorfein"]
   s.email = ["szorfein@protonmail.com"]
   s.homepage = 'https://github.com/szorfein/getch'

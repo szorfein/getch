@@ -1,5 +1,5 @@
 # Getch
-A script to install Gentoo.
+A CLI tool to install Gentoo.
 
 # Install
 
