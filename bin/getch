@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
-puts "hi"
+require 'getch'
+
+Getch::main(ARGV)

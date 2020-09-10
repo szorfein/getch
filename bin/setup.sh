@@ -5,18 +5,19 @@ set -o errexit -o nounset
 DIR=/tmp/getch-master
 PATH=${PATH}:/tmp/ruby/bin
 
+# last snapshot https://www.ruby-lang.org/en/downloads/
 compile_ruby() {
   PN=ruby
   PV=2.7
   [ -f /tmp/$PN_$PV.tar.gz ] || curl -s -L -o /tmp/$PN_$PV.tar.gz https://cache.ruby-lang.org/pub/ruby/snapshot/snapshot-$PN_$PV.tar.gz
-  [ -d /tmp/$PN_$PV ] || {
+  [ -d /tmp/snapshot-$PN_$PV ] || {
     cd /tmp
     tar xvf $PN_$PV.tar.gz
-    cd snapshot-$PN_$PV
-    ./configure --prefix=/tmp/$PN
-    make
-    make install
   }
+  cd snapshot-$PN_$PV
+  ./configure --prefix=/tmp/$PN
+  make
+  make install
 }
 
 search_ruby() {
