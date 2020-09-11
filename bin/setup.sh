@@ -26,8 +26,7 @@ search_ruby() {
   else
     echo "Install ruby"
     if hash pacman 2>/dev/null ; then
-      pacman -Syy
-      pacman -S --needed ruby
+      pacman -Syy --needed libyaml ruby ruby-irb ruby-reline rubygems
     elif hash emerge 2>/dev/null ; then
       emerge -av dev-lang/ruby
     elif hash apt-get 2>/dev/null ; then
@@ -39,19 +38,37 @@ search_ruby() {
 }
 
 get_getch() {
-  cd /tmp
-  [ -f ./getch.tar.gz ] && rm ./getch.tar.gz
-  [ -d ./getch-master ] && rm -rf ./getch-master
+  if hash gem 2>/dev/null ; then
+    gem install getch
+    getch -h
+  else
+    cd /tmp
+    [ -f ./getch.tar.gz ] && rm ./getch.tar.gz
+    [ -d ./getch-master ] && rm -rf ./getch-master
 
-  curl -s -L -o getch.tar.gz https://github.com/szorfein/getch/archive/master.tar.gz
-  tar xzf getch.tar.gz
+    curl -s -L -o getch.tar.gz https://github.com/szorfein/getch/archive/master.tar.gz
+    tar xzf getch.tar.gz \
+      && cd $DIR \
+      && ruby -I lib bin/getch -h
+  fi
+}
+
+set_shell() {
+  your_shell=~/.bashrc
+  [ -f ~/.zshrc ] && your_shell=~/.zshrc
+
+  [ -f "$your_shell" ] && {
+    if ! grep -q ".gem/ruby/[0-9.]*/bin" "$your_shell" ; then
+      echo "export PATH=\$PATH:$(ruby -e 'puts Gem.user_dir')/bin" >> "$your_shell"
+    fi
+    source "$your_shell"
+  }
 }
 
 main() {
-  get_getch
   search_ruby
-  cd $DIR \
-    && ruby -I lib bin/getch
+  set_shell
+  get_getch
 }
 
 main "$@"
