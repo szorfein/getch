@@ -34,7 +34,7 @@ module Getch
           @fs = fs
         end
         opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
-          @username = username
+          @username = user
         end
         opts.on("-h", "--help", "Display this") do
           puts opts

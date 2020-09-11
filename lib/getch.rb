@@ -1,4 +1,5 @@
 require_relative 'getch/options'
+require_relative 'getch/disk'
 
 module Getch
 
@@ -8,25 +9,36 @@ module Getch
     keyboard: 'us',
     disk: 'sda',
     fs: 'ext4',
-    username: ''
+    username: nil
   }
 
-  def self.main(argv)
-    options = Options.new(DEFAULT_OPTIONS, argv)
+  def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
-    puts "lang: #{options.language}"
-    puts "zoneinfo: #{options.zoneinfo}"
-    puts "keyboard: #{options.keyboard}"
-    puts "disk: #{options.disk}"
-    puts "fs: #{options.fs}"
-    puts "username: #{options.username}"
+    puts "lang: #{opts.language}"
+    puts "zoneinfo: #{opts.zoneinfo}"
+    puts "keyboard: #{opts.keyboard}"
+    puts "disk: #{opts.disk}"
+    puts "fs: #{opts.fs}"
+    puts "username: #{opts.username}"
     puts
     print "Continue? (n,y) "
     case gets.chomp
     when /^y|^Y/
-      puts "Right"
+      return
     else
       exit 1
     end
+  end
+
+  def self.format(disk, fs)
+    disk = Getch::Disk.new(disk, fs)
+    disk.cleaning
+    disk.format
+  end
+
+  def self.main(argv)
+    options = Options.new(DEFAULT_OPTIONS, argv)
+    resume_options(options)
+    format(options.disk, options.fs)
   end
 end
