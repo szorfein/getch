@@ -31,9 +31,17 @@ module Getch
   end
 
   def self.format(disk, fs)
-    disk = Getch::Disk.new(disk, fs)
-    disk.cleaning
-    disk.format
+    puts
+    print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
+    case gets.chomp
+    when /^y|^Y/
+      disk = Getch::Disk.new(disk, fs)
+      disk.cleaning
+      disk.partition
+      disk.format
+    else
+      return
+    end
   end
 
   def self.main(argv)

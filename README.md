@@ -17,3 +17,8 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
 ## Usage
 
     $ getch -h
+
+## Examples
+For a french user:
+
+    # getch --username ninja --zoneinfo Europe/Paris --language fr_FR --keyboard fr
