@@ -39,6 +39,7 @@ module Getch
   end
 
   def self.format(disk, fs)
+    return if STATES[:format] and STATES[:partition]
     puts
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
     case gets.chomp
@@ -55,6 +56,7 @@ module Getch
   def self.main(argv)
     options = Options.new(DEFAULT_OPTIONS, argv)
     resume_options(options)
+    Getch::States.new() # Update States
     format(options.disk, options.fs)
   end
 end
