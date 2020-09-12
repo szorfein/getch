@@ -1,6 +1,7 @@
 require_relative 'getch/options'
 require_relative 'getch/disk'
 require_relative 'getch/states'
+require_relative 'getch/mount'
 
 module Getch
 
@@ -11,7 +12,7 @@ module Getch
     disk: 'sda',
     fs: 'ext4',
     username: nil
-  }
+  }.freeze
 
   STATES = {
     :partition => false,
@@ -53,10 +54,20 @@ module Getch
     end
   end
 
+  def self.mount(disk, user)
+    return if STATES[:mount]
+    mount = Getch::Mount.new(disk, user)
+    mount.swap
+    mount.root
+    mount.boot
+    mount.home
+  end
+
   def self.main(argv)
-    options = Options.new(DEFAULT_OPTIONS, argv)
+    options = Options.new(argv)
     resume_options(options)
     Getch::States.new() # Update States
     format(options.disk, options.fs)
+    mount(options.disk, options.username)
   end
 end

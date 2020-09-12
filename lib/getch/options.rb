@@ -4,13 +4,13 @@ module Getch
   class Options
     attr_reader :language, :zoneinfo, :keyboard, :disk, :fs, :username
 
-    def initialize(default, argv)
-      @language = default[:language]
-      @zoneinfo = default[:location]
-      @keyboard = default[:keyboard]
-      @disk = default[:disk]
-      @fs = default[:fs]
-      @username = default[:username]
+    def initialize(argv)
+      @language = DEFAULT_OPTIONS[:language]
+      @zoneinfo = DEFAULT_OPTIONS[:location]
+      @keyboard = DEFAULT_OPTIONS[:keyboard]
+      @disk = DEFAULT_OPTIONS[:disk]
+      @fs = DEFAULT_OPTIONS[:fs]
+      @username = DEFAULT_OPTIONS[:username]
       parse(argv)
     end
 

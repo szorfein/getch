@@ -41,14 +41,12 @@ module Getch
       return if STATES[:format]
       puts "Format #{@hdd} with #{@fs}"
       if efi? then
-        system("mkfs.vfat -F32 /dev/#{@hdd}1")
+        system("mkfs.fat -F32 /dev/#{@hdd}1")
         system("mkswap /dev/#{@hdd}2")
-        system("swapon /dev/#{@hdd}2")
         system("mkfs.ext4 /dev/#{@hdd}3")
         system("mkfs.ext4 /dev/#{@hdd}4")
       else
         system("mkswap /dev/#{@hdd}2")
-        system("swapon /dev/#{@hdd}2")
         system("mkfs.ext4 /dev/#{@hdd}3")
         system("mkfs.ext4 /dev/#{@hdd}4")
       end

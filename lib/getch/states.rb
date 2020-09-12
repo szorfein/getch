@@ -17,6 +17,11 @@ module Getch
       save
     end
 
+    def mount
+      STATES[:mount] = true
+      save
+    end
+
     private
 
     def save
