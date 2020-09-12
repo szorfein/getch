@@ -2,6 +2,8 @@ require_relative 'getch/options'
 require_relative 'getch/disk'
 require_relative 'getch/states'
 require_relative 'getch/mount'
+require_relative 'getch/gentoo'
+require_relative 'getch/helpers'
 
 module Getch
 
@@ -18,7 +20,7 @@ module Getch
     :partition => false,
     :format => false,
     :mount => false,
-    :gentoo_base => false
+    :gentoo_base => false,
   }
 
   def self.resume_options(opts)
@@ -63,11 +65,20 @@ module Getch
     mount.home
   end
 
+  def self.get_stage3
+    return if STATES[:gentoo_base]
+    gentoo = Getch::Gentoo.new
+    gentoo.get_stage3
+    gentoo.control_files
+    gentoo.checksum
+  end
+
   def self.main(argv)
     options = Options.new(argv)
     resume_options(options)
     Getch::States.new() # Update States
     format(options.disk, options.fs)
     mount(options.disk, options.username)
+    get_stage3
   end
 end

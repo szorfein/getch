@@ -22,6 +22,11 @@ module Getch
       save
     end
 
+    def stage3
+      STATES[:gentoo_base] = true
+      save
+    end
+
     private
 
     def save
