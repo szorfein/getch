@@ -1,5 +1,6 @@
 require_relative 'getch/options'
 require_relative 'getch/disk'
+require_relative 'getch/states'
 
 module Getch
 
@@ -10,6 +11,13 @@ module Getch
     disk: 'sda',
     fs: 'ext4',
     username: nil
+  }
+
+  STATES = {
+    :partition => false,
+    :format => false,
+    :mount => false,
+    :gentoo_base => false
   }
 
   def self.resume_options(opts)
@@ -40,7 +48,7 @@ module Getch
       disk.partition
       disk.format
     else
-      return
+      exit 1
     end
   end
 

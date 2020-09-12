@@ -3,6 +3,7 @@ module Getch
     def initialize(disk, fs)
       @hdd = disk
       @fs = fs
+      @state = Getch::States.new()
     end
 
     def efi?
@@ -11,6 +12,7 @@ module Getch
 
     # https://wiki.archlinux.org/index.php/Securely_wipe_disk
     def cleaning
+      return if STATES[:partition ]
       puts
       print "Cleaning data on #{@hdd}, can be long, avoid this on Flash Memory (SSD,USB,...) ? (n,y) "
       case gets.chomp
@@ -22,6 +24,7 @@ module Getch
     end
 
     def partition
+      return if STATES[:partition]
       system("sgdisk --zap-all /dev/#{@hdd}")
       if efi? then
         puts "Partition disk #{@hdd} for an EFI system"
@@ -30,9 +33,11 @@ module Getch
         puts "Partition disk #{@hdd} for a Bios system"
         partition_bios
       end
+      @state.partition
     end
 
     def format
+      return if STATES[:format]
       puts "Format #{@hdd} with #{@fs}"
       if efi? then
         system("mkfs.vfat -F32 /dev/#{@hdd}1")
@@ -46,6 +51,7 @@ module Getch
         system("mkfs.ext4 /dev/#{@hdd}3")
         system("mkfs.ext4 /dev/#{@hdd}4")
       end
+      @state.format
     end
 
     private
