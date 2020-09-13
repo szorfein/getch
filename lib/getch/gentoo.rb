@@ -12,6 +12,7 @@ module Getch
 
       def stage3
         return if STATES[:gentoo_base]
+        new
         stage = Getch::Gentoo::Stage.new()
         stage.get_stage3
         stage.control_files
@@ -21,6 +22,7 @@ module Getch
 
       def config(options)
         return if STATES[:gentoo_config]
+        new
         config = Getch::Gentoo::Config.new()
         config.portage
         config.repo
