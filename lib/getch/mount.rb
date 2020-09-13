@@ -9,7 +9,7 @@ module Getch
 
     def swap
       return if STATES[:mount]
-      system("swapon /dev/#{@hdd}2")
+      system("swapon /dev/#{@disk}2")
     end
 
     def root
@@ -20,7 +20,7 @@ module Getch
 
     def boot
       return if STATES[:mount]
-      if File.exist?("/dev/#{@disk}1")
+      if Helpers::efi? then
         Dir.mkdir(@dest + '/boot', 0700) if ! Dir.exist?(@dest + '/boot')
         Dir.mkdir(@dest + '/boot/efi', 0700) if ! Dir.exist?(@dest + '/boot/efi')
         system("mount /dev/#{@disk}1 #{@dest}/boot/efi") 

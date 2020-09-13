@@ -6,10 +6,6 @@ module Getch
       @state = Getch::States.new()
     end
 
-    def efi?
-      Dir.exist? '/sys/firmware/efi/efivars'
-    end
-
     # https://wiki.archlinux.org/index.php/Securely_wipe_disk
     def cleaning
       return if STATES[:partition ]
@@ -27,7 +23,7 @@ module Getch
       return if STATES[:partition]
       system("wipefs -a /dev/#{@hdd}")
       system("sgdisk --zap-all /dev/#{@hdd}")
-      if efi? then
+      if Helpers::efi? then
         puts "Partition disk #{@hdd} for an EFI system"
         partition_efi
       else
@@ -40,7 +36,7 @@ module Getch
     def format
       return if STATES[:format]
       puts "Format #{@hdd} with #{@fs}"
-      if efi? then
+      if Helpers::efi? then
         system("mkfs.fat -F32 /dev/#{@hdd}1")
         system("mkswap /dev/#{@hdd}2")
         system("mkfs.ext4 /dev/#{@hdd}3")

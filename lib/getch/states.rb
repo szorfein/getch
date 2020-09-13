@@ -34,7 +34,7 @@ module Getch
     end
 
     def load_state()
-      if File.exists? @file
+      if File.exist? @file
         state_file = YAML.load_file(@file)
         STATES.merge!(state_file)
       else

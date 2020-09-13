@@ -25,7 +25,7 @@ module Getch
     end
 
     def get_stage3
-      Dir.chdir('/home/daggoth/tmp') # /mnt/gentoo
+      Dir.chdir('/mnt/gentoo')
       return if File.exist?(@stage_file)
       puts "Download the last #{@stage_file}, please wait..."
       Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file, @stage_file)
@@ -47,7 +47,9 @@ module Getch
       if status.success? then
         puts "Checksum is ok"
         decompress
+        cleaning
       else
+        cleaning
         raise "Problem with the checksum, stderr\n#{stderr}"
       end
     end
@@ -56,9 +58,16 @@ module Getch
 
     # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage
     def decompress
-      p "Decompress archive #{@stage_file}"
-      system("tar xpvf #{@stage_file} --xattrs-include='*.*' --numeric-owner")
+      puts "Decompressing archive #{@stage_file}..."
+      cmd = "tar xpvf #{@stage_file} --xattrs-include='*.*' --numeric-owner"
+      Helpers::exec_or_die(cmd)
       @state.stage3
+    end
+
+    def cleaning
+      Dir.glob("stage3-amd64-systemd*").each do |f|
+        File.delete(f)
+      end
     end
   end
 end
