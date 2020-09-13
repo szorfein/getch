@@ -21,7 +21,11 @@ module Getch
     :format => false,
     :mount => false,
     :gentoo_base => false,
+    :gentoo_config => false
   }
+
+  MOUNTPOINT = "/mnt/gentoo".freeze
+  #MOUNTPOINT = "/home/daggoth/lol".freeze
 
   def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
@@ -65,12 +69,10 @@ module Getch
     mount.home
   end
 
-  def self.get_stage3
-    return if STATES[:gentoo_base]
-    gentoo = Getch::Gentoo.new
-    gentoo.get_stage3
-    gentoo.control_files
-    gentoo.checksum
+  def self.init_gentoo(options)
+    gentoo = Getch::Gentoo
+    gentoo.stage3
+    gentoo.config(options)
   end
 
   def self.main(argv)
@@ -79,6 +81,6 @@ module Getch
     Getch::States.new() # Update States
     format(options.disk, options.fs)
     mount(options.disk, options.username)
-    get_stage3
+    init_gentoo(options)
   end
 end

@@ -1,9 +1,13 @@
+require 'fileutils'
+
 module Getch
   class Mount
     def initialize(disk, user)
       @disk = disk
       @user = user
-      @dest = '/mnt/gentoo'
+      @dest = MOUNTPOINT
+      @boot_efi = MOUNTPOINT + '/boot/efi'
+      @home = @user == nil ? MOUNTPOINT + '/home' : MOUNTPOINT + "/home/#{@user}"
       @state = Getch::States.new()
     end
 
@@ -21,18 +25,17 @@ module Getch
     def boot
       return if STATES[:mount]
       if Helpers::efi? then
-        Dir.mkdir(@dest + '/boot', 0700) if ! Dir.exist?(@dest + '/boot')
-        Dir.mkdir(@dest + '/boot/efi', 0700) if ! Dir.exist?(@dest + '/boot/efi')
-        system("mount /dev/#{@disk}1 #{@dest}/boot/efi") 
+        FileUtils.mkdir_p @boot_efi, mode: 0700 if ! Dir.exist?(@boot_efi)
+        system("mount /dev/#{@disk}1 #{@boot_efi}")
       end
     end
 
     def home
       return if STATES[:mount]
-      Dir.mkdir(@dest + '/home', 0700) if ! Dir.exist?(@dest + '/home')
       if @user != nil then
-        Dir.mkdir(@dest + "/home/#{@user}", 0700) if ! Dir.exist?(@dest + "/home/#{@user}")
-        system("mount /dev/#{@disk}4 #{@dest}/home/#{@user}") 
+        FileUtils.mkdir_p @home, mode: 0700 if ! Dir.exist?(@home)
+        system("mount /dev/#{@disk}4 #{@home}")
+        FileUtils.chown @user, @user, @home
       end
       @state.mount
     end

@@ -1,72 +1,32 @@
 require 'open-uri'
 require 'open3'
+require_relative 'gentoo/stage'
+require_relative 'gentoo/config'
 
 module Getch
-  class Gentoo
-    def initialize
-      @mirror = "https://mirrors.soeasyto.com/distfiles.gentoo.org"
-      @release = release
-      @stage_file="stage3-amd64-systemd-#{@release}.tar.xz"
-      @state = Getch::States.new()
-    end
-
-    def stage3
-      @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt'
-    end
-
-    def release
-      URI.open(stage3) do |file|
-        file.read.match(/^[[:alnum:]]+/)
+  module Gentoo
+    class << self
+      def new
+        @state = Getch::States.new()
       end
-    end
 
-    def file
-      "#{@release}/#{@stage_file}"
-    end
-
-    def get_stage3
-      Dir.chdir('/mnt/gentoo')
-      return if File.exist?(@stage_file)
-      puts "Download the last #{@stage_file}, please wait..."
-      Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file, @stage_file)
-    end
-
-    def control_files
-      puts "Download the DIGESTS"
-      Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS", "#{@stage_file}.DIGESTS")
-      puts "Download the DIGESTS.asc"
-      Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS.asc", "#{@stage_file}.DIGESTS.asc")
-      puts "Download the CONTENTS.gz"
-      Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".CONTENTS.gz", "#{@stage_file}.CONTENTS.gz")
-    end
-
-    def checksum
-      puts 'Check the SHA512 checksum.'
-      command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS.asc | sha512sum --check"
-      _, stderr, status = Open3.capture3(command)
-      if status.success? then
-        puts "Checksum is ok"
-        decompress
-        cleaning
-      else
-        cleaning
-        raise "Problem with the checksum, stderr\n#{stderr}"
+      def stage3
+        return if STATES[:gentoo_base]
+        stage = Getch::Gentoo::Stage.new()
+        stage.get_stage3
+        stage.control_files
+        stage.checksum
+        @state.stage3
       end
-    end
 
-    private 
-
-    # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage
-    def decompress
-      puts "Decompressing archive #{@stage_file}..."
-      cmd = "tar xpvf #{@stage_file} --xattrs-include='*.*' --numeric-owner"
-      Helpers::exec_or_die(cmd)
-      @state.stage3
-    end
-
-    def cleaning
-      Dir.glob("stage3-amd64-systemd*").each do |f|
-        File.delete(f)
+      def config(options)
+        return if STATES[:gentoo_config]
+        config = Getch::Gentoo::Config.new()
+        config.portage
+        config.repo
+        config.network
+        config.systemd(options)
+        @state.config
       end
     end
   end

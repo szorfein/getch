@@ -27,6 +27,11 @@ module Getch
       save
     end
 
+    def config
+      STATES[:gentoo_config] = true
+      save
+    end
+
     private
 
     def save
