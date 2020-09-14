@@ -35,6 +35,9 @@ module Getch
       def chroot
         chroot = Getch::Gentoo::Chroot.new()
         chroot.update
+        chroot.world
+        chroot.systemd
+        chroot.kernel
       end
     end
   end

@@ -42,7 +42,9 @@ module Getch
       def systemd(options)
         control_options(options)
         File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
-        File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C')
+        File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}")
+        File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
+        File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{@keymap}")
       end
 
@@ -69,9 +71,10 @@ module Getch
       end
 
       def search_utf8(lang)
-        @utf8 = nil
+        @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each { |l|
           @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
+          @lang = $~[0] if l.match(/^#{lang}[. ]+utf\-8/i)
         }
         raise "Lang #{lang} no found" if ! @utf8
       end

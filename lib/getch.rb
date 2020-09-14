@@ -21,7 +21,8 @@ module Getch
     :format => false,
     :mount => false,
     :gentoo_base => false,
-    :gentoo_config => false
+    :gentoo_config => false,
+    :gentoo_update => false
   }
 
   MOUNTPOINT = "/mnt/gentoo".freeze
@@ -73,6 +74,7 @@ module Getch
     gentoo = Getch::Gentoo
     gentoo.stage3
     gentoo.config(options)
+    gentoo.chroot
   end
 
   def self.main(argv)

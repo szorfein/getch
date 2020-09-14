@@ -32,6 +32,11 @@ module Getch
       save
     end
 
+    def update
+      STATES[:gentoo_update] = true
+      save
+    end
+
     private
 
     def save
