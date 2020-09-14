@@ -39,6 +39,7 @@ module Getch
         chroot.world
         chroot.systemd
         chroot.kernel
+        chroot.kernel_build
       end
     end
   end

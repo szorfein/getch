@@ -42,10 +42,10 @@ module Getch
       def systemd(options)
         control_options(options)
         File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
-        File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}")
+        File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}\n")
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
         File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{@keymap}")
+        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{options.keyboard}")
       end
 
       def portage_fs

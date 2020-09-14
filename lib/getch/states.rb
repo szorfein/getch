@@ -37,6 +37,11 @@ module Getch
       save
     end
 
+    def kernel
+      STATES[:gentoo_kernel] = true
+      save
+    end
+
     private
 
     def save

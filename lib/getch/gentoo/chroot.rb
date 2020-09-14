@@ -35,7 +35,49 @@ module Getch
         exec_chroot(cmd)
       end
 
+      def kernel_build
+        return if STATES[:gentoo_kernel]
+        get_garden
+        garden_dep
+        garden_build
+        make
+        @state.kernel
+      end
+
       private
+
+      def make
+        puts "Compiling kernel sources"
+        cmd = 'cd /usr/src/linux; make -j$(nproc); make modules_install; make install'
+        exec_chroot(cmd)
+      end
+
+      def get_garden
+        puts "Downloading garden..."
+        url = 'https://github.com/szorfein/garden/archive/master.tar.gz'
+        file = 'garden-master.tar.gz'
+
+        Dir.chdir("#{MOUNTPOINT}/root")
+        Helpers::get_file_online(url, file)
+        Helpers::run_or_die("tar xzf #{file}") if ! Dir.exist? 'garden-master'
+      end
+
+      def garden_dep
+        puts "Install dependencies for Garden"
+        cmd = "emerge gentoolkit && euse -p sys-apps/kmod -E lzma && emerge kmod"
+        exec_chroot(cmd)
+      end
+
+      def garden_build
+        kernel = '/usr/src/linux'
+        puts "Adding KSPP to the kernel source"
+        cmd = "cd /root/garden-master;
+          ./kernel.sh -b -k #{kernel};
+          ./kernel.sh -a \"systemd wifi\" -k #{kernel};
+        "
+        exec_chroot(cmd)
+      end
+
       def mount
         puts "Populate /proc, /sys and /dev."
         Helpers::exec_or_die("mount --types proc /proc \"#{MOUNTPOINT}/proc\"")
