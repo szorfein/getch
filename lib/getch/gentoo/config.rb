@@ -71,7 +71,7 @@ module Getch
       def search_utf8(lang)
         @utf8 = nil
         File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each { |l|
-          @utf8 = l.match(/#{lang}.*UTF/)
+          @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
         }
         raise "Lang #{lang} no found" if ! @utf8
       end

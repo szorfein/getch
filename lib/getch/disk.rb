@@ -21,8 +21,8 @@ module Getch
 
     def partition
       return if STATES[:partition]
-      system("wipefs -a /dev/#{@hdd}")
       system("sgdisk --zap-all /dev/#{@hdd}")
+      system("wipefs -a /dev/#{@hdd}")
       if Helpers::efi? then
         puts "Partition disk #{@hdd} for an EFI system"
         partition_efi

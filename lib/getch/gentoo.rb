@@ -2,6 +2,7 @@ require 'open-uri'
 require 'open3'
 require_relative 'gentoo/stage'
 require_relative 'gentoo/config'
+require_relative 'gentoo/chroot'
 
 module Getch
   module Gentoo
@@ -29,6 +30,11 @@ module Getch
         config.network
         config.systemd(options)
         @state.config
+      end
+
+      def chroot
+        chroot = Getch::Gentoo::Chroot.new()
+        chroot.update
       end
     end
   end
