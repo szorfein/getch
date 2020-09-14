@@ -30,6 +30,8 @@ module Getch
       def kernel
         puts "Installing kernel gentoo-sources..."
         cmd = "emerge sys-kernel/gentoo-sources sys-kernel/linux-firmware"
+        license = "#{MOUNTPOINT}/etc/portage/package.license"
+        File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
         exec_chroot(cmd)
       end
 

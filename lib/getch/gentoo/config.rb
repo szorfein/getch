@@ -14,7 +14,7 @@ module Getch
           '',
           'ACCEPT_KEYWORD="amd64 ~amd64"',
           "MAKEOPTS=\"-j#{nproc} -l#{nproc}\"",
-          'INPUT_DEVICES="libinput synaptics"'
+          'INPUT_DEVICES="libinput"'
         ]
         File.write(@make, data.join("\n"), mode: "a")
       end
@@ -46,6 +46,17 @@ module Getch
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
         File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{@keymap}")
+      end
+
+      def portage_fs
+        portage = "#{MOUNTPOINT}/etc/portage"
+        Helpers::create_dir("#{portage}/package.use")
+        Helpers::create_dir("#{portage}/package.accept_keywords")
+        Helpers::create_dir("#{portage}/package.unmask")
+
+        Helpers::add_file("#{portage}/package.use/zzz_via_autounmask")
+        Helpers::add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
+        Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
       private

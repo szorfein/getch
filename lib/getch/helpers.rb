@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'open3'
+require 'fileutils'
 
 module Helpers
   def self.efi?
@@ -19,5 +20,13 @@ module Helpers
     unless status.success?
       raise "Problem running #{cmd}, stderr was:\n#{stderr}"
     end
+  end
+
+  def self.create_dir(path, perm = 0755)
+    FileUtils.mkdir_p path, mode: perm if ! Dir.exist?(path)
+  end
+
+  def self.add_file(path, content = '')
+    File.write path, content if ! File.exist? path
   end
 end

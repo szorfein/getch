@@ -26,6 +26,7 @@ module Getch
         new
         config = Getch::Gentoo::Config.new()
         config.portage
+        config.portage_fs
         config.repo
         config.network
         config.systemd(options)
