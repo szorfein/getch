@@ -49,10 +49,10 @@ module Getch
     private
 
     def gen_uuid
-      @hdd1_uuid = `lsblk -o "UUID" /dev/#{disk}1 | tail -1`.chomp()
-      @hdd2_uuid = `lsblk -o "UUID" /dev/#{disk}2 | tail -1`.chomp()
-      @hdd3_uuid = `lsblk -o "UUID" /dev/#{disk}3 | tail -1`.chomp()
-      @hdd4_uuid = `lsblk -o "UUID" /dev/#{disk}4 | tail -1`.chomp()
+      @hdd1_uuid = `lsblk -o "UUID" /dev/#{@disk}1 | tail -1`.chomp()
+      @hdd2_uuid = `lsblk -o "UUID" /dev/#{@disk}2 | tail -1`.chomp()
+      @hdd3_uuid = `lsblk -o "UUID" /dev/#{@disk}3 | tail -1`.chomp()
+      @hdd4_uuid = `lsblk -o "UUID" /dev/#{@disk}4 | tail -1`.chomp()
     end
 
     def gen_data

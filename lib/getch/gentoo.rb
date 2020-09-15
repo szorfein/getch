@@ -3,6 +3,8 @@ require 'open3'
 require_relative 'gentoo/stage'
 require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'
+require_relative 'gentoo/sources'
+require_relative 'gentoo/boot'
 
 module Getch
   module Gentoo
@@ -50,6 +52,11 @@ module Getch
         source.build_others
         source.make
         @state.source
+      end
+
+      def boot(options)
+        boot = Getch::Gentoo::Boot.new(options)
+        boot.start
       end
     end
   end
