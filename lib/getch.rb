@@ -77,6 +77,7 @@ module Getch
     gentoo.stage3
     gentoo.config(options)
     gentoo.chroot
+    gentoo.kernel
   end
 
   def self.main(argv)

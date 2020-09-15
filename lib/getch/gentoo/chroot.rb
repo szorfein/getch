@@ -36,22 +36,14 @@ module Getch
         exec_chroot(cmd)
       end
 
-      def kernel_build
-        return if STATES[:gentoo_kernel]
+      def kernel_deps
         get_garden
         garden_dep
         garden_build
-        make
         @state.kernel
       end
 
       private
-
-      def make
-        puts "Compiling kernel sources"
-        cmd = 'cd /usr/src/linux; make -j$(nproc); make modules_install; make install'
-        exec_chroot(cmd)
-      end
 
       def get_garden
         return if Dir.exist? "#{MOUNTPOINT}/root/garden-master"
@@ -67,13 +59,6 @@ module Getch
       def garden_dep
         puts "Install dependencies for Garden"
         cmd = "emerge gentoolkit && euse -p sys-apps/kmod -E lzma && emerge kmod"
-        exec_chroot(cmd)
-      end
-
-      def garden_build
-        kernel = '/usr/src/linux'
-        puts "Adding KSPP to the kernel source"
-        cmd = "cd /root/garden-master && ./kernel.sh -b -a 'systemd wifi' -k #{kernel}"
         exec_chroot(cmd)
       end
 

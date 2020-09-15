@@ -39,7 +39,17 @@ module Getch
         chroot.world
         chroot.systemd
         chroot.kernel
-        chroot.kernel_build
+        chroot.kernel_deps
+      end
+
+      def kernel
+        return if STATES[:gentoo_kernel]
+        source = Getch::Gentoo::Sources.new()
+        new
+        source.build_kspp
+        source.build_others
+        source.make
+        @state.source
       end
     end
   end
