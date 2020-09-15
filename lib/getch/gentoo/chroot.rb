@@ -28,6 +28,7 @@ module Getch
       end
 
       def kernel
+        return if Dir.exist? "#{MOUNTPOINT}/usr/src/linux"
         puts "Installing kernel gentoo-sources..."
         cmd = "emerge sys-kernel/gentoo-sources sys-kernel/linux-firmware"
         license = "#{MOUNTPOINT}/etc/portage/package.license"
@@ -53,13 +54,14 @@ module Getch
       end
 
       def get_garden
+        return if Dir.exist? "#{MOUNTPOINT}/root/garden-master"
         puts "Downloading garden..."
         url = 'https://github.com/szorfein/garden/archive/master.tar.gz'
         file = 'garden-master.tar.gz'
 
         Dir.chdir("#{MOUNTPOINT}/root")
         Helpers::get_file_online(url, file)
-        Helpers::run_or_die("tar xzf #{file}") if ! Dir.exist? 'garden-master'
+        Helpers::exec_or_die("tar xzf #{file}") if ! Dir.exist? 'garden-master'
       end
 
       def garden_dep
@@ -71,10 +73,7 @@ module Getch
       def garden_build
         kernel = '/usr/src/linux'
         puts "Adding KSPP to the kernel source"
-        cmd = "cd /root/garden-master;
-          ./kernel.sh -b -k #{kernel};
-          ./kernel.sh -a \"systemd wifi\" -k #{kernel};
-        "
+        cmd = "cd /root/garden-master && ./kernel.sh -b -a 'systemd wifi' -k #{kernel}"
         exec_chroot(cmd)
       end
 

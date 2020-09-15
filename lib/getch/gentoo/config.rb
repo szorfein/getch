@@ -72,12 +72,12 @@ module Getch
         Dir.glob("#{MOUNTPOINT}/usr/share/keymaps/**/#{keys}.map.gz") { |f|
           @keymap = f
         }
-        raise "No keymap #{@keymap} found" if ! @keymap
+        raise ArgumentError, "No keymap #{@keymap} found" if ! @keymap
       end
 
       def search_zone(zone)
         if ! File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
-          raise "Zoneinfo #{zone} doesn\'t exist."
+          raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
       end
 
@@ -87,7 +87,7 @@ module Getch
           @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
           @lang = $~[0] if l.match(/^#{lang}[. ]+utf\-8/i)
         }
-        raise "Lang #{lang} no found" if ! @utf8
+        raise ArgumentError, "Lang #{lang} no found" if ! @utf8
       end
     end
   end
