@@ -69,6 +69,7 @@ module Getch
     mount.root
     mount.boot
     mount.home
+    mount.gen_fstab
   end
 
   def self.init_gentoo(options)
