@@ -29,4 +29,12 @@ module Helpers
   def self.add_file(path, content = '')
     File.write path, content if ! File.exist? path
   end
+
+  def self.emerge(pkgs, path)
+    cmd = "chroot #{path} /bin/bash -c \"
+      source /etc/profile
+      emerge --changed-use #{pkgs}
+    \""
+    exec_or_die(cmd)
+  end
 end

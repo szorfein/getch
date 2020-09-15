@@ -21,4 +21,4 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
 ## Examples
 For a french user:
 
-    # getch --username ninja --zoneinfo Europe/Paris --language fr_FR --keyboard fr
+    # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keyboard fr

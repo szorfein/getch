@@ -30,24 +30,25 @@ module Getch
       def kernel
         return if Dir.exist? "#{MOUNTPOINT}/usr/src/linux"
         puts "Installing kernel gentoo-sources..."
-        cmd = "emerge sys-kernel/gentoo-sources sys-kernel/linux-firmware"
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
-        exec_chroot(cmd)
+        Helpers::emerge("sys-kernel/gentoo-sources linux-firmware", MOUNTPOINT)
       end
 
       def kernel_deps
+        puts "Installing Garden..."
         get_garden
         garden_dep
-        garden_build
-        @state.kernel
+      end
+
+      def install_tools
+        Helpers::emerge("dhcpcd", MOUNTPOINT)
       end
 
       private
 
       def get_garden
         return if Dir.exist? "#{MOUNTPOINT}/root/garden-master"
-        puts "Downloading garden..."
         url = 'https://github.com/szorfein/garden/archive/master.tar.gz'
         file = 'garden-master.tar.gz'
 
@@ -57,8 +58,9 @@ module Getch
       end
 
       def garden_dep
-        puts "Install dependencies for Garden"
-        cmd = "emerge gentoolkit && euse -p sys-apps/kmod -E lzma && emerge kmod"
+        Helpers::emerge("gentoolkit", MOUNTPOINT)
+        cmd = "euse -p sys-apps/kmod -E lzma"
+        Helpers::emerge("kmod", MOUNTPOINT)
         exec_chroot(cmd)
       end
 

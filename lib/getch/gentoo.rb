@@ -42,6 +42,7 @@ module Getch
         chroot.systemd
         chroot.kernel
         chroot.kernel_deps
+        chroot.install_tools
       end
 
       def kernel
