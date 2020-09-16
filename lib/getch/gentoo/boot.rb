@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Getch
   module Gentoo
     class Boot
@@ -8,13 +10,45 @@ module Getch
 
       def start
         gen_fstab
-        grub
+        bootloader
         password
         umount
       end
 
+      def bootloader
+        if Helpers::efi?
+          bootctl
+        else
+          grub
+        end
+      end
+
+      # bootctl is alrealy installed with the stage3-amd64-systemd
+      def bootctl
+        puts 'Installing Bootctl...'
+        # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
+        #exec_chroot("euse -p sys-apps/systemd -E gnuefi")
+        #Helpers::emerge("sys-apps/systemd efivar", MOUNTPOINT)
+        systemd = "#{MOUNTPOINT}/usr/lib/systemd"
+        esp = '/boot/efi'
+        FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
+        exec_chroot("bootctl --path #{esp} install")
+        @boot_efi = `lsblk -o "PARTUUID" /dev/#{@disk}1 | tail -1`.chomp()
+        datas_gentoo = [
+          'title Gentoo Linux',
+          'linux /vmlinuz',
+          "options root=PARTUUID=#{boot_efi} rw"
+        ]
+        datas_loader = [
+          'default gentoo',
+          'timeout 3',
+          'editor 0'
+        ]
+        File.write("#{efi}/loader/entries/gentoo.conf", datas_gentoo.join("\n"))
+        File.write("#{efi}/loader/loader.conf", datas_loader.join("\n"))
+      end
+
       def grub
-        return if Helpers::efi?
         puts 'Installing GRUB...'
         Helpers::emerge("sys-boot/grub:2", MOUNTPOINT)
         exec_chroot("grub-install /dev/#{@disk}")
