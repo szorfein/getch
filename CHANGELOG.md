@@ -1,3 +1,6 @@
+* Generate a hostname
+* Configure systemd-boot for efi system
+
 ## 0.0.4, release 2020-09-16
 * Boot on a BIOS system with VirtualBox
 * Install Grub

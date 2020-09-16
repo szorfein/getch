@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'tempfile'
+require 'securerandom'
 
 module Getch
   module Gentoo
@@ -48,6 +49,11 @@ module Getch
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
         File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{options.keyboard}")
+      end
+
+      def hostname
+        id = SecureRandom.hex(2)
+        File.write("#{MOUNTPOINT}/etc/hostname", "gentoo-hatch-#{id}")
       end
 
       def portage_fs

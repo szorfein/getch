@@ -32,6 +32,7 @@ module Getch
         config.repo
         config.network
         config.systemd(options)
+        config.hostname
         @state.config
       end
 

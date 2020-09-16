@@ -1,6 +1,15 @@
 # Getch
 A CLI tool to install Gentoo.
 
+## Description
+Actually, Getch support only the [AMD64 handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64) and only with the last `stage3-amd64-systemd`.  
+It also require a disk (only one for now) with a minimum of 20G.  
+
+Filesystem supported by Getch are (the list will evolve...):
++ ext4 in BIOS (with GRUB) and soon, the EFI mode (with systemd-boot)
+
+I would also add disk encryption soon.
+
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
 With `gem` installed:

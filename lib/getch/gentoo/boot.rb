@@ -33,7 +33,7 @@ module Getch
         esp = '/boot/efi'
         FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
         exec_chroot("bootctl --path #{esp} install")
-        @boot_efi = `lsblk -o "PARTUUID" /dev/#{@disk}1 | tail -1`.chomp()
+        boot_efi = `lsblk -o "PARTUUID" /dev/#{@disk}1 | tail -1`.chomp()
         datas_gentoo = [
           'title Gentoo Linux',
           'linux /vmlinuz',
@@ -44,8 +44,8 @@ module Getch
           'timeout 3',
           'editor 0'
         ]
-        File.write("#{efi}/loader/entries/gentoo.conf", datas_gentoo.join("\n"))
-        File.write("#{efi}/loader/loader.conf", datas_loader.join("\n"))
+        File.write("#{MOUNTPOINT}/#{esp}/loader/entries/gentoo.conf", datas_gentoo.join("\n"))
+        File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
       end
 
       def grub
@@ -70,7 +70,7 @@ module Getch
 
       def umount
         Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
-        Helpers::exec_or_die("umount -R #{MOUNTPONT}")
+        Helpers::exec_or_die("umount -R #{MOUNTPOINT}")
         puts "Reboot when you have done"
       end
 
