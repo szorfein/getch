@@ -15,25 +15,27 @@ module Getch
 
       def grub
         return if Helpers::efi?
-        puts 'Installing grub...'
+        puts 'Installing GRUB...'
         Helpers::emerge("sys-boot/grub:2", MOUNTPOINT)
-        exec_chroot("grub install #{@disk}")
+        exec_chroot("grub-install /dev/#{@disk}")
         exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')
       end
 
       def password
         puts 'Password for root'
-        exec_chroot('passwd')
+        cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd\""
+        system(cmd)
         if @user != nil
           puts "Creating user #{@user}"
           exec_chroot("useradd -m -G users,wheel,audio,video #{@user}")
           puts "Password for your user #{@user}"
-          exec_chroot("passwd #{@user}")
+          cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd #{@user}\""
+          system(cmd)
         end
       end
 
       def umount
-        Helpers::exec_or_die("mount -l /mnt/gentoo/dev{/shm,/pts,}")
+        Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
         Helpers::exec_or_die("umount -R #{MOUNTPONT}")
         puts "Reboot when you have done"
       end

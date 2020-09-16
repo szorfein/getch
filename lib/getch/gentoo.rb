@@ -40,6 +40,7 @@ module Getch
         chroot.update
         chroot.world
         chroot.systemd
+        return if STATES[:gentoo_kernel]
         chroot.kernel
         chroot.kernel_deps
         chroot.install_tools
@@ -52,7 +53,7 @@ module Getch
         source.build_kspp
         source.build_others
         source.make
-        @state.source
+        @state.kernel
       end
 
       def boot(options)
