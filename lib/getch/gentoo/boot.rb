@@ -25,19 +25,20 @@ module Getch
 
       # bootctl is alrealy installed with the stage3-amd64-systemd
       def bootctl
-        puts 'Installing Bootctl...'
+        bootctl_dep
+        puts "Configuring systemd-boot."
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
-        #exec_chroot("euse -p sys-apps/systemd -E gnuefi")
-        #Helpers::emerge("sys-apps/systemd efivar", MOUNTPOINT)
-        systemd = "#{MOUNTPOINT}/usr/lib/systemd"
         esp = '/boot/efi'
-        FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
+        #systemd = "#{MOUNTPOINT}/usr/lib/systemd"
+        #FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
         exec_chroot("bootctl --path #{esp} install")
+
         boot_efi = `lsblk -o "PARTUUID" /dev/#{@disk}1 | tail -1`.chomp()
+        init = '/usr/lib/systemd/systemd'
         datas_gentoo = [
           'title Gentoo Linux',
           'linux /vmlinuz',
-          "options root=PARTUUID=#{boot_efi} rw"
+          "options root=PARTUUID=#{boot_efi} init=#{init} rw"
         ]
         datas_loader = [
           'default gentoo',
@@ -46,6 +47,15 @@ module Getch
         ]
         File.write("#{MOUNTPOINT}/#{esp}/loader/entries/gentoo.conf", datas_gentoo.join("\n"))
         File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
+
+        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz", preserve: true)
+        exec_chroot("bootctl --path #{esp} update")
+      end
+
+      def bootctl_dep
+        puts 'Installing systemd-boot...'
+        exec_chroot("euse -p sys-apps/systemd -E gnuefi")
+        Helpers::emerge("sys-apps/systemd efivar", MOUNTPOINT)
       end
 
       def grub
