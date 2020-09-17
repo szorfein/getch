@@ -33,12 +33,12 @@ module Getch
         #FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
         exec_chroot("bootctl --path #{esp} install")
 
-        boot_efi = `lsblk -o "PARTUUID" /dev/#{@disk}1 | tail -1`.chomp()
+        root = `lsblk -o "PARTUUID" /dev/#{@disk}3 | tail -1`.chomp()
         init = '/usr/lib/systemd/systemd'
         datas_gentoo = [
           'title Gentoo Linux',
           'linux /vmlinuz',
-          "options root=PARTUUID=#{boot_efi} init=#{init} rw"
+          "options root=PARTUUID=#{root} init=#{init} rw"
         ]
         datas_loader = [
           'default gentoo',

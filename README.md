@@ -6,9 +6,12 @@ Actually, Getch support only the [AMD64 handbook](https://wiki.gentoo.org/wiki/H
 It also require a disk (only one for now) with a minimum of 20G.  
 
 Filesystem supported by Getch are: (the list will evolve...)
-+ ext4 with GRUB2 for BIOS based system and soon systemd-boot for UEFI systems.
++ ext4 with GRUB2 for BIOS based system and systemd-boot for UEFI systems.
 
 I would also add disk encryption soon.
+
+The ISO images i was able to test and that works:
++ [Archlinux](https://www.archlinux.org/download/)
 
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
@@ -31,3 +34,8 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
 For a french user:
 
     # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keyboard fr
+
+## Issues
+If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
++ lspci
++ lsmod
