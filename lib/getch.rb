@@ -1,8 +1,8 @@
 require_relative 'getch/options'
-require_relative 'getch/disk'
 require_relative 'getch/states'
 require_relative 'getch/mount'
 require_relative 'getch/gentoo'
+require_relative 'getch/filesystem'
 require_relative 'getch/helpers'
 
 module Getch
@@ -27,7 +27,9 @@ module Getch
   }
 
   MOUNTPOINT = "/mnt/gentoo".freeze
-  #MOUNTPOINT = "/home/daggoth/lol".freeze
+  OPTIONS_FS = {
+    'ext4' => Getch::FileSystem::Ext4
+  }.freeze
 
   def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
@@ -53,10 +55,10 @@ module Getch
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
     case gets.chomp
     when /^y|^Y/
-      disk = Getch::Disk.new(disk, fs)
-      disk.cleaning
-      disk.partition
-      disk.format
+      filesystem = OPTIONS_FS[fs].new(disk)
+      filesystem.cleaning
+      filesystem.partition
+      filesystem.format
     else
       exit 1
     end

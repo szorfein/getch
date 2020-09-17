@@ -35,6 +35,8 @@ For a french user:
 
     # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keyboard fr
 
+After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
+
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
 + lspci
