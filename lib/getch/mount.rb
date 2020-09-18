@@ -6,9 +6,9 @@ module Getch
       @disk = disk
       @user = user
       @root_dir = MOUNTPOINT
-      @boot_dir = "#{root_dir}/boot"
-      @boot_efi_dir = "#{root_dir}/boot/efi"
-      @home_dir = @user ? "#{root_dir}/home/#{@user}" : nil
+      @boot_dir = "#{@root_dir}/boot"
+      @boot_efi_dir = "#{@root_dir}/boot/efi"
+      @home_dir = @user ? "#{@root_dir}/home/#{@user}" : nil
       @state = Getch::States.new()
     end
 

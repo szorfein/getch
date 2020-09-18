@@ -59,7 +59,7 @@ module Getch
       filesystem.cleaning
       filesystem.partition
       filesystem.format
-      filesystem::Mount.new(disk, user).run
+      OPTIONS_FS[fs]::Mount.new(disk, user).run
     else
       exit 1
     end
