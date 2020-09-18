@@ -61,7 +61,7 @@ module Getch
       def decompress
         puts "Decompressing archive #{@stage_file}..."
         cmd = "tar xpvf #{@stage_file} --xattrs-include='*.*' --numeric-owner"
-        Helpers::exec_or_die(cmd)
+        Gentoo::Command.new(cmd).run!
       end
 
       def cleaning

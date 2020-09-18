@@ -40,7 +40,7 @@ module Getch
           cd /root/garden-master
           #{cmd}
         \""
-        Helpers::exec_or_die(script)
+        Getch::Command.new(script).run!
       end
 
       def exec_chroot(cmd)
@@ -48,7 +48,7 @@ module Getch
           source /etc/profile
           #{cmd}
         \""
-        Helpers::exec_or_die(script)
+        Gentoo::Command.new(script).run!
       end
 
       def install_wifi

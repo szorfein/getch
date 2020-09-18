@@ -4,7 +4,7 @@ module Getch
   class Command
     def initialize(cmd)
       @cmd = cmd
-      @block_size = 1024
+      @block_size = 512
     end
 
     def run!
@@ -31,7 +31,7 @@ module Getch
                   data = f.read_nonblock(@block_size)
 
                   # Do something with the data...
-                  puts "fileno: #{fileno}, data: #{data}"
+                  puts "#{data}" if DEFAULT_OPTIONS[:verbose]
                 rescue EOFError
                   puts "fileno: #{fileno} EOF"
                 end
@@ -48,7 +48,6 @@ module Getch
     private
 
     # Returns true if all files are EOF
-    #
     def all_eof(files)
       files.find { |f| !f.eof }.nil?
     end

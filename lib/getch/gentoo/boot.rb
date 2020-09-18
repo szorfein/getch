@@ -96,7 +96,7 @@ module Getch
           source /etc/profile
           #{cmd}
         \""
-        Helpers::exec_or_die(script)
+        Gentoo::Command.new(script).run!
       end
     end
   end

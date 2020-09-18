@@ -54,7 +54,7 @@ module Getch
 
         Dir.chdir("#{MOUNTPOINT}/root")
         Helpers::get_file_online(url, file)
-        Helpers::exec_or_die("tar xzf #{file}") if ! Dir.exist? 'garden-master'
+        Gentoo::Command.new("tar xzf #{file}").run! if ! Dir.exist? 'garden-master'
       end
 
       def garden_dep
@@ -80,7 +80,7 @@ module Getch
           source /etc/profile
           #{cmd}
         \""
-        Helpers::exec_or_die(script)
+        Getch::Command.new(script).run!
       end
     end
   end

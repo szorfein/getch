@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'open3'
 require 'fileutils'
+require_relative 'command'
 
 module Helpers
   def self.efi?
@@ -35,6 +36,6 @@ module Helpers
       source /etc/profile
       emerge --changed-use #{pkgs}
     \""
-    exec_or_die(cmd)
+    Getch::Command.new(cmd).run!
   end
 end
