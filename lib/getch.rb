@@ -49,7 +49,7 @@ module Getch
     end
   end
 
-  def self.format(disk, fs)
+  def self.format(disk, fs, user)
     return if STATES[:format] and STATES[:partition]
     puts
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
@@ -59,18 +59,10 @@ module Getch
       filesystem.cleaning
       filesystem.partition
       filesystem.format
+      filesystem::Mount.new(disk, user).run
     else
       exit 1
     end
-  end
-
-  def self.mount(disk, user)
-    return if STATES[:mount]
-    mount = Getch::Mount.new(disk, user)
-    mount.swap
-    mount.root
-    mount.boot
-    mount.home
   end
 
   def self.init_gentoo(options)
@@ -86,8 +78,7 @@ module Getch
     options = Options.new(argv)
     resume_options(options)
     Getch::States.new() # Update States
-    format(options.disk, options.fs)
-    mount(options.disk, options.username)
+    format(options.disk, options.fs, options.username)
     init_gentoo(options)
   end
 end

@@ -5,69 +5,84 @@ module Getch
     def initialize(disk, user)
       @disk = disk
       @user = user
-      @dest = MOUNTPOINT
-      @boot_efi = MOUNTPOINT + '/boot/efi'
-      @home = @user == nil ? MOUNTPOINT + '/home' : MOUNTPOINT + "/home/#{@user}"
+      @root_dir = MOUNTPOINT
+      @boot_dir = "#{root_dir}/boot"
+      @boot_efi_dir = "#{root_dir}/boot/efi"
+      @home_dir = @user ? "#{root_dir}/home/#{@user}" : nil
       @state = Getch::States.new()
     end
 
-    def swap
+    def run
       return if STATES[:mount]
-      system("swapon /dev/#{@disk}2")
+      gen_vars
+      mount_swap
+      mount_root
+      mount_boot
+      mount_home
+      mount_boot_efi if Helpers::efi?
+      @state.mount
     end
 
-    def root
-      return if STATES[:mount]
-      Dir.mkdir(@dest, 0700) if ! Dir.exist?(@dest)
-      system("mount /dev/#{@disk}3 #{@dest}") 
+    private
+
+    def gen_vars
+      @dev_boot_efi = nil
+      @dev_boot = nil
+      @dev_root = nil
+      @dev_swap = nil
+      @dev_home = nil
     end
 
-    def boot
-      return if STATES[:mount]
-      if Helpers::efi? then
-        FileUtils.mkdir_p @boot_efi, mode: 0700 if ! Dir.exist?(@boot_efi)
-        system("mount /dev/#{@disk}1 #{@boot_efi}")
-      end
+    def mount_swap
+      return if ! @dev_swap
+      system("swapon #{@dev_swap}")
     end
 
-    def home
-      return if STATES[:mount]
+    def mount_root
+      return if ! @dev_root
+      Dir.mkdir(@root_dir, 0700) if ! Dir.exist?(@root_dir)
+      system("mount #{@dev_root} #{@root_dir}")
+    end
+
+    def mount_boot_efi
+      return if ! @dev_boot_efi
+      FileUtils.mkdir_p @boot_efi_dir, mode: 0700 if ! Dir.exist?(@boot_efi_dir)
+      system("mount #{@dev_boot_efi} #{@boot_efi_dir}")
+    end
+
+    def mount_boot
+      return if ! @dev_boot
+      FileUtils.mkdir_p @boot_dir, mode: 0700 if ! Dir.exist?(@boot_dir)
+      system("mount #{@dev_boot} #{@boot_dir}")
+    end
+
+    def mount_home
+      return if ! @dev_home
       if @user != nil then
-        FileUtils.mkdir_p @home, mode: 0700 if ! Dir.exist?(@home)
-        system("mount /dev/#{@disk}4 #{@home}")
-        #FileUtils.chown @user, @user, @home
+        FileUtils.mkdir_p @home_dir, mode: 0700 if ! Dir.exist?(@home_dir)
+        system("mount #{@dev_home} #{@home_dir}")
       end
       @state.mount
     end
 
     def gen_fstab
+      file = "#{@root_dir}/etc/fstab"
+      FileUtils.mkdir_p file, mode: 0700 if ! Dir.exist?(file)
       gen_uuid
-      datas = gen_data
-      File.write("#{MOUNTPOINT}/etc/fstab", datas.join("\n"), mode: "a")
+      datas = data_fstab
+      File.write(file, datas.join("\n"))
     end
-
-    private
 
     def gen_uuid
-      @hdd1_uuid = `lsblk -o "UUID" /dev/#{@disk}1 | tail -1`.chomp()
-      @hdd2_uuid = `lsblk -o "UUID" /dev/#{@disk}2 | tail -1`.chomp()
-      @hdd3_uuid = `lsblk -o "UUID" /dev/#{@disk}3 | tail -1`.chomp()
-      @hdd4_uuid = `lsblk -o "UUID" /dev/#{@disk}4 | tail -1`.chomp()
+      @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
+      @uuid_root = `lsblk -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
+      @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
+      @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
+      @uuid_home = `lsblk -o "UUID" #{@dev_home} | tail -1`.chomp() if @dev_home
     end
 
-    def gen_data
-      boot = Helpers::efi? ? "UUID=#{@hdd1_uuid} /boot/efi vfat noauto,defaults  0 2" : ''
-      swap = "UUID=#{@hdd2_uuid} none swap discard 0 0"
-      root = "UUID=#{@hdd3_uuid} / ext4 defaults 0 1"
-      home = @user != nil ? "UUID=#{@hdd4_uuid} /home/#{@user} ext4 defaults 0 2" : ''
-
-      datas = [
-        boot,
-        swap,
-        root,
-        home
-      ]
-      return datas
+    def data_fstab
+      return []
     end
   end
 end
