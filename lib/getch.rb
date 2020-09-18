@@ -3,18 +3,20 @@ require_relative 'getch/states'
 require_relative 'getch/mount'
 require_relative 'getch/gentoo'
 require_relative 'getch/filesystem'
+require_relative 'getch/command'
 require_relative 'getch/helpers'
 
 module Getch
 
   DEFAULT_OPTIONS = {
     language: 'en_US',
-    location: 'US/Eastern',
+    zoneinfo: 'US/Eastern',
     keyboard: 'us',
     disk: 'sda',
     fs: 'ext4',
-    username: nil
-  }.freeze
+    username: nil,
+    verbose: false
+  }
 
   STATES = {
     :partition => false,
@@ -33,12 +35,12 @@ module Getch
 
   def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
-    puts "lang: #{opts.language}"
-    puts "zoneinfo: #{opts.zoneinfo}"
-    puts "keyboard: #{opts.keyboard}"
-    puts "disk: #{opts.disk}"
-    puts "fs: #{opts.fs}"
-    puts "username: #{opts.username}"
+    puts "lang: #{DEFAULT_OPTIONS[:language]}"
+    puts "zoneinfo: #{DEFAULT_OPTIONS[:zoneinfo]}"
+    puts "keyboard: #{DEFAULT_OPTIONS[:keyboard]}"
+    puts "disk: #{DEFAULT_OPTIONS[:disk]}"
+    puts "fs: #{DEFAULT_OPTIONS[:fs]}"
+    puts "username: #{DEFAULT_OPTIONS[:username]}"
     puts
     print "Continue? (n,y) "
     case gets.chomp
@@ -76,6 +78,7 @@ module Getch
 
   def self.main(argv)
     options = Options.new(argv)
+    DEFAULT_OPTIONS.freeze
     resume_options(options)
     Getch::States.new() # Update States
     format(options.disk, options.fs, options.username)

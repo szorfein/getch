@@ -10,17 +10,25 @@ module Getch
       @boot_efi_dir = "#{@root_dir}/boot/efi"
       @home_dir = @user ? "#{@root_dir}/home/#{@user}" : nil
       @state = Getch::States.new()
+      gen_vars
     end
 
     def run
       return if STATES[:mount]
-      gen_vars
       mount_swap
       mount_root
       mount_boot
       mount_home
       mount_boot_efi if Helpers::efi?
       @state.mount
+    end
+
+    def gen_fstab
+      file = "#{@root_dir}/etc/fstab"
+      FileUtils.mkdir_p "#{@root_dir}/etc", mode: 0700 if ! Dir.exist?("#{@root_dir}/etc")
+      gen_uuid
+      datas = data_fstab
+      File.write(file, datas.join("\n"))
     end
 
     private
@@ -63,14 +71,6 @@ module Getch
         system("mount #{@dev_home} #{@home_dir}")
       end
       @state.mount
-    end
-
-    def gen_fstab
-      file = "#{@root_dir}/etc/fstab"
-      FileUtils.mkdir_p file, mode: 0700 if ! Dir.exist?(file)
-      gen_uuid
-      datas = data_fstab
-      File.write(file, datas.join("\n"))
     end
 
     def gen_uuid

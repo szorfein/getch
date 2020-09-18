@@ -2,15 +2,16 @@ require 'optparse'
 
 module Getch
   class Options
-    attr_reader :language, :zoneinfo, :keyboard, :disk, :fs, :username
+    attr_reader :language, :zoneinfo, :keyboard, :disk, :fs, :username, :verbose
 
     def initialize(argv)
       @language = DEFAULT_OPTIONS[:language]
-      @zoneinfo = DEFAULT_OPTIONS[:location]
+      @zoneinfo = DEFAULT_OPTIONS[:zoneinfo]
       @keyboard = DEFAULT_OPTIONS[:keyboard]
       @disk = DEFAULT_OPTIONS[:disk]
       @fs = DEFAULT_OPTIONS[:fs]
       @username = DEFAULT_OPTIONS[:username]
+      @verbose = DEFAULT_OPTIONS[:verbose]
       parse(argv)
     end
 
@@ -36,11 +37,14 @@ module Getch
         opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
           @username = user
         end
+        opts.on("-v", "--verbose", "Write more messages to the standard output.") do
+          @verbose = true
+        end
         opts.on("-h", "--help", "Display this") do
           puts opts
           exit
         end
-      end.parse!
+      end.parse!(into: DEFAULT_OPTIONS)
     end
   end
 end
