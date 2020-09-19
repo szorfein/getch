@@ -9,7 +9,8 @@ module Getch
       def build_others
         install_wifi if ismatch?('iwlwifi')
         install_zfs if ismatch?('zfs')
-        exec("./kernel.sh -b -a virtualbox-guest -k #{@linux}") if ismatch?('vmwgfx')
+        virtualbox_guest
+        qemu_guest
       end
 
       def build_kspp
@@ -28,7 +29,21 @@ module Getch
         exec_chroot("cd #{@linux} && make -j$(nproc)")
       end
 
+      def init_config
+        exec_chroot("env-update && cd #{@linux} && make localyesconfig")
+      end
+
       private
+
+      def virtualbox_guest
+        exec("./kernel.sh -b -a virtualbox-guest -k #{@linux}") if ismatch?('vmwgfx')
+        Helpers::emerge("app-emulation/virtualbox-guest-additions", MOUNTPOINT)
+      end
+
+      def qemu_guest
+        exec("./kernel.sh -a qemu-guest -k #{@linux}") if ismatch?('virtio')
+        exec("./kernel.sh -a kvm -k #{@linux}") if ismatch?('kvm')
+      end
 
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
@@ -48,7 +63,7 @@ module Getch
           source /etc/profile
           #{cmd}
         \""
-        Gentoo::Command.new(script).run!
+        Getch::Command.new(script).run!
       end
 
       def install_wifi

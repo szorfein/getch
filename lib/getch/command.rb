@@ -8,7 +8,7 @@ module Getch
     end
 
     def run!
-      puts "Running command: #{@cmd}"
+      puts "Running command: " + @cmd.gsub(/\"/, '')
 
       Open3.popen3(@cmd) do |stdin, stdout, stderr|
         stdin.close_write

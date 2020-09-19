@@ -51,6 +51,7 @@ module Getch
         return if STATES[:gentoo_kernel]
         source = Getch::Gentoo::Sources.new()
         new
+        source.init_config
         source.build_kspp
         source.build_others
         source.make

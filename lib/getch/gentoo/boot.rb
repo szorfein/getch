@@ -96,7 +96,7 @@ module Getch
           source /etc/profile
           #{cmd}
         \""
-        Gentoo::Command.new(script).run!
+        Getch::Command.new(script).run!
       end
     end
   end

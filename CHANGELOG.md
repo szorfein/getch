@@ -1,3 +1,9 @@
+## 0.0.6, release 2020-09-19
+* Add support for QEMU guest #2
+* Kernel compilation, initialize a config file with `make localyesconfig`.
+* More modular codes to start with encryption and other filesystems.
+* Add the new option --verbose to display output of compilation, etc... #2
+
 ## 0.0.5, release 2020-09-17
 * Generate a hostname
 * Configure systemd-boot for UEFI system
