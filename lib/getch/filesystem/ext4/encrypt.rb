@@ -1,6 +1,8 @@
 module Getch
   module FileSystem
-    module Encrypt
+    module Ext4
+      module Encrypt
+      end
     end
   end
 end

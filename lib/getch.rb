@@ -1,6 +1,5 @@
 require_relative 'getch/options'
 require_relative 'getch/states'
-require_relative 'getch/mount'
 require_relative 'getch/gentoo'
 require_relative 'getch/filesystem'
 require_relative 'getch/command'
@@ -31,7 +30,7 @@ module Getch
 
   MOUNTPOINT = "/mnt/gentoo".freeze
   OPTIONS_FS = {
-    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Encrypt::Ext4 : Getch::FileSystem::Ext4
+    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Ext4::Encrypt : Getch::FileSystem::Ext4
   }.freeze
 
   def self.resume_options(opts)
@@ -59,11 +58,9 @@ module Getch
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
     case gets.chomp
     when /^y|^Y/
-      filesystem = OPTIONS_FS[fs].new(disk)
-      filesystem.cleaning
-      filesystem.partition
-      filesystem.format
-      OPTIONS_FS[fs]::Mount.new(disk, user).run
+      OPTIONS_FS[fs]::Partition.new()
+      OPTIONS_FS[fs]::Format.new()
+      OPTIONS_FS[fs]::Mount.new().run
     else
       exit 1
     end

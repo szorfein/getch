@@ -3,6 +3,4 @@ module Getch
   end
 end
 
-require_relative 'filesystem/root'
 require_relative 'filesystem/ext4'
-require_relative 'filesystem/encrypt'

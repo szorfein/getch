@@ -6,10 +6,11 @@ module Getch
       def initialize(opts)
         @disk = opts.disk
         @user = opts.username
+        @config = OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Config.new()
       end
 
       def start
-        gen_fstab
+        @config.fstab
         bootloader
         password
         umount
@@ -29,23 +30,13 @@ module Getch
         puts "Configuring systemd-boot."
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
         esp = '/boot/efi'
-        #systemd = "#{MOUNTPOINT}/usr/lib/systemd"
-        #FileUtils.mkdir_p "#{systemd}#{esp}", mode: 0700 if ! Dir.exist?("#{systemd}#{esp}")
         exec_chroot("bootctl --path #{esp} install")
-
-        root = `lsblk -o "PARTUUID" /dev/#{@disk}3 | tail -1`.chomp()
-        init = '/usr/lib/systemd/systemd'
-        datas_gentoo = [
-          'title Gentoo Linux',
-          'linux /vmlinuz',
-          "options root=PARTUUID=#{root} init=#{init} rw"
-        ]
         datas_loader = [
           'default gentoo',
           'timeout 3',
           'editor 0'
         ]
-        File.write("#{MOUNTPOINT}/#{esp}/loader/entries/gentoo.conf", datas_gentoo.join("\n"))
+        @config.systemd_boot
         File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
 
         FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz", preserve: true)
@@ -61,6 +52,7 @@ module Getch
       def grub
         puts 'Installing GRUB...'
         Helpers::emerge("sys-boot/grub:2", MOUNTPOINT)
+        @config.grub
         exec_chroot("grub-install /dev/#{@disk}")
         exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')
       end
@@ -85,10 +77,6 @@ module Getch
       end
 
       private
-
-      def gen_fstab
-        OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Mount.new(@disk, @user).gen_fstab
-      end
 
       def exec_chroot(cmd)
         script = "chroot #{MOUNTPOINT} /bin/bash -c \"
