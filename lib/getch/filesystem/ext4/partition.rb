@@ -23,8 +23,8 @@ module Getch
         private
 
         def clear_struct
-          exec("sgdisk -Z #{@disk}")
-          exec("wipefs -a #{@disk}")
+          exec("sgdisk -Z /dev/#{@disk}")
+          exec("wipefs -a /dev/#{@disk}")
         end
 
         def cleaning
@@ -47,10 +47,10 @@ module Getch
           # /home     - Home
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
 
-          exec("sgdisk -n1:1M:+260M -t1:EF00 #{@dev_boot_efi}")
-          exec("sgdisk -n2:0:+15G -t2:8304 #{@dev_root}")
-          exec("sgdisk -n3:0:+#{mem} -t3:8200 #{@dev_swap}")
-          exec("sgdisk -n4:0:0 -t4:8302 #{@dev_home}") if @dev_home
+          exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
+          exec("sgdisk -n2:0:+15G -t2:8304 /dev/#{@disk}")
+          exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
+          exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}") if @dev_home
         end
 
         def partition_bios
@@ -60,10 +60,10 @@ module Getch
           # /home     - Home
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
 
-          exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}1")
-          exec("sgdisk -n2:0:+15G -t2:8304 #{@dev_root}")
-          exec("sgdisk -n3:0:+#{mem} -t3:8200 #{@dev_swap}")
-          exec("sgdisk -n4:0:0 -t4:8302 #{@dev_home}") if @dev_home
+          exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
+          exec("sgdisk -n2:0:+15G -t2:8304 /dev/#{@disk}")
+          exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
+          exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}") if @dev_home
         end
 
         def exec(cmd)

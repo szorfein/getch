@@ -23,8 +23,8 @@ module Getch
           private
 
           def clear_struct
-            exec("sgdisk -Z #{@disk}")
-            exec("wipefs -a #{@disk}")
+            exec("sgdisk -Z /dev/#{@disk}")
+            exec("wipefs -a /dev/#{@disk}")
           end
 
           def cleaning
@@ -41,14 +41,14 @@ module Getch
 
           def boot
             if Helpers::efi?
-              exec("sgdisk -n1:1M:+260M -t1:EF00 #{@dev_boot_efi}")
+              exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}}")
             else
-              exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}1")
+              exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
             end
           end
 
           def others
-            exec("sgdisk -n2:0:+0 -t2:8309 #{@dev_root}")
+            exec("sgdisk -n2:0:+0 -t2:8309 /dev/#{@disk}")
           end
 
           def luks
