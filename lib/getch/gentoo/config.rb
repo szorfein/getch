@@ -11,13 +11,13 @@ module Getch
 
       def portage
         nproc = `nproc`.chomp()
-        efi = Helpers::efi? ? 'GRUB_PLATFORMS="efi-64"' : ''
+        grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
         data = [
           '',
           'ACCEPT_KEYWORD="amd64 ~amd64"',
           "MAKEOPTS=\"-j#{nproc} -l#{nproc}\"",
           'INPUT_DEVICES="libinput"',
-          efi
+          grub_pc
         ]
         File.write(@make, data.join("\n"), mode: "a")
       end

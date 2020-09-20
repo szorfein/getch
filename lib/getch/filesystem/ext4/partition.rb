@@ -10,6 +10,7 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+          clear_struct
           cleaning
           if Helpers::efi?
             partition_efi
@@ -21,12 +22,18 @@ module Getch
 
         private
 
+        def clear_struct
+          exec("sgdisk -Z #{@disk}")
+          exec("wipefs -a #{@disk}")
+        end
+
         def cleaning
           puts
           print "Cleaning data on #{@disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? (n,y) "
           case gets.chomp
           when /^y|^Y/
-            exec("dd if=/dev/urandom of=/dev/#{@disk} bs=4M status=progress")
+            bloc=`blockdev --getbsz /dev/#{@disk}`.chomp
+            exec("dd if=/dev/urandom of=/dev/#{@disk} bs=#{bloc} status=progress")
           else
             return
           end
@@ -38,9 +45,11 @@ module Getch
           # /         - Root
           # swap      - Linux Swap - size of the ram
           # /home     - Home
+          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+
           exec("sgdisk -n1:1M:+260M -t1:EF00 #{@dev_boot_efi}")
           exec("sgdisk -n2:0:+15G -t2:8304 #{@dev_root}")
-          exec("sgdisk -n3:0:+2G -t3:8200 #{@dev_swap}")
+          exec("sgdisk -n3:0:+#{mem} -t3:8200 #{@dev_swap}")
           exec("sgdisk -n4:0:0 -t4:8302 #{@dev_home}") if @dev_home
         end
 
@@ -49,9 +58,11 @@ module Getch
           # /         - Root
           # swap      - Linux Swap - size of the ram
           # /home     - Home
+          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+
           exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}1")
           exec("sgdisk -n2:0:+15G -t2:8304 #{@dev_root}")
-          exec("sgdisk -n3:0:+2G -t3:8200 #{@dev_swap}")
+          exec("sgdisk -n3:0:+#{mem} -t3:8200 #{@dev_swap}")
           exec("sgdisk -n4:0:0 -t4:8302 #{@dev_home}") if @dev_home
         end
 

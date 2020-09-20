@@ -1,3 +1,7 @@
+* Repair GRUB/fstab for BIOS system, add config and all :)
+* New option --encrypt (LVM/EXT4/LUKS for now)
+* Create a swap volume equal to the memory installed
+
 ## 0.0.6, release 2020-09-19
 * Add support for QEMU guest with KVM and Virtio driver
 * Kernel compilation, initialize a config file with `make localyesconfig`.
