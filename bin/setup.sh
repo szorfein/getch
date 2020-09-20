@@ -37,19 +37,33 @@ search_ruby() {
   fi
 }
 
+install_with_gem() {
+  gem install getch
+  getch -h
+}
+
+dll_test_version() {
+  echo "Downloading the test version..."
+  cd /tmp
+  [ -f ./getch.tar.gz ] && rm ./getch.tar.gz
+  [ -d ./getch-master ] && rm -rf ./getch-master
+
+  curl -s -L -o getch.tar.gz https://github.com/szorfein/getch/archive/master.tar.gz
+  tar xzf getch.tar.gz \
+    && cd $DIR \
+    && ruby -I lib bin/getch -h
+}
+
 get_getch() {
   if hash gem 2>/dev/null ; then
-    gem install getch
-    getch -h
+    printf "Which version? [1] stable , [2] test (no recommended) " ; read -r
+    if echo "$REPLY" | grep -qP  "2" ; then
+      dll_test_version
+    else
+      install_with_gem
+    fi
   else
-    cd /tmp
-    [ -f ./getch.tar.gz ] && rm ./getch.tar.gz
-    [ -d ./getch-master ] && rm -rf ./getch-master
-
-    curl -s -L -o getch.tar.gz https://github.com/szorfein/getch/archive/master.tar.gz
-    tar xzf getch.tar.gz \
-      && cd $DIR \
-      && ruby -I lib bin/getch -h
+    dll_test_version
   fi
 }
 

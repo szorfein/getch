@@ -1,8 +1,8 @@
 ## 0.0.6, release 2020-09-19
-* Add support for QEMU guest #2
+* Add support for QEMU guest with KVM and Virtio driver
 * Kernel compilation, initialize a config file with `make localyesconfig`.
 * More modular codes to start with encryption and other filesystems.
-* Add the new option --verbose to display output of compilation, etc... #2
+* Add the new option --verbose to display output of compilation, etc...
 
 ## 0.0.5, release 2020-09-17
 * Generate a hostname

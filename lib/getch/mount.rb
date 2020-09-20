@@ -31,6 +31,12 @@ module Getch
       File.write(file, datas.join("\n"))
     end
 
+    def gen_crypttab
+    end
+
+    def gen_boot
+    end
+
     private
 
     def gen_vars

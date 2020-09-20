@@ -15,6 +15,7 @@ module Getch
     disk: 'sda',
     fs: 'ext4',
     username: nil,
+    encrypt: false,
     verbose: false
   }
 
@@ -30,7 +31,7 @@ module Getch
 
   MOUNTPOINT = "/mnt/gentoo".freeze
   OPTIONS_FS = {
-    'ext4' => Getch::FileSystem::Ext4
+    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Encrypt::Ext4 : Getch::FileSystem::Ext4
   }.freeze
 
   def self.resume_options(opts)
@@ -41,6 +42,7 @@ module Getch
     puts "disk: #{DEFAULT_OPTIONS[:disk]}"
     puts "fs: #{DEFAULT_OPTIONS[:fs]}"
     puts "username: #{DEFAULT_OPTIONS[:username]}"
+    puts "encrypt: #{DEFAULT_OPTIONS[:encrypt]}"
     puts
     print "Continue? (n,y) "
     case gets.chomp

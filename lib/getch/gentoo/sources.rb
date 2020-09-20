@@ -73,7 +73,7 @@ module Getch
 
       def install_zfs
         exec("./kernel.sh -b -a zfs -k #{@linux}")
-        only_make # a first make is necessary before emerge zfs
+        only_make # a first 'make' is necessary before emerge zfs
         Helpers::emerge("zfs", MOUNTPOINT)
       end
     end

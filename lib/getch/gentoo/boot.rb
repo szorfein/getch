@@ -87,8 +87,7 @@ module Getch
       private
 
       def gen_fstab
-        mount = Getch::Mount.new(@disk, @user)
-        mount.gen_fstab
+        OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Mount.new(@disk, @user).gen_fstab
       end
 
       def exec_chroot(cmd)
