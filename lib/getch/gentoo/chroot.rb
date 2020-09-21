@@ -32,7 +32,7 @@ module Getch
         puts "Installing kernel gentoo-sources..."
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
-        Helpers::emerge("sys-kernel/gentoo-sources linux-firmware", MOUNTPOINT)
+        Helpers::emerge("sys-kernel/gentoo-sources linux-firmware dev-util/dwarves", MOUNTPOINT)
       end
 
       def kernel_deps
