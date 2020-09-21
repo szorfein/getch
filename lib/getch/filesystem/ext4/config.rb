@@ -30,8 +30,8 @@ module Getch
         def grub
           return if Helpers::efi?
           file = "#{@root_dir}/etc/default/grub"
-          cmdline = "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} rw\""
-          File.write("#{file}", cmdline.join("\n"), mode: 'a')
+          cmdline = "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} rw\"\n"
+          File.write(file, cmdline, mode: 'a')
         end
 
         private
@@ -45,12 +45,12 @@ module Getch
         end
 
         def data_fstab
-          boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,defaults  0 2" : ''
+          boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
           swap = @dev_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
           root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
           home = @dev_home ? "UUID=#{@uuid_home} /home/#{@user} ext4 defaults 0 2" : ''
 
-          return [ boot_efi, swap, root, home ]
+          [ boot_efi, swap, root, home ]
         end
       end
     end

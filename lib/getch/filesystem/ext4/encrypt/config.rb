@@ -49,12 +49,12 @@ module Getch
         end
 
         def data_fstab
-          boot_efi = @lv_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,defaults  0 2" : ''
+          boot_efi = @lv_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
           swap = @lv_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
           root = @lv_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
           home = @lv_home ? "UUID=#{@uuid_home} /home/#{@user} ext4 defaults 0 2" : ''
 
-          return [ boot_efi, swap, root, home ]
+          [ boot_efi, swap, root, home ]
         end
       end
     end

@@ -38,4 +38,12 @@ module Helpers
     \""
     Getch::Command.new(cmd).run!
   end
+
+  def self.run_chroot(cmd, path)
+    script = "chroot #{path} /bin/bash -c \"
+      source /etc/profile
+      #{cmd}
+    \""
+    Getch::Command.new(script).run!
+  end
 end

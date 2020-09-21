@@ -42,7 +42,7 @@ module Getch
       end
 
       def install_tools
-        Helpers::emerge("dhcpcd", MOUNTPOINT)
+        Helpers::emerge("sudo vim", MOUNTPOINT)
       end
 
       private
