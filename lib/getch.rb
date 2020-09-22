@@ -58,9 +58,8 @@ module Getch
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
     case gets.chomp
     when /^y|^Y/
-      OPTIONS_FS[fs]::Partition.new()
-      OPTIONS_FS[fs]::Format.new()
-      OPTIONS_FS[fs]::Mount.new().run
+      OPTIONS_FS[fs]::Partition.new
+      OPTIONS_FS[fs]::Format.new
     else
       exit 1
     end
@@ -79,8 +78,9 @@ module Getch
     options = Options.new(argv)
     DEFAULT_OPTIONS.freeze
     resume_options(options)
-    Getch::States.new() # Update States
+    Getch::States.new # Update States
     format(options.disk, options.fs, options.username)
+    OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Mount.new.run
     init_gentoo(options)
   end
 end

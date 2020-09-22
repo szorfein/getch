@@ -3,6 +3,7 @@ module Getch
     class Chroot
       def initialize
         @state = Getch::States.new()
+        @pkgs = []
         mount
       end
 
@@ -32,7 +33,8 @@ module Getch
         puts "Installing kernel gentoo-sources..."
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
-        Helpers::emerge("sys-kernel/gentoo-sources linux-firmware dev-util/dwarves", MOUNTPOINT)
+        @pkgs << "sys-kernel/gentoo-sources"
+        @pkgs << "dev-util/dwarves"
       end
 
       def kernel_deps
@@ -41,8 +43,10 @@ module Getch
         garden_dep
       end
 
-      def install_tools
-        Helpers::emerge("sudo vim", MOUNTPOINT)
+      def install_pkgs
+        @pkgs << "app-admin/sudo"
+        @pkgs << "app-editors/vim"
+        Helpers::emerge(@pkgs.join(" "), MOUNTPOINT)
       end
 
       private
@@ -59,9 +63,8 @@ module Getch
 
       def garden_dep
         Helpers::emerge("gentoolkit", MOUNTPOINT)
-        cmd = "euse -p sys-apps/kmod -E lzma"
-        Helpers::emerge("kmod", MOUNTPOINT)
-        exec_chroot(cmd)
+        exec_chroot("euse -p sys-apps/kmod -E lzma")
+        @pkgs << "sys-apps/kmod"
       end
 
       def mount

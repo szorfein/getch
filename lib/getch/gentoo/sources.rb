@@ -22,7 +22,7 @@ module Getch
         puts "Compiling kernel sources"
         cmd = "cd #{@linux} && make -j$(nproc) && make modules_install && make install"
         exec_chroot(cmd)
-        is_kernel = Dir.glob("/boot/vmlinuz*")
+        is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
         raise "No kernel installed, compiling source fail..." if is_kernel == []
       end
 

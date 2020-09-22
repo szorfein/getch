@@ -44,7 +44,7 @@ module Getch
         return if STATES[:gentoo_kernel]
         chroot.kernel
         chroot.kernel_deps
-        chroot.install_tools
+        chroot.install_pkgs
       end
 
       def kernel
