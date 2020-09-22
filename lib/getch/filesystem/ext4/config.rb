@@ -30,7 +30,7 @@ module Getch
         def grub
           return if Helpers::efi?
           file = "#{@root_dir}/etc/default/grub"
-          cmdline = "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} rw\"\n"
+          cmdline = "GRUB_CMDLINE_LINUX=\"resume=#{@dev_swap} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force\"\n"
           File.write(file, cmdline, mode: 'a')
         end
 
