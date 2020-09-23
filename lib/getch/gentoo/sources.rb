@@ -20,8 +20,11 @@ module Getch
 
       def make
         puts "Compiling kernel sources"
-        cmd = "cd #{@linux} && make -j$(nproc) && make modules_install && make install"
-        exec_chroot(cmd)
+        cmd = "source /etc/profile \
+          && cd #{@linux} \
+          && make -j$(nproc) \
+          && make modules_install && make install"
+        system(cmd)
         is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
         raise "No kernel installed, compiling source fail..." if is_kernel == []
       end
