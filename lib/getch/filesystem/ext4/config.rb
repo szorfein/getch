@@ -22,7 +22,7 @@ module Getch
           datas_gentoo = [
             'title Gentoo Linux',
             'linux /vmlinuz',
-            "options root=UUID=#{uuid_root} init=#{@init} rw"
+            "options root=UUID=#{@uuid_root} init=#{@init} rw"
           ]
           File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
         end
