@@ -4,6 +4,7 @@ require_relative 'getch/gentoo'
 require_relative 'getch/filesystem'
 require_relative 'getch/command'
 require_relative 'getch/helpers'
+require_relative 'getch/log'
 
 module Getch
 
@@ -54,10 +55,12 @@ module Getch
 
   def self.format(disk, fs, user)
     return if STATES[:format] and STATES[:partition]
+    log = Log.new
     puts
     print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
     case gets.chomp
     when /^y|^Y/
+      log.info("Partition start")
       OPTIONS_FS[fs]::Partition.new
       OPTIONS_FS[fs]::Format.new
     else

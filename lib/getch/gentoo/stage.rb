@@ -60,7 +60,7 @@ module Getch
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage
       def decompress
         puts "Decompressing archive #{@stage_file}..."
-        cmd = "tar xpvf #{@stage_file} --xattrs-include='*.*' --numeric-owner"
+        cmd = "tar xpf #{@stage_file} --xattrs-include=\'*.*\' --numeric-owner"
         Getch::Command.new(cmd).run!
       end
 

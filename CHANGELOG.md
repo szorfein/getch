@@ -1,4 +1,5 @@
 * New option --encrypt (LVM/EXT4/LUKS for now)
+* Include logger
 
 ## 0.0.7, release 2020-09-22
 * Correct fstab.

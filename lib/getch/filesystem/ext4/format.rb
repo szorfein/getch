@@ -14,8 +14,8 @@ module Getch
           puts "Format #{@disk} with #{@fs}"
           system("mkfs.fat -F32 #{@dev_boot_efi}") if Helpers::efi?
           system("mkswap -f #{@dev_swap}")
-          system("mkfs.#{@fs} #{@dev_root}")
-          system("mkfs.#{@fs} #{@dev_home}") if @dev_home
+          system("mkfs.#{@fs} -F #{@dev_root}")
+          system("mkfs.#{@fs} -F #{@dev_home}") if @dev_home
           @state.format
         end
       end
