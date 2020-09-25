@@ -14,7 +14,7 @@ module Getch
         grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
         data = [
           '',
-          'ACCEPT_KEYWORDS="amd64 ~amd64"',
+          'ACCEPT_KEYWORDS="amd64"',
           "MAKEOPTS=\"-j#{nproc} -l#{nproc}\"",
           'INPUT_DEVICES="libinput"',
           grub_pc
