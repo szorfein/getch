@@ -26,7 +26,7 @@ search_ruby() {
   else
     echo "Install ruby"
     if hash pacman 2>/dev/null ; then
-      pacman -Syy libyaml ruby ruby-irb ruby-reline rubygems
+      pacman -Syy --noconfirm libyaml ruby ruby-irb ruby-reline rubygems
     elif hash emerge 2>/dev/null ; then
       emerge -av dev-lang/ruby
     elif hash apt-get 2>/dev/null ; then

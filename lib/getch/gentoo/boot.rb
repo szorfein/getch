@@ -47,12 +47,12 @@ module Getch
       def bootctl_dep
         puts 'Installing systemd-boot...'
         exec_chroot("euse -p sys-apps/systemd -E gnuefi")
-        Helpers::emerge("sys-apps/systemd efivar", MOUNTPOINT)
+        Getch::Emerge.new("sys-apps/systemd efivar").pkg!
       end
 
       def grub
         puts 'Installing GRUB...'
-        Helpers::emerge("sys-boot/grub:2", MOUNTPOINT)
+        Getch::Emerge.new("sys-boot/grub:2").pkg!
         @config.grub
         exec_chroot("grub-install /dev/#{@disk}")
         exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')

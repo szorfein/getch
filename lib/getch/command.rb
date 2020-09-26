@@ -17,7 +17,7 @@ module Getch
 
         # only stderr
         begin
-          @logger.error stderr.readline until stderr.eof.nil?
+          @log.error stderr.readline until stderr.eof.nil?
         rescue EOFError
         end
 
@@ -38,7 +38,7 @@ module Getch
         rescue IOError => e
           puts "IOError: #{e}"
         end
-        @logger.debug "Done - #{@cmd} - #{code}"
+        @log.debug "Done - #{@cmd} - #{code}"
       end
     end
 
@@ -53,12 +53,43 @@ module Getch
       block.each do |f|
         begin
           data = f.read_nonblock(@block_size)
-          puts "#{data}" if DEFAULT_OPTIONS[:verbose]
+          @log.debug data
         rescue EOFError
           puts ""
         rescue => e
           puts "Fatal - #{e}"
         end
+      end
+    end
+  end
+
+  # Use system, the only ruby method to display stdout with colors !
+  class Emerge
+    def initialize(cmd)
+      @gentoo = MOUNTPOINT
+      @cmd = cmd
+      @log = Getch::Log.new
+    end
+
+    def run!
+      @log.info "Running emerge: #{@cmd}"
+      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && #{@cmd}")
+      read_exit
+    end
+
+    def pkg!
+      @log.info "Running emerge pkg: #{@cmd}"
+      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && emerge --changed-use #{@cmd}")
+      read_exit
+    end
+
+    private
+
+    def read_exit
+      if $?.exitstatus > 0
+        @log.fatal "Running #{@cmd}"
+      else
+        @log.info "Done #{@cmd}"
       end
     end
   end

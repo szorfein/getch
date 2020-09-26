@@ -10,15 +10,15 @@ module Getch
       def update
         return if STATES[:gentoo_update]
         puts "Downloading the last ebuilds for Gentoo..."
+        Helpers::create_dir("#{MOUNTPOINT}/var/db/repos/gentoo")
         cmd = "emerge-webrsync"
         exec_chroot(cmd)
       end
 
       def world
         return if STATES[:gentoo_update]
-        puts "Update Gentoo"
-        cmd = "emerge --update --deep --newuse @world"
-        exec_chroot(cmd)
+        puts "Update Gentoo world"
+        Getch::Emerge.new("emerge --update --deep --newuse @world").run!
         @state.update
       end
 
@@ -30,7 +30,6 @@ module Getch
 
       def kernel
         return if Dir.exist? "#{MOUNTPOINT}/usr/src/linux"
-        puts "Installing kernel gentoo-sources..."
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
         @pkgs << "sys-kernel/gentoo-sources"
@@ -46,7 +45,9 @@ module Getch
       def install_pkgs
         @pkgs << "app-admin/sudo"
         @pkgs << "app-editors/vim"
-        Helpers::emerge(@pkgs.join(" "), MOUNTPOINT)
+        all_pkgs = @pkgs.join(" ")
+        puts "Installing #{all_pkgs}..."
+        Getch::Emerge.new(all_pkgs).pkg!
       end
 
       private

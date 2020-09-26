@@ -22,7 +22,7 @@ module Getch
 
           def install_deps
             exec("euse -p sys-apps/systemd -E cryptsetup")
-            Helpers::emerge('genkernel cryptsetup lvm2')
+            Getch::Emerge.new('genkernel cryptsetup lvm2').pkg!
             exec("genkernel --install --luks --keymap #{DEFAULT_OPTIONS[:keyboard]} --lvm --kernel-config=/usr/src/linux/.config initramfs")
             exec("systemctl enable lvm2-monitor")
           end

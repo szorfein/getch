@@ -22,6 +22,11 @@ module Getch
       @logger_text.debug(msg)
     end
 
+    def fatal(msg)
+      @logger.fatal(msg)
+      @logger_text.fatal(msg)
+    end
+
     private
 
     def init_log

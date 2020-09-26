@@ -41,7 +41,7 @@ module Getch
 
       def virtualbox_guest
         exec("./kernel.sh -b -a virtualbox-guest -k #{@linux}") if ismatch?('vmwgfx')
-        Helpers::emerge("app-emulation/virtualbox-guest-additions", MOUNTPOINT)
+        Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
       end
 
       def qemu_guest
@@ -72,13 +72,13 @@ module Getch
 
       def install_wifi
         exec("./kernel.sh -b -a wifi -k #{@linux}")
-        Helpers::emerge("net-wireless/iw wpa_supplicant", MOUNTPOINT)
+        Getch::Emerge.new("net-wireless/iw wpa_supplicant").pkg!
       end
 
       def install_zfs
         exec("./kernel.sh -b -a zfs -k #{@linux}")
         only_make # a first 'make' is necessary before emerge zfs
-        Helpers::emerge("zfs", MOUNTPOINT)
+        Getch::Emerge.new("sys-fs/zfs").pkg!
       end
     end
   end
