@@ -22,7 +22,7 @@ module Getch
           datas_gentoo = [
             'title Gentoo Linux',
             'linux /vmlinuz',
-            "options root=UUID=#{@uuid_root} init=#{@init} rw"
+            "options root=PARTUUID=#{@partuuid_root} init=#{@init} rw"
           ]
           File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
         end
@@ -37,6 +37,7 @@ module Getch
         private
 
         def gen_uuid
+          @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
           @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
           @uuid_root = `lsblk -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
           @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
