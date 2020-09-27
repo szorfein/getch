@@ -53,7 +53,7 @@ module Getch
       block.each do |f|
         begin
           data = f.read_nonblock(@block_size)
-          @log.debug data
+          puts data if DEFAULT_OPTIONS[:verbose]
         rescue EOFError
           puts ""
         rescue => e
@@ -103,10 +103,37 @@ module Getch
 
     def run!
       @log.info "Running Make: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"env-update \
-        && source /etc/profile \
+      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
+        && env-update \
         && cd /usr/src/linux \
         && #{@cmd}\""
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        while line = stdout_err.gets
+          puts line
+        end
+
+        exit_status = wait_thr.value
+        unless exit_status.success?
+          @log.fatal "Running #{cmd}"
+          exit 1
+        end
+      end
+    end
+  end
+
+  class Garden
+    def initialize(cmd)
+      @gentoo = MOUNTPOINT
+      @cmd = cmd
+      @log = Getch::Log.new
+    end
+
+    def run!
+      @log.info "Running Garden: #{@cmd}"
+      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
+        && env-update \
+        && cd /root/garden-master \
+        && ./kernel.sh #{@cmd} -k /usr/src/linux\""
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         while line = stdout_err.gets
           puts line

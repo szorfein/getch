@@ -14,7 +14,6 @@ module Getch
           cleaning
           boot
           others
-          luks
           lvm
           @state.partition
         end
@@ -50,21 +49,10 @@ module Getch
           exec("sgdisk -n2:0:+0 -t2:8309 /dev/#{@disk}")
         end
 
-        def luks
-          if Helpers::efi?
-            exec("cryptsetup --use-random luksFormat /dev/#{@disk}2")
-            exec("cryptsetup open --type luks /dev/#{@disk}2 crypt-lvm")
-          else
-            # GRUB do not support LUKS2
-            exec("cryptsetup --use-random luksFormat --type luks1 /dev/#{@disk}2")
-            exec("cryptsetup open --type luks1 /dev/#{@disk}2 crypt-lvm")
-          end
-        end
-
         def lvm
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          exec("pvcreate /dev/mapper/crypt-lvm")
-          exec("vgcreate #{@vg} /dev/mapper/crypt-lvm")
+          exec("pvcreate /dev/#{@disk}2")
+          exec("vgcreate #{@vg} /dev/#{@disk}2")
           exec("lvcreate -L 15G -n root #{@vg}")
           exec("lvcreate -L #{mem} -n swap #{@vg}")
           exec("lvcreate -l 100%FREE -n home #{@vg}") if @user
@@ -75,14 +63,10 @@ module Getch
         # Partition_efi
         # /boot/efi - EFI system partition - 260MB
         # /         - Root
-        # swap      - Linux Swap - size of the ram
-        # /home     - Home
 
         # Partition_bios
         # None      - Bios Boot Partition - 1MiB
         # /         - Root
-        # swap      - Linux Swap - size of the ram
-        # /home     - Home
 
         def exec(cmd)
           Getch::Command.new(cmd).run!

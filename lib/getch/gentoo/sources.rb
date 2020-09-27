@@ -3,7 +3,6 @@ module Getch
     class Sources
       def initialize
         @lsmod = `lsmod`.chomp
-        @linux = '/usr/src/linux'
       end
 
       def build_others
@@ -15,7 +14,7 @@ module Getch
 
       def build_kspp
         puts "Adding KSPP to the kernel source"
-        exec("./kernel.sh -b -a systemd -k #{@linux}")
+        garden("-b -a systemd")
       end
 
       def make
@@ -37,43 +36,30 @@ module Getch
       private
 
       def virtualbox_guest
-        exec("./kernel.sh -b -a virtualbox-guest -k #{@linux}") if ismatch?('vmwgfx')
+        garden("-a virtualbox-guest") if ismatch?('vmwgfx')
         Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
       end
 
       def qemu_guest
-        exec("./kernel.sh -a qemu-guest -k #{@linux}") if ismatch?('virtio')
-        exec("./kernel.sh -a kvm -k #{@linux}") if ismatch?('kvm')
+        garden("-a qemu-guest") if ismatch?('virtio')
+        garden("-a kvm") if ismatch?('kvm')
       end
 
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
       end
 
-      def exec(cmd)
-        script = "chroot #{MOUNTPOINT} /bin/bash -c \"
-          source /etc/profile
-          cd /root/garden-master
-          #{cmd}
-        \""
-        Getch::Command.new(script).run!
-      end
-
-      def exec_chroot(cmd)
-        script = "chroot #{MOUNTPOINT} /bin/bash -c \"
-          source /etc/profile
-          #{cmd}
-        \""
-        Getch::Command.new(script).run!
+      def garden(cmd)
+        Getch::Garden.new(cmd).run!
       end
 
       def install_wifi
-        exec("./kernel.sh -b -a wifi -k #{@linux}")
+        garden("-a wifi")
         Getch::Emerge.new("net-wireless/iw wpa_supplicant").pkg!
       end
 
       def install_zfs
-        exec("./kernel.sh -b -a zfs -k #{@linux}")
+        garden("-a zfs")
         only_make # a first 'make' is necessary before emerge zfs
         Getch::Emerge.new("sys-fs/zfs").pkg!
       end
