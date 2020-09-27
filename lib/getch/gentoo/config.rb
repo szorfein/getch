@@ -12,10 +12,12 @@ module Getch
       def portage
         nproc = `nproc`.chomp()
         grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
+        quiet = DEFAULT_OPTIONS[:verbose] ? '' : "EMERGE_DEFAULT_OPTS=\"--jobs=#{nproc} --load-average=#{nproc}\""
         data = [
           '',
           'ACCEPT_KEYWORDS="amd64"',
           "MAKEOPTS=\"-j#{nproc} -l#{nproc}\"",
+          quiet,
           'INPUT_DEVICES="libinput"',
           grub_pc
         ]

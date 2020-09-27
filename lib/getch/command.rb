@@ -93,4 +93,31 @@ module Getch
       end
     end
   end
+
+  class Make
+    def initialize(cmd)
+      @gentoo = MOUNTPOINT
+      @cmd = cmd
+      @log = Getch::Log.new
+    end
+
+    def run!
+      @log.info "Running Make: #{@cmd}"
+      cmd = "chroot #{@gentoo} /bin/bash -c \"env-update \
+        && source /etc/profile \
+        && cd /usr/src/linux \
+        && #{@cmd}\""
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        while line = stdout_err.gets
+          puts line
+        end
+
+        exit_status = wait_thr.value
+        unless exit_status.success?
+          @log.fatal "Running #{cmd}"
+          exit 1
+        end
+      end
+    end
+  end
 end

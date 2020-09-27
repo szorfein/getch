@@ -63,7 +63,7 @@ module Getch
       end
 
       def garden_dep
-        Helpers::emerge("gentoolkit", MOUNTPOINT)
+        Getch::Emerge.new("gentoolkit").pkg!
         exec_chroot("euse -p sys-apps/kmod -E lzma")
         @pkgs << "sys-apps/kmod"
       end

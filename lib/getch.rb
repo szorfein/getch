@@ -31,7 +31,8 @@ module Getch
 
   MOUNTPOINT = "/mnt/gentoo".freeze
   OPTIONS_FS = {
-    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Ext4::Encrypt : Getch::FileSystem::Ext4
+    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Ext4::Encrypt : Getch::FileSystem::Ext4,
+    'lvm' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Lvm::Encrypt : Getch::FileSystem::Lvm
   }.freeze
 
   def self.resume_options(opts)

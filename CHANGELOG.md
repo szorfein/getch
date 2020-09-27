@@ -1,10 +1,9 @@
-* New option --encrypt (LVM/EXT4/LUKS for now)
-* Include logger
+* Include logger.
+* Adding LVM via the option fs, `--fs lvm`.
 
 ## 0.0.7, release 2020-09-22
 * Correct fstab.
 * Repair GRUB/fstab for BIOS system, add secure cmdline.
-* Adding LVM (EXPERIMENTAL).
 * Create a swap volume equal to the memory installed.
 * Add vim and sudo
 

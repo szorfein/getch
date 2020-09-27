@@ -39,8 +39,8 @@ module Getch
       def chroot
         chroot = Getch::Gentoo::Chroot.new()
         chroot.update
-        chroot.world
         chroot.systemd
+        chroot.world
         return if STATES[:gentoo_kernel]
         chroot.kernel
         chroot.kernel_deps

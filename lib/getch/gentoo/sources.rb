@@ -20,21 +20,18 @@ module Getch
 
       def make
         puts "Compiling kernel sources"
-        cmd = "source /etc/profile \
-          && cd #{@linux} \
-          && make -j$(nproc) \
-          && make modules_install && make install"
-        system(cmd)
+        cmd = "make -j$(nproc) && make modules_install && make install"
+        Getch::Make.new(cmd).run!
         is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
         raise "No kernel installed, compiling source fail..." if is_kernel == []
       end
 
       def only_make
-        exec_chroot("cd #{@linux} && make -j$(nproc)")
+        Getch::Make.new("make -j$(nproc)").run!
       end
 
       def init_config
-        exec_chroot("env-update && cd #{@linux} && make localyesconfig")
+        Getch::Make.new("make localyesconfig").run!
       end
 
       private

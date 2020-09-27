@@ -32,7 +32,7 @@ module Getch
         opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb)") do |disk|
           @disk = disk
         end
-        opts.on("-f", "--format FS", "Default use ext4") do |fs|
+        opts.on("-f", "--format FS", "Can be ext4, lvm. Default use ext4") do |fs|
           @fs = fs
         end
         opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
