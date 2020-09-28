@@ -11,7 +11,6 @@ module Getch
 
       def start
         @config.fstab
-        OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Deps.new()
         bootloader
         password
         umount

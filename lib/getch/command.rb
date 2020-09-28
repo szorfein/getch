@@ -38,6 +38,12 @@ module Getch
         rescue IOError => e
           puts "IOError: #{e}"
         end
+
+        unless code.success?
+          @log.fatal "Running #{@cmd}"
+          exit 1
+        end
+
         @log.debug "Done - #{@cmd} - #{code}"
       end
     end

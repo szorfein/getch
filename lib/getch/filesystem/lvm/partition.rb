@@ -12,8 +12,7 @@ module Getch
           return if STATES[:partition ]
           clear_struct
           cleaning
-          boot
-          others
+          partition
           lvm
           @state.partition
         end
@@ -37,22 +36,24 @@ module Getch
           end
         end
 
-        def boot
+        def partition
           if Helpers::efi?
             exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+0 -t2:8e00 /dev/#{@disk}")
           else
             exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+128MiB -t1:8300 /dev/#{@disk}")
+            exec("sgdisk -n3:0:+0 -t2:8e00 /dev/#{@disk}")
           end
-        end
-
-        def others
-          exec("sgdisk -n2:0:+0 -t2:8309 /dev/#{@disk}")
         end
 
         def lvm
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          exec("pvcreate -f /dev/#{@disk}2")
-          exec("vgcreate -f #{@vg} /dev/#{@disk}2")
+          exec("vgremove -f #{@vg}") # remove older volume group
+          exec("pvremove -f #{@dev_root}") # remove older volume group
+
+          exec("pvcreate -f #{@dev_root}")
+          exec("vgcreate -f #{@vg} #{@dev_root}")
           exec("lvcreate -L 15G -n root #{@vg}")
           exec("lvcreate -L #{mem} -n swap #{@vg}")
           exec("lvcreate -l 100%FREE -n home #{@vg}") if @user
@@ -66,6 +67,7 @@ module Getch
 
         # Partition_bios
         # None      - Bios Boot Partition - 1MiB
+        # /boot     - Boot - 8300
         # /         - Root
 
         def exec(cmd)

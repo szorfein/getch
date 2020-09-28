@@ -11,7 +11,28 @@ module Getch
           install_deps
         end
 
+        def make
+          options_make
+          Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+        end
+
         private
+        def options_make
+          grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+          datas = [
+            grub,
+            'INSTALL="yes"',
+            'MENUCONFIG="no"',
+            'CLEAN="yes"',
+            'SAVE_CONFIG="yes"',
+            'MOUNTBOOT="yes"',
+            'LVM="yes"',
+            'DEFAULT_KERNEL_SOURCE="/usr/src/linux"'
+          ]
+          file = "#{MOUNTPOINT}/etc/genkernel.conf"
+          File.write(file, datas.join("\n"))
+        end
+
         def install_efi
         end
 
@@ -22,7 +43,7 @@ module Getch
         def install_deps
           exec("euse -E lvm")
           Getch::Emerge.new('genkernel lvm2').pkg!
-          exec("genkernel --install --lvm --kernel-config=/usr/src/linux/.config initramfs")
+          Getch::Garden.new('-a lvm').run!
           exec("systemctl enable lvm2-monitor")
         end
 

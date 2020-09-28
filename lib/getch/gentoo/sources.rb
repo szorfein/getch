@@ -3,6 +3,7 @@ module Getch
     class Sources
       def initialize
         @lsmod = `lsmod`.chomp
+        @filesystem = OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Deps.new()
       end
 
       def build_others
@@ -18,15 +19,11 @@ module Getch
       end
 
       def make
-        puts "Compiling kernel sources"
-        cmd = "make -j$(nproc) && make modules_install && make install"
-        Getch::Make.new(cmd).run!
-        is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
-        raise "No kernel installed, compiling source fail..." if is_kernel == []
-      end
-
-      def only_make
-        Getch::Make.new("make -j$(nproc)").run!
+        if DEFAULT_OPTIONS[:fs] == 'lvm'
+          @filesystem.make
+        else
+          just_make
+        end
       end
 
       def init_config
@@ -34,6 +31,18 @@ module Getch
       end
 
       private
+
+      def only_make
+        Getch::Make.new("make -j$(nproc)").run!
+      end
+
+      def just_make
+        puts "Compiling kernel sources"
+        cmd = "make -j$(nproc) && make modules_install && make install"
+        Getch::Make.new(cmd).run!
+        is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
+        raise "No kernel installed, compiling source fail..." if is_kernel == []
+      end
 
       def virtualbox_guest
         garden("-a virtualbox-guest") if ismatch?('vmwgfx')
