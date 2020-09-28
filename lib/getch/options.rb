@@ -34,6 +34,7 @@ module Getch
         end
         opts.on("-f", "--format FS", "Can be ext4, lvm. Default use ext4") do |fs|
           @fs = fs
+          DEFAULT_OPTIONS[:fs] = fs # dont known why, but it should be enforce
         end
         opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
           @username = user

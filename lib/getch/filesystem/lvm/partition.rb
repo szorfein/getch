@@ -39,7 +39,7 @@ module Getch
 
         def boot
           if Helpers::efi?
-            exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}}")
+            exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
           else
             exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
           end
@@ -51,8 +51,8 @@ module Getch
 
         def lvm
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          exec("pvcreate /dev/#{@disk}2")
-          exec("vgcreate #{@vg} /dev/#{@disk}2")
+          exec("pvcreate -f /dev/#{@disk}2")
+          exec("vgcreate -f #{@vg} /dev/#{@disk}2")
           exec("lvcreate -L 15G -n root #{@vg}")
           exec("lvcreate -L #{mem} -n swap #{@vg}")
           exec("lvcreate -l 100%FREE -n home #{@vg}") if @user
