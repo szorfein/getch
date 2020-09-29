@@ -50,7 +50,7 @@ module Getch
       end
 
       def qemu_guest
-        garden("-a qemu-guest") if ismatch?('virtio')
+        garden("-a kvm-guest") if ismatch?('virtio')
         garden("-a kvm") if ismatch?('kvm')
       end
 

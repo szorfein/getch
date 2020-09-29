@@ -20,6 +20,10 @@ module Getch
         private
 
         def clear_struct
+          oldvg = `vgdisplay | grep #{@vg}`.chomp
+          exec("vgremove -f #{@vg}") if oldvg # remove older volume group
+          exec("pvremove -f #{@dev_root}") if oldvg # remove older volume group
+
           exec("sgdisk -Z /dev/#{@disk}")
           exec("wipefs -a /dev/#{@disk}")
         end
@@ -49,14 +53,11 @@ module Getch
 
         def lvm
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          exec("vgremove -f #{@vg}") # remove older volume group
-          exec("pvremove -f #{@dev_root}") # remove older volume group
-
           exec("pvcreate -f #{@dev_root}")
           exec("vgcreate -f #{@vg} #{@dev_root}")
-          exec("lvcreate -L 15G -n root #{@vg}")
-          exec("lvcreate -L #{mem} -n swap #{@vg}")
-          exec("lvcreate -l 100%FREE -n home #{@vg}") if @user
+          exec("lvcreate -W y -L 15G -n root #{@vg}")
+          exec("lvcreate -W y -L #{mem} -n swap #{@vg}")
+          exec("lvcreate -W y -l 100%FREE -n home #{@vg}") if @user
           exec("vgchange --available y")
         end
 

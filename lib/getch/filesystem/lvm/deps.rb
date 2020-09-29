@@ -20,17 +20,18 @@ module Getch
         def options_make
           grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
           datas = [
+            '',
             grub,
             'INSTALL="yes"',
             'MENUCONFIG="no"',
             'CLEAN="yes"',
             'SAVE_CONFIG="yes"',
             'MOUNTBOOT="yes"',
+            'MRPROPER="no"',
             'LVM="yes"',
-            'DEFAULT_KERNEL_SOURCE="/usr/src/linux"'
           ]
           file = "#{MOUNTPOINT}/etc/genkernel.conf"
-          File.write(file, datas.join("\n"))
+          File.write(file, datas.join("\n"), mode: 'a')
         end
 
         def install_efi
