@@ -23,7 +23,7 @@ With `gem` installed:
 
 When you boot from an `iso`, you can install `ruby`, `getch` and correct your `PATH=` directly with the `bin/setup.sh`:
 
-    # curl https://raw.githubusercontent.com/szorfein/getch/master/bin/setup.sh | sh
+    # sh <(curl -L https://raw.githubusercontent.com/szorfein/getch/master/bin/setup.sh)
     # source ~/.zshrc # or ~/.bashrc
 
 ## Usage

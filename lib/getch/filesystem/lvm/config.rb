@@ -22,7 +22,8 @@ module Getch
           datas_gentoo = [
             'title Gentoo Linux',
             'linux /vmlinuz',
-            "options crypt_root=UUID=#{uuid_dev_root} root=/dev/mapper/#{@vg}-root init=#{@init} dolvm rw"
+            'initrd /initramfs',
+            "options resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} dolvm rw"
           ]
           File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
         end
@@ -31,7 +32,7 @@ module Getch
           return if Helpers::efi?
           file = "#{@root_dir}/etc/default/grub"
           cmdline = [ 
-            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_dev_root} init=#{@init} dolvm rw\""
+            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} dolvm rw\""
           ]
           File.write("#{file}", cmdline.join("\n"), mode: 'a')
         end
@@ -48,7 +49,7 @@ module Getch
         end
 
         def data_fstab
-          boot_efi = @lv_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
+          boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
           swap = @lv_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
           root = @lv_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
           home = @lv_home ? "UUID=#{@uuid_home} /home/#{@user} ext4 defaults 0 2" : ''
