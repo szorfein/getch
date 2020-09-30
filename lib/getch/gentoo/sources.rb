@@ -68,7 +68,7 @@ module Getch
         return if ! ismatch?('cfg80211')
         garden("-a wifi")
         wifi_drivers
-        Getch::Emerge.new("net-wireless/iw wpa_supplicant").pkg!
+        Getch::Emerge.new("net-wireless/iw wpa_supplicant net-wireless/iwd").pkg!
       end
 
       def install_audio

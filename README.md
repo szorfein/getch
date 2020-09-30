@@ -37,6 +37,10 @@ For a french user:
 
 After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
 
+Install Gentoo on LVM:
+
+    # getch --format lvm --disk sda
+
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
 + lspci

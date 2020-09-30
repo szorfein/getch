@@ -21,8 +21,8 @@ module Getch
 
         def clear_struct
           oldvg = `vgdisplay | grep #{@vg}`.chomp
-          exec("vgremove -f #{@vg}") if oldvg # remove older volume group
-          exec("pvremove -f #{@dev_root}") if oldvg # remove older volume group
+          exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group
+          exec("pvremove -f #{@dev_root}") if oldvg != '' and File.exist? @dev_root # remove older volume group
 
           exec("sgdisk -Z /dev/#{@disk}")
           exec("wipefs -a /dev/#{@disk}")
@@ -46,8 +46,8 @@ module Getch
             exec("sgdisk -n2:0:+0 -t2:8e00 /dev/#{@disk}")
           else
             exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+128MiB -t1:8300 /dev/#{@disk}")
-            exec("sgdisk -n3:0:+0 -t2:8e00 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+128MiB -t2:8300 /dev/#{@disk}")
+            exec("sgdisk -n3:0:+0 -t3:8e00 /dev/#{@disk}")
           end
         end
 
