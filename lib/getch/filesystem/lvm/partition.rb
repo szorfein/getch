@@ -55,9 +55,10 @@ module Getch
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
           exec("pvcreate -f #{@dev_root}")
           exec("vgcreate -f #{@vg} #{@dev_root}")
-          exec("lvcreate -W y -L 15G -n root #{@vg}")
-          exec("lvcreate -W y -L #{mem} -n swap #{@vg}")
-          exec("lvcreate -W y -l 100%FREE -n home #{@vg}") if @user
+          # Wipe old signature: https://github.com/chef-cookbooks/lvm/issues/45
+          exec("lvcreate -y -Wy -Zy -L 15G -n root #{@vg}")
+          exec("lvcreate -y -Wy -Zy -L #{mem} -n swap #{@vg}")
+          exec("lvcreate -y -Wy -Zy -l 100%FREE -n home #{@vg}") if @user
           exec("vgchange --available y")
         end
 

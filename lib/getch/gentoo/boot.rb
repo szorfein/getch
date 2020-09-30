@@ -42,7 +42,7 @@ module Getch
         FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz", preserve: true)
 
         initramfs = Dir.glob("#{MOUNTPOINT}/boot/initramfs-*.img")
-        FileUtils.cp("#{initramfs}", "#{MOUNTPOINT}/#{esp}/initramfs", preserve: true) if initramfs != []
+        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs", preserve: true) if initramfs != []
 
         exec_chroot("bootctl --path #{esp} update")
       end

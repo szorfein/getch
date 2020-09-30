@@ -7,10 +7,11 @@ module Getch
       end
 
       def build_others
-        install_wifi if ismatch?('iwlwifi')
         install_zfs if ismatch?('zfs')
         virtualbox_guest
         qemu_guest
+        install_wifi
+        install_audio
       end
 
       def build_kspp
@@ -45,7 +46,8 @@ module Getch
       end
 
       def virtualbox_guest
-        garden("-a virtualbox-guest") if ismatch?('vmwgfx')
+        return if ! ismatch?('vmwgfx')
+        garden("-a virtualbox-guest")
         Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
       end
 
@@ -63,14 +65,25 @@ module Getch
       end
 
       def install_wifi
+        return if ! ismatch?('cfg80211')
         garden("-a wifi")
+        wifi_drivers
         Getch::Emerge.new("net-wireless/iw wpa_supplicant").pkg!
+      end
+
+      def install_audio
+        return if ! ismatch?('snd_pcm')
+        garden("-a sound")
       end
 
       def install_zfs
         garden("-a zfs")
         only_make # a first 'make' is necessary before emerge zfs
         Getch::Emerge.new("sys-fs/zfs").pkg!
+      end
+
+      def wifi_drivers
+        garden("-a ath9k-driver") if ismatch?('ath9k')
       end
     end
   end
