@@ -1,6 +1,10 @@
+* Encryption with ext4
+
+## 0.0.8, release 2020-09-30
 * Adding LVM via the option fs, `--fs lvm`.
 * Systemd-boot use the value of PARTUUID without initramfs.
 * Include lib logger.
+* Enhance functions to call program system Emerge, Make, ...
 
 ## 0.0.7, release 2020-09-22
 * Correct fstab.

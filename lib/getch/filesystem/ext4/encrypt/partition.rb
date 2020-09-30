@@ -13,10 +13,13 @@ module Getch
             return if STATES[:partition ]
             clear_struct
             cleaning
-            boot
-            others
-            luks
-            lvm
+            if Helpers::efi?
+              partition_efi
+              encrypt_efi
+            else
+              partition_bios
+              encrypt_bios
+            end
             @state.partition
           end
 
@@ -39,51 +42,44 @@ module Getch
             end
           end
 
-          def boot
-            if Helpers::efi?
-              exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}}")
-            else
-              exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-            end
-          end
-
-          def others
-            exec("sgdisk -n2:0:+0 -t2:8309 /dev/#{@disk}")
-          end
-
-          def luks
-            if Helpers::efi?
-              exec("cryptsetup --use-random luksFormat /dev/#{@disk}2")
-              exec("cryptsetup open --type luks /dev/#{@disk}2 crypt-lvm")
-            else
-              # GRUB do not support LUKS2
-              exec("cryptsetup --use-random luksFormat --type luks1 /dev/#{@disk}2")
-              exec("cryptsetup open --type luks1 /dev/#{@disk}2 crypt-lvm")
-            end
-          end
-
-          def lvm
-            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-            exec("pvcreate /dev/mapper/crypt-lvm")
-            exec("vgcreate #{@vg} /dev/mapper/crypt-lvm")
-            exec("lvcreate -L 15G -n root #{@vg}")
-            exec("lvcreate -L #{mem} -n swap #{@vg}")
-            exec("lvcreate -l 100%FREE -n home #{@vg}") if @user
-            exec("vgchange --available y")
-          end
-
           # Follow https://wiki.archlinux.org/index.php/Partitioning
-          # Partition_efi
+          def partition_efi
             # /boot/efi - EFI system partition - 260MB
             # /         - Root
             # swap      - Linux Swap - size of the ram
             # /home     - Home
+            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
 
-          # Partition_bios
+            exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+15G -t2:8309 /dev/#{@disk}")
+            exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
+            exec("sgdisk -n4:0:0 -t4:8309 /dev/#{@disk}") if @dev_home
+          end
+
+          def encrypt_efi
+            exec("cryptsetup luksFormat #{@dev_root}")
+            puts "Open root"
+            exec("cryptsetup open --type luks #{@dev_root} cryptroot")
+            exec("cryptsetup luksFormat #{@dev_home}") if @dev_home
+            puts "Open home"
+            exec("cryptsetup open --type luks #{@dev_home} crypthome")
+          end
+
+          def partition_bios
             # None      - Bios Boot Partition - 1MiB
             # /         - Root
             # swap      - Linux Swap - size of the ram
             # /home     - Home
+            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+
+            exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+15G -t2:8309 /dev/#{@disk}")
+            exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
+            exec("sgdisk -n4:0:0 -t4:8309 /dev/#{@disk}") if @dev_home
+          end
+
+          def encrypt_bios
+          end
 
           def exec(cmd)
             Getch::Command.new(cmd).run!

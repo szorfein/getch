@@ -16,7 +16,7 @@ module Getch
 
           def run
             return if STATES[:mount]
-            mount_swap
+            #mount_swap
             mount_root
             mount_boot
             mount_home
@@ -27,14 +27,14 @@ module Getch
           private
 
           def mount_swap
-            return if ! @lv_swap
-            system("swapon #{@lv_swap}")
+            return if ! @dev_swap
+            system("swapon #{@dev_swap}")
           end
 
           def mount_root
-            return if ! @lv_root
+            return if ! @dev_root
             Dir.mkdir(@root_dir, 0700) if ! Dir.exist?(@root_dir)
-            system("mount #{@lv_root} #{@root_dir}")
+            system("mount #{@luks_root} #{@root_dir}")
           end
 
           def mount_boot_efi
@@ -50,10 +50,10 @@ module Getch
           end
 
           def mount_home
-            return if ! @lv_home
+            return if ! @dev_home
             if @user != nil then
               FileUtils.mkdir_p @home_dir, mode: 0700 if ! Dir.exist?(@home_dir)
-              system("mount #{@lv_home} #{@home_dir}")
+              system("mount #{@luks_home} #{@home_dir}")
             end
             @state.mount
           end

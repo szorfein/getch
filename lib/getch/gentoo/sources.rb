@@ -20,7 +20,7 @@ module Getch
       end
 
       def make
-        if DEFAULT_OPTIONS[:fs] == 'lvm'
+        if DEFAULT_OPTIONS[:fs] == 'lvm' or DEFAULT_OPTIONS[:encrypt]
           @filesystem.make
         else
           just_make

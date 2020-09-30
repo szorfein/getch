@@ -8,10 +8,11 @@ module Getch
             @user = DEFAULT_OPTIONS[:username]
             @dev_boot_efi = Helpers::efi? ? "/dev/#{@disk}1" : nil
             @dev_root = "/dev/#{@disk}2"
-            @vg = 'vg0'
-            @lv_root = "/dev/mapper/#{@vg}-root"
-            @lv_swap = "/dev/mapper/#{@vg}-swap"
-            @lv_home = @user ? "/dev/mapper/#{@vg}-home" : nil
+            @dev_swap = "/dev/#{@disk}3"
+            @dev_home = @user ? "/dev/#{@disk}4" : nil
+            @luks_root = "/dev/mapper/cryptroot"
+            @luks_home = @user ? "/dev/mapper/crypthome" : nil
+            @luks_swap = "/dev/mapper/cryptswap"
           end
         end
       end
