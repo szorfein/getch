@@ -3,7 +3,7 @@ module Getch
     class Sources
       def initialize
         @lsmod = `lsmod`.chomp
-        @filesystem = OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Deps.new()
+        @filesystem = Getch.class_fs::Deps.new()
       end
 
       def build_others

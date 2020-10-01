@@ -6,7 +6,7 @@ module Getch
       def initialize(opts)
         @disk = opts.disk
         @user = opts.username
-        @config = OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Config.new()
+        @config = Getch.class_fs::Config.new()
       end
 
       def start

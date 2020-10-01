@@ -57,12 +57,16 @@ module Getch
           end
 
           def encrypt_efi
-            exec("cryptsetup luksFormat #{@dev_root}")
+            puts "Format root"
+            system("cryptsetup luksFormat #{@dev_root}")
             puts "Open root"
-            exec("cryptsetup open --type luks #{@dev_root} cryptroot")
-            exec("cryptsetup luksFormat #{@dev_home}") if @dev_home
-            puts "Open home"
-            exec("cryptsetup open --type luks #{@dev_home} crypthome")
+            system("cryptsetup open --type luks #{@dev_root} cryptroot")
+            if @dev_home then
+              puts "Format home"
+              system("cryptsetup luksFormat #{@dev_home}")
+              puts "Open home"
+              system("cryptsetup open --type luks #{@dev_home} crypthome")
+            end
           end
 
           def partition_bios

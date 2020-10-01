@@ -1,6 +1,6 @@
 module Getch
   module FileSystem
-    module Ext4
+    module Lvm
       module Encrypt
         class Deps
           def initialize
@@ -13,15 +13,12 @@ module Getch
           end
 
           def make
-            genkernel
+            options_make
             Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
           end
 
           private
-          def install_efi
-          end
-
-          def genkernel
+          def options_make
             grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [
               '',
@@ -29,22 +26,27 @@ module Getch
               'INSTALL="yes"',
               'MENUCONFIG="no"',
               'CLEAN="yes"',
-              "KEYMAP=\"#{DEFAULT_OPTIONS[:keyboard]}\"",
               'SAVE_CONFIG="yes"',
               'MOUNTBOOT="yes"',
               'MRPROPER="no"',
-              'LUKS="yes"',
+              'LVM="yes"',
             ]
             file = "#{MOUNTPOINT}/etc/genkernel.conf"
             File.write(file, datas.join("\n"), mode: 'a')
           end
 
+          def install_efi
+          end
+
           def install_bios
+            exec("euse -p sys-boot/grub -E device-mapper")
           end
 
           def install_deps
-            exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/i)
-            Getch::Emerge.new('genkernel sys-apps/systemd sys-fs/cryptsetup').pkg!
+            exec("euse -E lvm")
+            Getch::Emerge.new('genkernel lvm2').pkg!
+            Getch::Garden.new('-a lvm').run!
+            exec("systemctl enable lvm2-monitor")
           end
 
           def exec(cmd)

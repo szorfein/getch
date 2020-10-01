@@ -30,10 +30,22 @@ module Getch
   }
 
   MOUNTPOINT = "/mnt/gentoo".freeze
-  OPTIONS_FS = {
-    'ext4' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Ext4::Encrypt : Getch::FileSystem::Ext4,
-    'lvm' => DEFAULT_OPTIONS[:encrypt] ? Getch::FileSystem::Lvm::Encrypt : Getch::FileSystem::Lvm
+  DEFAULT_FS = {
+    true => {
+      ext4: Getch::FileSystem::Ext4::Encrypt,
+      lvm: Getch::FileSystem::Lvm::Encrypt
+    },
+    false => {
+      ext4: Getch::FileSystem::Ext4,
+      lvm: Getch::FileSystem::Lvm
+    }
   }.freeze
+
+  def self.class_fs
+    encrypt = DEFAULT_OPTIONS[:encrypt]
+    fs = DEFAULT_OPTIONS[:fs].to_sym
+    DEFAULT_FS[encrypt][fs]
+  end
 
   def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
@@ -62,8 +74,8 @@ module Getch
     case gets.chomp
     when /^y|^Y/
       log.info("Partition start")
-      OPTIONS_FS[fs]::Partition.new
-      OPTIONS_FS[fs]::Format.new
+      class_fs::Partition.new
+      class_fs::Format.new
     else
       exit 1
     end
@@ -84,7 +96,7 @@ module Getch
     resume_options(options)
     Getch::States.new # Update States
     format(options.disk, options.fs, options.username)
-    OPTIONS_FS[DEFAULT_OPTIONS[:fs]]::Mount.new.run
+    class_fs::Mount.new.run
     init_gentoo(options)
   end
 end
