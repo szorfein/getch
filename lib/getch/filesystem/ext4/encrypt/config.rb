@@ -10,7 +10,7 @@ module Getch
             gen_uuid
             @root_dir = MOUNTPOINT
             @init = '/usr/lib/systemd/systemd'
-            create_secret_keys
+            move_secret_keys
             crypttab
           end
 
@@ -45,8 +45,11 @@ module Getch
           def grub
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
-            cmdline = "GRUB_CMDLINE_LINUX=\"resume=#{@dev_swap} crypt_root=#{@uuid_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force\"\n"
-            File.write(file, cmdline, mode: 'a')
+            cmdline = [
+              "GRUB_CMDLINE_LINUX=\"resume=#{@dev_swap} crypt_root=UUID=#{@uuid_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force\"",
+              "GRUB_ENABLE_CRYPTODISK=y"
+            ]
+            File.write(file, cmdline.join("\n"), mode: 'a')
           end
 
           private
@@ -54,7 +57,7 @@ module Getch
           def gen_uuid
             @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
-            @uuid_root = `lsblk -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
+            @uuid_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
             @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
             @uuid_home = `lsblk -o "UUID" #{@dev_home} | tail -1`.chomp() if @dev_home
@@ -69,12 +72,11 @@ module Getch
             [ boot_efi, swap, root, home ]
           end
 
-          def create_secret_keys
+          def move_secret_keys
             return if ! @luks_home
-            puts "Creating secret keys"
+            puts "Moving secret keys"
             keys_path = "#{@root_dir}/root/secretkeys"
-            FileUtils.mkdir keys_path, mode: 0700 if ! Dir.exist?(keys_path)
-            Getch::Command.new("dd bs=512 count=4 if=/dev/urandom of=#{keys_path}/crypto_keyfile.bin").run!
+            FileUtils.mv("/root/secretkeys", keys_path) if ! Dir.exist?(keys_path)
           end
         end
       end

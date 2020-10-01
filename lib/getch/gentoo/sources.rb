@@ -77,6 +77,7 @@ module Getch
       end
 
       def install_zfs
+        return if ! DEFAULT_OPTIONS[:fs] == 'zfs'
         garden("-a zfs")
         only_make # a first 'make' is necessary before emerge zfs
         Getch::Emerge.new("sys-fs/zfs").pkg!

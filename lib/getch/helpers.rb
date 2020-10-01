@@ -57,4 +57,11 @@ module Helpers
     end
     is_found
   end
+
+  def self.sys(cmd)
+    system(cmd)
+    unless $?.success?
+      raise "Error with #{cmd}"
+    end
+  end
 end

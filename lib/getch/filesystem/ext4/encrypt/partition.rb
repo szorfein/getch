@@ -6,6 +6,7 @@ module Getch
           def initialize
             super
             @state = Getch::States.new()
+            @log = Log.new
             run_partition
           end
 
@@ -57,16 +58,27 @@ module Getch
           end
 
           def encrypt_efi
-            puts "Format root"
-            system("cryptsetup luksFormat #{@dev_root}")
-            puts "Open root"
-            system("cryptsetup open --type luks #{@dev_root} cryptroot")
+            @log.info("Format root")
+            Helpers::sys("cryptsetup luksFormat #{@dev_root}")
+            @log.debug("Opening root")
+            Helpers::sys("cryptsetup open --type luks #{@dev_root} cryptroot")
             if @dev_home then
-              puts "Format home"
-              system("cryptsetup luksFormat #{@dev_home}")
-              puts "Open home"
-              system("cryptsetup open --type luks #{@dev_home} crypthome")
+              create_secret_keys
+              @log.info("Format home with #{@key_path}")
+              Helpers::sys("cryptsetup luksFormat #{@dev_home} #{@key_path}")
+              @log.debug("Open home with key #{@key_path}")
+              exec("cryptsetup open --type luks -d #{@key_path} #{@dev_home} crypthome")
             end
+          end
+
+          def create_secret_keys
+            return if ! @dev_home
+            @log.info("Creating secret keys")
+            keys_dir = "/root/secretkeys"
+            key_name = "crypto_keyfile.bin"
+            @key_path = "#{keys_dir}/#{key_name}"
+            FileUtils.mkdir keys_dir, mode: 0700 if ! Dir.exist?(keys_dir)
+            Getch::Command.new("dd bs=512 count=4 if=/dev/urandom of=#{@key_path}").run!
           end
 
           def partition_bios
