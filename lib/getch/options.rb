@@ -2,12 +2,12 @@ require 'optparse'
 
 module Getch
   class Options
-    attr_reader :language, :zoneinfo, :keyboard, :disk, :fs, :username, :encrypt, :verbose
+    attr_reader :language, :zoneinfo, :keymap, :disk, :fs, :username, :encrypt, :verbose
 
     def initialize(argv)
       @language = DEFAULT_OPTIONS[:language]
       @zoneinfo = DEFAULT_OPTIONS[:zoneinfo]
-      @keyboard = DEFAULT_OPTIONS[:keyboard]
+      @keymap = DEFAULT_OPTIONS[:keymap]
       @disk = DEFAULT_OPTIONS[:disk]
       @fs = DEFAULT_OPTIONS[:fs]
       @username = DEFAULT_OPTIONS[:username]
@@ -26,8 +26,8 @@ module Getch
         opts.on("-z", "--zoneinfo ZONE", "Default is US/Eastern") do |zone|
           @zoneinfo = zone
         end
-        opts.on("-k", "--keyboard KEY", "Default is us") do |key|
-          @keyboard = key
+        opts.on("-k", "--keymap KEY", "Default is us") do |key|
+          @keymap = key
         end
         opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb)") do |disk|
           @disk = disk

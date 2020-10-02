@@ -50,7 +50,7 @@ module Getch
         File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}\n")
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
         File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{options.keyboard}")
+        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{options.keymap}")
       end
 
       def hostname
@@ -74,7 +74,7 @@ module Getch
       def control_options(options)
         search_zone(options.zoneinfo)
         search_utf8(options.language)
-        search_key(options.keyboard)
+        search_key(options.keymap)
       end
 
       def search_key(keys)

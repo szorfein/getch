@@ -11,7 +11,7 @@ module Getch
   DEFAULT_OPTIONS = {
     language: 'en_US',
     zoneinfo: 'US/Eastern',
-    keyboard: 'us',
+    keymap: 'us',
     disk: 'sda',
     fs: 'ext4',
     username: nil,
@@ -51,7 +51,7 @@ module Getch
     puts "\nBuild Gentoo with the following args:\n"
     puts "lang: #{DEFAULT_OPTIONS[:language]}"
     puts "zoneinfo: #{DEFAULT_OPTIONS[:zoneinfo]}"
-    puts "keyboard: #{DEFAULT_OPTIONS[:keyboard]}"
+    puts "keymap: #{DEFAULT_OPTIONS[:keymap]}"
     puts "disk: #{DEFAULT_OPTIONS[:disk]}"
     puts "fs: #{DEFAULT_OPTIONS[:fs]}"
     puts "username: #{DEFAULT_OPTIONS[:username]}"
