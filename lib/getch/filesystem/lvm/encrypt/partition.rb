@@ -6,6 +6,7 @@ module Getch
           def initialize
             super
             @state = Getch::States.new()
+            @log = Log.new
             run_partition
           end
 
@@ -14,6 +15,7 @@ module Getch
             clear_struct
             cleaning
             partition
+            encrypt
             lvm
             @state.partition
           end
@@ -52,10 +54,17 @@ module Getch
             end
           end
 
+          def encrypt
+            @log.info("Format root")
+            Helpers::sys("cryptsetup luksFormat #{@dev_root}")
+            @log.debug("Opening root")
+            Helpers::sys("cryptsetup open --type luks #{@dev_root} cryptroot")
+          end
+
           def lvm
             mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-            exec("pvcreate -f #{@dev_root}")
-            exec("vgcreate -f #{@vg} #{@dev_root}")
+            exec("pvcreate -f #{@luks_root}")
+            exec("vgcreate -f #{@vg} #{@luks_root}")
             # Wipe old signature: https://github.com/chef-cookbooks/lvm/issues/45
             exec("lvcreate -y -Wy -Zy -L 15G -n root #{@vg}")
             exec("lvcreate -y -Wy -Zy -L #{mem} -n swap #{@vg}")

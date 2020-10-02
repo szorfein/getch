@@ -13,12 +13,17 @@ module Getch
           def format
             return if STATES[:format]
             puts "Format #{@disk} with #{@fs}"
-            system("mkfs.fat -F32 #{@dev_boot_efi}") if @dev_boot_efi
-            system("mkfs.#{@fs} -F #{@dev_boot}") if @dev_boot
-            system("mkswap -f #{@lv_swap}")
-            system("mkfs.#{@fs} -F #{@lv_root}")
-            system("mkfs.#{@fs} -F #{@lv_home}") if @lv_home
+            exec("mkfs.fat -F32 #{@dev_boot_efi}") if @dev_boot_efi
+            exec("mkfs.#{@fs} -F #{@dev_boot}") if @dev_boot
+            exec("mkswap -f #{@lv_swap}")
+            exec("mkfs.#{@fs} -F #{@lv_root}")
+            exec("mkfs.#{@fs} -F #{@lv_home}") if @lv_home
             @state.format
+          end
+
+          private
+          def exec(cmd)
+            Getch::Command.new(cmd).run!
           end
         end
       end

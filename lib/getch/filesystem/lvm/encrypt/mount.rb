@@ -4,7 +4,7 @@ module Getch
   module FileSystem
     module Lvm
       module Encrypt
-        class Mount < Getch::FileSystem::Lvm::Device
+        class Mount < Getch::FileSystem::Lvm::Encrypt::Device
           def initialize
             super
             @root_dir = MOUNTPOINT
@@ -16,7 +16,7 @@ module Getch
 
           def run
             return if STATES[:mount]
-            mount_swap
+            #mount_swap
             mount_root
             mount_boot
             mount_home

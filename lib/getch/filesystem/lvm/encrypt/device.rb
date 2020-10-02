@@ -13,6 +13,7 @@ module Getch
             @lv_root = "/dev/mapper/#{@vg}-root"
             @lv_swap = "/dev/mapper/#{@vg}-swap"
             @lv_home = @user ? "/dev/mapper/#{@vg}-home" : nil
+            @luks_root = "/dev/mapper/cryptroot"
           end
         end
       end

@@ -26,10 +26,12 @@ module Getch
               'INSTALL="yes"',
               'MENUCONFIG="no"',
               'CLEAN="yes"',
+              'KEYMAP="yes"',
               'SAVE_CONFIG="yes"',
               'MOUNTBOOT="yes"',
               'MRPROPER="no"',
               'LVM="yes"',
+              'LUKS="yes"',
             ]
             file = "#{MOUNTPOINT}/etc/genkernel.conf"
             File.write(file, datas.join("\n"), mode: 'a')
@@ -43,8 +45,10 @@ module Getch
           end
 
           def install_deps
-            exec("euse -E lvm")
-            Getch::Emerge.new('genkernel lvm2').pkg!
+            make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
+            exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)
+            exec("euse -E cryptsetup") if ! Helpers::grep?(make_conf, /cryptsetup/)
+            Getch::Emerge.new('genkernel systemd sys-fs/cryptsetup lvm2').pkg!
             Getch::Garden.new('-a lvm').run!
             exec("systemctl enable lvm2-monitor")
           end

@@ -8,6 +8,7 @@ module Getch
             gen_uuid
             @root_dir = MOUNTPOINT
             @init = '/usr/lib/systemd/systemd'
+            crypttab
           end
 
           def fstab
@@ -24,16 +25,24 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} dolvm rw"
+              "options crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keyboard]} dolvm rw"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
+          end
+
+          def crypttab
+            datas = [
+              "cryptswap UUID=#{@uuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256"
+            ]
+            File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
           end
 
           def grub
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
-              "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} dolvm rw\""
+              "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} dolvm rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keyboard]}\"",
+              "GRUB_ENABLE_CRYPTODISK=y"
             ]
             File.write("#{file}", cmdline.join("\n"), mode: 'a')
           end
@@ -42,8 +51,8 @@ module Getch
 
           def gen_uuid
             @uuid_swap = `lsblk -o "UUID" #{@lv_swap} | tail -1`.chomp() if @lv_swap
-            @uuid_root = `lsblk -o "UUID" #{@lv_root} | tail -1`.chomp() if @lv_root
-            @uuid_dev_root = `lsblk -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
+            @uuid_root = `lsblk -d -o "UUID" #{@lv_root} | tail -1`.chomp() if @lv_root
+            @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
             @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
             @uuid_home = `lsblk -o "UUID" #{@lv_home} | tail -1`.chomp() if @lv_home
@@ -51,7 +60,7 @@ module Getch
 
           def data_fstab
             boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
-            swap = @lv_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
+            swap = @lv_swap ? "/dev/mapper/cryptswap none swap discard 0 0" : ''
             root = @lv_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
             home = @lv_home ? "UUID=#{@uuid_home} /home/#{@user} ext4 defaults 0 2" : ''
 

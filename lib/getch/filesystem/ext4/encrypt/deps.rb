@@ -29,7 +29,7 @@ module Getch
               'INSTALL="yes"',
               'MENUCONFIG="no"',
               'CLEAN="yes"',
-              "KEYMAP=\"#{DEFAULT_OPTIONS[:keyboard]}\"",
+              'KEYMAP="yes"',
               'SAVE_CONFIG="yes"',
               'MOUNTBOOT="yes"',
               'MRPROPER="no"',
@@ -43,7 +43,7 @@ module Getch
           end
 
           def install_deps
-            exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/i)
+            exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/)
             Getch::Emerge.new('genkernel sys-apps/systemd sys-fs/cryptsetup').pkg!
           end
 
