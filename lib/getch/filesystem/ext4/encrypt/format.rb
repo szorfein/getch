@@ -15,6 +15,7 @@ module Getch
             puts "Format #{@disk} with #{@fs}"
             exec("mkfs.fat -F32 #{@dev_boot_efi}") if Helpers::efi?
             exec("mkfs.#{@fs} -F #{@luks_root}")
+            exec("mkswap -f #{@dev_swap}")
             exec("mkfs.#{@fs} -F #{@luks_home}") if @dev_home
             @state.format
           end
