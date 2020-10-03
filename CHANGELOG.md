@@ -2,6 +2,7 @@
 * Add encryption on ext4 and lvm (BIOS,UEFI)
 * Correct KEYMAP="yes" with genkernel
 * Renaming option keyboard with keymap
+* GPG verification for ebuild
 
 ## 0.0.8, release 2020-09-30
 * Adding LVM via the option fs, `--fs lvm`.

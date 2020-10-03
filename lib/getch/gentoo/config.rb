@@ -24,18 +24,25 @@ module Getch
         File.write(@make, data.join("\n"), mode: "a")
       end
 
+      # Write a repos.conf/gentoo.conf with the gpg verification
       def repo
         src = "#{MOUNTPOINT}/usr/share/portage/config/repos.conf"
         dest = "#{MOUNTPOINT}/etc/portage/repos.conf"
         FileUtils.mkdir dest, mode: 0644 if ! Dir.exist?(dest)
+        tmp = Tempfile.new('gentoo.conf')
         line_count = 0
-        tmp_file = Tempfile.new('gentoo.conf')
+
         File.open(src).each { |l|
-          File.write(tmp_file, "sync-allow-hardlinks = yes\n", mode: 'a') if line_count == 2
-          File.write(tmp_file, l, mode: 'a')
+          File.write(tmp, "sync-allow-hardlinks = yes\n", mode: 'a') if line_count == 2
+          if l.match(/^sync-type = rsync/)
+            File.write(tmp, "sync-type = webrsync\n", mode: 'a')
+          else
+            File.write(tmp, l, mode: 'a')
+          end
           line_count += 1
         }
-        FileUtils.copy_file(tmp_file, "#{dest}/gentoo.conf", preserve = false)
+
+        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf", preserve = false)
       end
 
       def network

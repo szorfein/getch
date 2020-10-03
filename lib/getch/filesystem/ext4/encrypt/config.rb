@@ -46,7 +46,7 @@ module Getch
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [
-              "GRUB_CMDLINE_LINUX=\"resume=#{@dev_swap} crypt_root=UUID=#{@uuid_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
+              "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
             File.write(file, cmdline.join("\n"), mode: 'a')
@@ -57,17 +57,17 @@ module Getch
           def gen_uuid
             @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
-            @uuid_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
+            @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
-            @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @dev_home
+            @uuid_root = `lsblk -d -o "UUID" #{@luks_root} | tail -1`.chomp() if @dev_root
+            @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @luks_home
           end
 
           def data_fstab
             boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
             swap = @dev_swap ? "#{@luks_swap} none swap discard 0 0 " : ''
-            root = @dev_root ? "UUID=#{@luks_root} / ext4 defaults 0 1" : ''
-            home = @dev_home ? "/dev/mapper/crypthome /home/#{@user} ext4 defaults 0 2" : ''
+            root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
+            home = @dev_home ? "#{@luks_home} /home/#{@user} ext4 defaults 0 2" : ''
 
             [ boot_efi, swap, root, home ]
           end
