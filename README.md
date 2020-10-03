@@ -9,7 +9,7 @@ BIOS system will use Grub2 and UEFI, systemd-boot. Filesystem supported by Getch
 + ext4
 + lvm
 
-I would also add disk encryption soon.
+Encryption is also supported.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
@@ -31,21 +31,33 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
 
     $ getch -h
 
+After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
+
 ## Examples
 For a french user:
 
-    # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
-
-After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
+    # getch --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
 
 Install Gentoo on LVM:
 
     # getch --format lvm --disk sda
 
+Encrypt your disk with LVM with a french keymap
+
+    # getch --format lvm --encrypt --keymap fr
+
+Encrypt with ext4 and create a home directory /home/ninja
+
+    # getch --format ext4 --encrypt --username ninja
+
 ## Troubleshooting
 
 #### LVM
-Unless than your older LVM volume group is named `vg0`, `getch` may fail to partition your disk, you have to clean your device before proceed with `vgremove` and `pvremove`.
+Unless than your older LVM volume group is named `vg0`, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`.
+
+#### Encryption enable on BIOS with ext4
+To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and for Cryptsetup/Genkernel too.  
+Also with GRUB, only a `us` keymap is working.
 
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
