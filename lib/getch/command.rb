@@ -17,7 +17,7 @@ module Getch
 
         # only stderr
         begin
-          @log.error stderr.readline until stderr.eof.nil?
+          @log.debug stderr.readline until stderr.eof.nil?
         rescue EOFError
         end
 

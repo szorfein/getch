@@ -16,10 +16,11 @@ module Getch
             cleaning
             if Helpers::efi?
               partition_efi
+              encrypt_efi
             else
               partition_bios
+              encrypt_bios
             end
-            encrypt
             @state.partition
           end
 
@@ -56,11 +57,23 @@ module Getch
             exec("sgdisk -n4:0:0 -t4:8309 /dev/#{@disk}") if @dev_home
           end
 
-          def encrypt
+          def encrypt_efi
             @log.info("Format root")
             Helpers::sys("cryptsetup luksFormat #{@dev_root}")
             @log.debug("Opening root")
             Helpers::sys("cryptsetup open --type luks #{@dev_root} cryptroot")
+            encrypt_home
+          end
+
+          def encrypt_bios
+            @log.info("Format root for bios")
+            Helpers::sys("cryptsetup luksFormat --type luks1 #{@dev_root}")
+            @log.debug("Opening root")
+            Helpers::sys("cryptsetup open --type luks1 #{@dev_root} cryptroot")
+            encrypt_home
+          end
+
+          def encrypt_home
             if @dev_home then
               create_secret_keys
               @log.info("Format home with #{@key_path}")

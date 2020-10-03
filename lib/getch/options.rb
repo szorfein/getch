@@ -39,7 +39,7 @@ module Getch
         opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
           @username = user
         end
-        opts.on("--encrypt", "Encrypt your filesystem.!! NOT YET READY !!") do
+        opts.on("--encrypt", "Encrypt your system with Luks2.") do
           @encrypt = true
         end
         opts.on("--verbose", "Write more messages to the standard output.") do

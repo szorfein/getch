@@ -66,7 +66,7 @@ module Getch
           def data_fstab
             boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
             swap = @dev_swap ? "#{@luks_swap} none swap discard 0 0 " : ''
-            root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
+            root = @dev_root ? "UUID=#{@luks_root} / ext4 defaults 0 1" : ''
             home = @dev_home ? "/dev/mapper/crypthome /home/#{@user} ext4 defaults 0 2" : ''
 
             [ boot_efi, swap, root, home ]

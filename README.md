@@ -34,13 +34,18 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
 ## Examples
 For a french user:
 
-    # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keyboard fr
+    # getch --username ninja --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
 
 After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
 
 Install Gentoo on LVM:
 
     # getch --format lvm --disk sda
+
+## Troubleshooting
+
+#### LVM
+Unless than your older LVM volume group is named `vg0`, `getch` may fail to partition your disk, you have to clean your device before proceed with `vgremove` and `pvremove`.
 
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:

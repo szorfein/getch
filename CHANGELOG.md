@@ -1,4 +1,7 @@
-* Encryption with ext4
+## 0.0.9, release 2020-10-03
+* Add encryption on ext4 and lvm (BIOS,UEFI)
+* Correct KEYMAP="yes" with genkernel
+* Renaming option keyboard with keymap
 
 ## 0.0.8, release 2020-09-30
 * Adding LVM via the option fs, `--fs lvm`.
