@@ -53,10 +53,10 @@ Encrypt with ext4 and create a home directory /home/ninja
 ## Troubleshooting
 
 #### LVM
-Unless than your older LVM volume group is named `vg0`, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`.
+Unless your old LVM volume group is also named `vg0`, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`.
 
 #### Encryption enable on BIOS with ext4
-To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and for Cryptsetup/Genkernel too.  
+To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and for Cryptsetup/Genkernel too. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
 ## Issues

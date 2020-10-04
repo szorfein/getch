@@ -7,7 +7,6 @@ module Getch
       end
 
       def build_others
-        install_zfs if ismatch?('zfs')
         virtualbox_guest
         qemu_guest
         install_wifi
@@ -23,7 +22,7 @@ module Getch
         if DEFAULT_OPTIONS[:fs] == 'lvm' or DEFAULT_OPTIONS[:encrypt]
           @filesystem.make
         else
-          just_make
+          make_kernel
         end
       end
 
@@ -33,11 +32,7 @@ module Getch
 
       private
 
-      def only_make
-        Getch::Make.new("make -j$(nproc)").run!
-      end
-
-      def just_make
+      def make_kernel
         puts "Compiling kernel sources"
         cmd = "make -j$(nproc) && make modules_install && make install"
         Getch::Make.new(cmd).run!
@@ -74,13 +69,6 @@ module Getch
       def install_audio
         return if ! ismatch?('snd_pcm')
         garden("-a sound")
-      end
-
-      def install_zfs
-        return if ! DEFAULT_OPTIONS[:fs] == 'zfs'
-        garden("-a zfs")
-        only_make # a first 'make' is necessary before emerge zfs
-        Getch::Emerge.new("sys-fs/zfs").pkg!
       end
 
       def wifi_drivers
