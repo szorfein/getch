@@ -9,6 +9,7 @@ module Getch
           @dev_boot = Helpers::efi? ? nil : "/dev/#{@disk}2"
           @dev_swap = Helpers::efi? ? "/dev/#{@disk}2" : "/dev/#{@disk}3"
           @dev_root = Helpers::efi? ? "/dev/#{@disk}3" : "/dev/#{@disk}4"
+          @boot_pool_name = 'bpool'
           @pool_name = 'zpool'
           @zfs_home = @user ? true : false
         end

@@ -9,7 +9,6 @@ module Getch
           @root_dir = MOUNTPOINT
           @boot_dir = "#{@root_dir}/boot"
           @boot_efi_dir = "#{@root_dir}/boot/efi"
-          @home_dir = @user ? "#{@root_dir}/home/#{@user}" : nil
           @state = Getch::States.new()
         end
 
@@ -18,7 +17,6 @@ module Getch
           mount_swap
           mount_root
           mount_boot
-          mount_home
           mount_boot_efi
           @state.mount
         end
@@ -26,14 +24,12 @@ module Getch
         private
 
         def mount_swap
-          return if ! @lv_swap
-          system("swapon #{@lv_swap}")
+          system("swapon #{@dev_swap}")
         end
 
         def mount_root
-          return if ! @lv_root
           Dir.mkdir(@root_dir, 0700) if ! Dir.exist?(@root_dir)
-          system("mount #{@lv_root} #{@root_dir}")
+          system("zfs mount #{@pool_name}/ROOT/gentoo")
         end
 
         def mount_boot_efi
@@ -45,16 +41,7 @@ module Getch
         def mount_boot
           return if ! @dev_boot
           FileUtils.mkdir_p @boot_dir, mode: 0700 if ! Dir.exist?(@boot_dir)
-          system("mount #{@dev_boot} #{@boot_dir}")
-        end
-
-        def mount_home
-          return if ! @lv_home
-          if @user != nil then
-            FileUtils.mkdir_p @home_dir, mode: 0700 if ! Dir.exist?(@home_dir)
-            system("mount #{@lv_home} #{@home_dir}")
-          end
-          @state.mount
+          system("zfs mount #{@boot_pool_name}/BOOT/gentoo")
         end
       end
     end

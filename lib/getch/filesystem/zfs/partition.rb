@@ -49,7 +49,7 @@ module Getch
             exec("sgdisk -n3:0:+0 -t3:BF00 /dev/#{@disk}")
           else
             exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+128MiB -t2:8300 /dev/#{@disk}")
+            exec("sgdisk -n2:0:+2G -t2:BE00 /dev/#{@disk}") # boot pool GRUB
             exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
             exec("sgdisk -n4:0:+0 -t4:BF00 /dev/#{@disk}")
           end
@@ -66,19 +66,58 @@ module Getch
             end
             
           @log.debug("ashift found for #{@bloc} - #{ashift}")
+          if ! Helpers::efi? 
+            # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
+            @log.info("Creating boot pool on #{@pool_name}")
+            exec("zpool create \
+              -o ashift=#{ashift} -d \
+              -o feature@async_destroy=enabled \
+              -o feature@bookmarks=enabled \
+              -o feature@embedded_data=enabled \
+              -o feature@empty_bpobj=enabled \
+              -o feature@enabled_txg=enabled \
+              -o feature@extensible_dataset=enabled \
+              -o feature@filesystem_limits=enabled \
+              -o feature@hole_birth=enabled \
+              -o feature@large_blocks=enabled \
+              -o feature@lz4_compress=enabled \
+              -o feature@spacemap_histogram=enabled \
+              -O acltype=posixacl -O canmount=off -O compression=lz4 \
+              -O devices=off -O normalization=formD -O atime=off -O xattr=sa \
+              -O mountpoint=/boot -R #{MOUNTPOINT} \
+              #{@boot_pool_name} #{@dev_boot}
+            ")
+          end
+
           exec("zpool create -o ashift=#{ashift} \
-            -O atime=off -O acltype=posixacl -O compression=lz4 \
-            -O dnodesize=auto -O normalization=formD -O xattr=sa \
-            -O devices=off -O setuid=off \
-            -R #{MOUNTPOINT} -m none #{@pool_name} \
-            #{@dev_root}")
+            -O acltype=posixacl -O canmount=off -O compression=lz4 \
+            -O dnodesize=auto -O normalization=formD -O atime=off \
+            -O xattr=sa -O mountpoint=/ -R #{MOUNTPOINT} \
+            #{@pool_name} #{@dev_root}
+          ")
+
           add_datasets
         end
 
         def add_datasets
-          exec("zfs create #{@pool_name}/gentoo")
-          exec("zfs create -o mountpoint=/ #{@pool_name}/gentoo/os")
-          exec("zfs create -o mountpoint=/home #{@pool_name}/gentoo/home")
+          exec("zfs create -o canmount=off -o mountpoint=none #{@pool_name}/ROOT")
+          exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOTgentoo") if Helpers::efi?
+
+          exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/gentoo")
+          exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/gentoo") if Helpers::efi?
+
+          exec("zfs create -o canmount=off #{@pool_name}/ROOT/gentoo/usr")
+          exec("zfs create #{@pool_name}/ROOT/gentoo/usr/src")
+          exec("zfs create -o canmount=off #{@pool_name}/ROOT/gentoo/var")
+          exec("zfs create #{@pool_name}/ROOT/gentoo/var/log")
+          exec("zfs create #{@pool_name}/ROOT/gentoo/var/db")
+          exec("zfs create #{@pool_name}/ROOT/gentoo/var/tmp")
+
+          exec("zfs create -o canmount=off -o mountpoint=/ #{@pool_name}/USERDATA")
+          exec("zfs create -o canmount=on -o mountpoint=/root \
+            #{@pool_name}/USERDATA/root")
+          exec("zfs create -o canmount=on -o mountpoint=/home/#{@user} \
+            #{@pool_name}/USERDATA/#{@user}") if @user
         end
 
         # Follow https://wiki.archlinux.org/index.php/Partitioning
