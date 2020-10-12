@@ -5,3 +5,4 @@ end
 
 require_relative 'filesystem/ext4'
 require_relative 'filesystem/lvm'
+require_relative 'filesystem/zfs'

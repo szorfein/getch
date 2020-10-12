@@ -72,10 +72,12 @@ set_shell() {
   [ -f ~/.zshrc ] && your_shell=~/.zshrc
 
   [ -f "$your_shell" ] && {
-    if ! grep -q ".gem/ruby/[0-9.]*/bin" "$your_shell" ; then
+    if ! grep -q "ruby" "$your_shell" ; then
       echo "export PATH=\$PATH:$(ruby -e 'puts Gem.user_dir')/bin" >> "$your_shell"
     fi
-    . "$your_shell"
+    if $(. "$your_shell") ; then
+      echo "Shell loaded"
+    fi
   }
 }
 

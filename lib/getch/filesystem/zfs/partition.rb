@@ -22,6 +22,10 @@ module Getch
 
         def clear_struct
           oldvg = `vgdisplay | grep #{@vg}`.chomp
+          oldzpool = `zpool status | grep "pool" | awk '{print $2}'`.split("\n")
+          if oldzpool != []
+            oldzpool.each { |p| exec("zpool destroy #{p}") if p }
+          end
           exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group
           exec("pvremove -f #{@dev_root}") if oldvg != '' and File.exist? @dev_root # remove older volume group
 
@@ -69,30 +73,30 @@ module Getch
           if ! Helpers::efi? 
             # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
             @log.info("Creating boot pool on #{@pool_name}")
-            exec("zpool create \
-              -o ashift=#{ashift} -d \
-              -o feature@async_destroy=enabled \
-              -o feature@bookmarks=enabled \
-              -o feature@embedded_data=enabled \
-              -o feature@empty_bpobj=enabled \
-              -o feature@enabled_txg=enabled \
-              -o feature@extensible_dataset=enabled \
-              -o feature@filesystem_limits=enabled \
-              -o feature@hole_birth=enabled \
-              -o feature@large_blocks=enabled \
-              -o feature@lz4_compress=enabled \
-              -o feature@spacemap_histogram=enabled \
-              -O acltype=posixacl -O canmount=off -O compression=lz4 \
-              -O devices=off -O normalization=formD -O atime=off -O xattr=sa \
-              -O mountpoint=/boot -R #{MOUNTPOINT} \
+            exec("zpool create -f \\
+              -o ashift=#{ashift} -d \\
+              -o feature@async_destroy=enabled \\
+              -o feature@bookmarks=enabled \\
+              -o feature@embedded_data=enabled \\
+              -o feature@empty_bpobj=enabled \\
+              -o feature@enabled_txg=enabled \\
+              -o feature@extensible_dataset=enabled \\
+              -o feature@filesystem_limits=enabled \\
+              -o feature@hole_birth=enabled \\
+              -o feature@large_blocks=enabled \\
+              -o feature@lz4_compress=enabled \\
+              -o feature@spacemap_histogram=enabled \\
+              -O acltype=posixacl -O canmount=off -O compression=lz4 \\
+              -O devices=off -O normalization=formD -O atime=off -O xattr=sa \\
+              -O mountpoint=/boot -R #{MOUNTPOINT} \\
               #{@boot_pool_name} #{@dev_boot}
             ")
           end
 
-          exec("zpool create -o ashift=#{ashift} \
-            -O acltype=posixacl -O canmount=off -O compression=lz4 \
-            -O dnodesize=auto -O normalization=formD -O atime=off \
-            -O xattr=sa -O mountpoint=/ -R #{MOUNTPOINT} \
+          exec("zpool create -o ashift=#{ashift} \\
+            -O acltype=posixacl -O canmount=off -O compression=lz4 \\
+            -O dnodesize=auto -O normalization=formD -O atime=off \\
+            -O xattr=sa -O mountpoint=/ -R #{MOUNTPOINT} \\
             #{@pool_name} #{@dev_root}
           ")
 
@@ -101,7 +105,7 @@ module Getch
 
         def add_datasets
           exec("zfs create -o canmount=off -o mountpoint=none #{@pool_name}/ROOT")
-          exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOTgentoo") if Helpers::efi?
+          exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOT/gentoo") if Helpers::efi?
 
           exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/gentoo")
           exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/gentoo") if Helpers::efi?

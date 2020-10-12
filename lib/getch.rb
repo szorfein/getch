@@ -33,11 +33,13 @@ module Getch
   DEFAULT_FS = {
     true => {
       ext4: Getch::FileSystem::Ext4::Encrypt,
-      lvm: Getch::FileSystem::Lvm::Encrypt
+      lvm: Getch::FileSystem::Lvm::Encrypt,
+      zfs: Getch::FileSystem::Zfs::Encrypt
     },
     false => {
       ext4: Getch::FileSystem::Ext4,
-      lvm: Getch::FileSystem::Lvm
+      lvm: Getch::FileSystem::Lvm,
+      zfs: Getch::FileSystem::Zfs,
     }
   }.freeze
 
