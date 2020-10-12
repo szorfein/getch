@@ -13,11 +13,11 @@ module Getch
         end
 
         def zfs_mountpoint
-          Getch::Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
-          Getch::Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/bpool")
-          Getch::Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/rpool")
-          Getch::Helpers::run_chroot("ln -s /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
-          Getch::Helpers::run_chroot("zed -F &")
+          Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
+          Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/bpool")
+          Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/rpool")
+          Helpers::run_chroot("ln -s /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
+          Helpers::run_chroot("zed -F &")
         end
 
         def make

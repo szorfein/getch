@@ -29,19 +29,19 @@ module Getch
         end
 
         def mount_root
-          Getch::Helpers::mkdir(@root_dir)
+          Helpers::mkdir(@root_dir)
           run("zfs mount #{@pool_name}/ROOT/gentoo")
         end
 
         def mount_boot_efi
           return if ! @dev_boot_efi
-          Getch::Helpers::mkdir(@boot_efi_dir)
+          Helpers::mkdir(@boot_efi_dir)
           run("mount #{@dev_boot_efi} #{@boot_efi_dir}")
         end
 
         def mount_boot
           return if ! @dev_boot
-          Getch::Helpers::mkdir(@boot_dir)
+          Helpers::mkdir(@boot_dir)
           run("zfs mount #{@boot_pool_name}/BOOT/gentoo")
         end
 

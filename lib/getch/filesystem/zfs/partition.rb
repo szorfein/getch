@@ -23,7 +23,7 @@ module Getch
         def clear_struct
           oldvg = `vgdisplay | grep #{@vg}`.chomp
           oldzpool = `zpool status | grep "pool" | awk '{print $2}'`.split("\n")
-          if oldzpool != []
+          if oldzpool != [] and $?.success?
             oldzpool.each { |p| exec("zpool destroy #{p}") if p }
           end
           exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group
@@ -68,6 +68,8 @@ module Getch
             else # 512
               9
             end
+
+          Helpers::mkdir(MOUNTPOINT)
             
           @log.debug("ashift found for #{@bloc} - #{ashift}")
           if ! Helpers::efi? 
@@ -93,7 +95,7 @@ module Getch
             ")
           end
 
-          exec("zpool create -o ashift=#{ashift} \\
+          exec("zpool create -f -o ashift=#{ashift} \\
             -O acltype=posixacl -O canmount=off -O compression=lz4 \\
             -O dnodesize=auto -O normalization=formD -O atime=off \\
             -O xattr=sa -O mountpoint=/ -R #{MOUNTPOINT} \\
