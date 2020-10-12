@@ -18,34 +18,34 @@ module Getch
           mount_root
           mount_boot
           mount_boot_efi
-          run("zfs mount -a")
+          exec("zfs mount -a")
           @state.mount
         end
 
         private
 
         def mount_swap
-          run("swapon #{@dev_swap}")
+          exec("swapon #{@dev_swap}")
         end
 
         def mount_root
           Helpers::mkdir(@root_dir)
-          run("zfs mount #{@pool_name}/ROOT/gentoo")
+          exec("zfs mount #{@pool_name}/ROOT/gentoo")
         end
 
         def mount_boot_efi
           return if ! @dev_boot_efi
           Helpers::mkdir(@boot_efi_dir)
-          run("mount #{@dev_boot_efi} #{@boot_efi_dir}")
+          exec("mount #{@dev_boot_efi} #{@boot_efi_dir}")
         end
 
         def mount_boot
           return if ! @dev_boot
           Helpers::mkdir(@boot_dir)
-          run("zfs mount #{@boot_pool_name}/BOOT/gentoo")
+          exec("zfs mount #{@boot_pool_name}/BOOT/gentoo")
         end
 
-        def run(cmd)
+        def exec(cmd)
           system(cmd)
           unless $?.success?
             raise "Error with #{cmd}"
