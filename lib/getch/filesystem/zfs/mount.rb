@@ -18,30 +18,38 @@ module Getch
           mount_root
           mount_boot
           mount_boot_efi
+          run("zfs mount -a")
           @state.mount
         end
 
         private
 
         def mount_swap
-          system("swapon #{@dev_swap}")
+          run("swapon #{@dev_swap}")
         end
 
         def mount_root
-          Dir.mkdir(@root_dir, 0700) if ! Dir.exist?(@root_dir)
-          system("zfs mount #{@pool_name}/ROOT/gentoo")
+          Getch::Helpers::mkdir(@root_dir)
+          run("zfs mount #{@pool_name}/ROOT/gentoo")
         end
 
         def mount_boot_efi
           return if ! @dev_boot_efi
-          FileUtils.mkdir_p @boot_efi_dir, mode: 0700 if ! Dir.exist?(@boot_efi_dir)
-          system("mount #{@dev_boot_efi} #{@boot_efi_dir}")
+          Getch::Helpers::mkdir(@boot_efi_dir)
+          run("mount #{@dev_boot_efi} #{@boot_efi_dir}")
         end
 
         def mount_boot
           return if ! @dev_boot
-          FileUtils.mkdir_p @boot_dir, mode: 0700 if ! Dir.exist?(@boot_dir)
-          system("zfs mount #{@boot_pool_name}/BOOT/gentoo")
+          Getch::Helpers::mkdir(@boot_dir)
+          run("zfs mount #{@boot_pool_name}/BOOT/gentoo")
+        end
+
+        def run(cmd)
+          system(cmd)
+          unless $?.success?
+            raise "Error with #{cmd}"
+          end
         end
       end
     end

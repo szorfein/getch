@@ -31,20 +31,20 @@ module Helpers
     File.write path, content if ! File.exist? path
   end
 
-  def self.emerge(pkgs, path)
-    cmd = "chroot #{path} /bin/bash -c \"
-      source /etc/profile
-      emerge --changed-use #{pkgs}
-    \""
-    Getch::Command.new(cmd).run!
-  end
-
   def self.run_chroot(cmd, path)
     script = "chroot #{path} /bin/bash -c \"
       source /etc/profile
       #{cmd}
     \""
     Getch::Command.new(script).run!
+  end
+
+  def self.mkdir(dir)
+    FileUtils.mkdir_p dir if ! Dir.exist? dir
+  end
+
+  def self.touch(file)
+    File.write file, '' if ! File.exist? file
   end
 
   def self.grep?(file, regex)

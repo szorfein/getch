@@ -105,7 +105,7 @@ module Getch
 
         def add_datasets
           exec("zfs create -o canmount=off -o mountpoint=none #{@pool_name}/ROOT")
-          exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOT/gentoo") if Helpers::efi?
+          exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOT") if Helpers::efi?
 
           exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/gentoo")
           exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/gentoo") if Helpers::efi?
