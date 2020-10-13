@@ -13,7 +13,7 @@ module Getch
         @config.fstab
         bootloader
         password
-        umount
+        the_end
       end
 
       def bootloader
@@ -74,13 +74,21 @@ module Getch
         end
       end
 
-      def umount
-        Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
-        Helpers::exec_or_die("umount -R #{MOUNTPOINT}")
-        puts "Reboot when you have done"
-      end
-
       private
+
+      def the_end
+        #Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
+        #Helpers::exec_or_die("umount -R #{MOUNTPOINT}")
+        puts
+        puts "getch has finish, before reboot, you can:"
+        puts "  +  Chroot on your system with: chroot #{MOUNTPOINT} /bin/bash"
+        puts "  +  Install more packages like networkmanager or emacs"
+        puts
+        puts "  +  Add more modules for your kernel (graphic, wifi card) and recompile it with:"
+        puts "  genkernel --kernel-config=/usr/src/linux/.config all  "
+        puts
+        puts "Reboot the system when you have done !"
+      end
 
       def exec_chroot(cmd)
         script = "chroot #{MOUNTPOINT} /bin/bash -c \"

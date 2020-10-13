@@ -22,8 +22,8 @@ module Getch
 
         def clear_struct
           oldvg = `vgdisplay | grep #{@vg}`.chomp
-          oldzpool = `zpool status | grep "pool" | awk '{print $2}'`.split("\n")
-          if oldzpool != [] and $?.success?
+          oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
+          if oldzpool[0] != "" and $?.success?
             oldzpool.each { |p| exec("zpool destroy #{p}") if p }
           end
           exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group

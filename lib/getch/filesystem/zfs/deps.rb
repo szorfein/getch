@@ -10,19 +10,46 @@ module Getch
           end
           install_deps
           zfs_mountpoint
+          auto_modules_rebuild
+        end
+
+        def auto_modules_rebuild
+          g_dir="#{MOUNTPOINT}/etc/portage/env/sys-kernel"
+          Helpers::mkdir(g_dir)
+          # See https://wiki.gentoo.org/wiki/Kernel/Upgrade#Automated_build_and_installation
+          content=<<EOF
+post_pkg_postinst() {
+  # BUG: reinstalls of a source will cause errors
+  CURRENT_KV=$(uname -r)
+  # Check to see if genkernel has been run previously for the running kernel and use that config
+  if [[ -f "${EROOT}/etc/kernels/kernel-config-${CURRENT_KV}" ]] ; then
+    genkernel --kernel-config="${EROOT}/etc/kernels/kernel-config-${CURRENT_KV}" all
+  elif [[ -f "${EROOT}/usr/src/linux-${CURRENT_KV}/.config" ]] ; then # Use latest kernel config from current kernel
+    genkernel --kernel-config="${EROOT}/usr/src/linux-${CURRENT_KV}/.config" all
+  else # No valid configs known
+    genkernel all
+  fi
+}
+EOF
+          File.write("#{g_dir}/gentoo-sources", content)
         end
 
         def zfs_mountpoint
           Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/bpool")
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/rpool")
-          Helpers::run_chroot("ln -s /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
-          Helpers::run_chroot("zed -F &")
+          Helpers::run_chroot("ln -s /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/", MOUNTPOINT)
+          Helpers::run_chroot("zed", MOUNTPOINT)
+          system("sed -Ei \"s|/mnt/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          unless $?.success?
+            raise "Error with sed"
+          end
         end
 
         def make
           options_make
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+          Getch::Emerge.new("@modules-rebuild")
         end
 
         private
@@ -50,9 +77,10 @@ module Getch
         end
 
         def install_deps
-          exec("euse -E libzfs")
+          exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
           Getch::Garden.new('-a zfs').run!
-          Getch::Make.new("make -j$(nproc)")
+          #Getch::Make.new("make -j$(nproc)").run!
+          Getch::Make.new("make modules_prepare").run!
           Getch::Emerge.new('genkernel sys-fs/zfs').pkg!
         end
 
