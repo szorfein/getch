@@ -10,10 +10,15 @@ module Getch
           @boot_dir = "#{@root_dir}/boot"
           @boot_efi_dir = "#{@root_dir}/boot/efi"
           @state = Getch::States.new()
+          @log = Getch::Log.new
         end
 
         def run
           return if STATES[:mount]
+          exec("zpool export -a")
+          exec("rm -rf #{MOUNTPOINT}/*")
+          exec("zpool import -N -R #{MOUNTPOINT} #{@pool_name}")
+          exec("zpool import -N -R #{MOUNTPOINT} #{@boot_pool_name}") if @dev_boot
           mount_swap
           mount_root
           mount_boot
@@ -25,6 +30,10 @@ module Getch
         private
 
         def mount_swap
+          if Helpers::grep?('/proc/swaps', /^\/dev/)
+            exec("swapoff #{@dev_swap}")
+          end
+
           exec("swapon #{@dev_swap}")
         end
 
@@ -46,6 +55,7 @@ module Getch
         end
 
         def exec(cmd)
+          @log.info("==> #{cmd}")
           system(cmd)
           unless $?.success?
             raise "Error with #{cmd}"
