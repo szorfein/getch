@@ -1,3 +1,8 @@
+* Add the (Zeta) filesystem ZFS
+* `emerge --depclean` to save space.
+* Add a message when getch have finish, do not try to umount /mnt/gentoo.
++ Use systemd-detect-virt to detect a Virtual Guest.
+
 ## 0.0.9, release 2020-10-03
 * Add encryption on ext4 and lvm (BIOS,UEFI)
 * Correct KEYMAP="yes" with genkernel

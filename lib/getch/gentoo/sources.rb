@@ -41,7 +41,8 @@ module Getch
       end
 
       def virtualbox_guest
-        return if ! ismatch?('vmwgfx')
+        systemd=`systemd-detect-virt`.chomp
+        return if ! ismatch?('vmwgfx') || systemd.match(/none/)
         garden("-a virtualbox-guest")
         Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
       end
