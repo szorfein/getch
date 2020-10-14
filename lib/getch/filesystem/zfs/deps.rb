@@ -13,7 +13,6 @@ module Getch
           hostid
           options_make
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
-          Getch::Emerge.new("@module-rebuild")
         end
 
         private
@@ -32,7 +31,7 @@ module Getch
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           exec("ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
-          exec("zed -F &")
+          exec("systemctl start zfs-zed.service")
           Helpers::sys("sed -Ei \"s|/mnt/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
           exec("systemctl enable zfs-zed.service")
           exec("systemctl enable zfs.target")
@@ -76,6 +75,7 @@ EOF
             'MOUNTBOOT="no"',
             'MRPROPER="no"',
             'ZFS="yes"',
+            'MODULEREBUILD="yes"'
           ]
           file = "#{MOUNTPOINT}/etc/genkernel.conf"
           File.write(file, datas.join("\n"), mode: 'a')
