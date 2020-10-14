@@ -33,6 +33,8 @@ module Getch
           exec("wipefs -a /dev/#{@disk}")
         end
 
+        # See https://wiki.archlinux.org/index.php/Solid_state_drive/Memory_cell_clearing
+        # for SSD
         def cleaning
           @bloc=`blockdev --getbsz /dev/#{@disk}`.chomp
           puts
@@ -110,6 +112,8 @@ module Getch
           exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOT") if @dev_boot
 
           exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/gentoo")
+          # set bootfs
+          #exec("zpool set bootfs=#{@pool_name}/ROOT/gentoo #{@pool_name}")
           exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/gentoo") if @dev_boot
 
           exec("zfs create -o canmount=off #{@pool_name}/ROOT/gentoo/usr")

@@ -10,10 +10,10 @@ module Getch
           end
           install_deps
           zfs_mountpoint
-          auto_modules_rebuild
+          auto_module_rebuild
         end
 
-        def auto_modules_rebuild
+        def auto_module_rebuild
           g_dir="#{MOUNTPOINT}/etc/portage/env/sys-kernel"
           Helpers::mkdir(g_dir)
           # See https://wiki.gentoo.org/wiki/Kernel/Upgrade#Automated_build_and_installation
@@ -47,12 +47,21 @@ EOF
         end
 
         def make
+          hostid
           options_make
+          if ! Helpers::grep?("#{MOUNTPOINT}/etc/genkernel.conf", /ZFS="yes"/)
+            raise "Error by adding new options to genkernel.conf"
+          end
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
-          Getch::Emerge.new("@modules-rebuild")
+          Getch::Emerge.new("@module-rebuild")
         end
 
         private
+        def hostid
+          hostid_value=`hostid`.chomp
+          File.write("#{MOUNTPOINT}/etc/hostid", hostid_value, mode: 'w')
+        end
+
         def options_make
           grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
           datas = [
@@ -62,7 +71,7 @@ EOF
             'MENUCONFIG="no"',
             'CLEAN="yes"',
             'SAVE_CONFIG="yes"',
-            'MOUNTBOOT="yes"',
+            'MOUNTBOOT="no"',
             'MRPROPER="no"',
             'ZFS="yes"',
           ]

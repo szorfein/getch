@@ -28,8 +28,9 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
     # source ~/.zshrc # or ~/.bashrc
 
 ## Usage
+Just ensure than the script is run with a root account, not just sudo.
 
-    $ getch -h
+    # getch -h
 
 After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
 
@@ -56,7 +57,7 @@ Encrypt with ext4 and create a home directory /home/ninja
 Unless your old LVM volume group is also named `vg0`, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`.
 
 #### Encryption enable on BIOS with ext4
-To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and for Cryptsetup/Genkernel too. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
+To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and another time for the initramfs (Genkernel). [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
 ## Issues
