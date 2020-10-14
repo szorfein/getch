@@ -1,7 +1,6 @@
 require 'open-uri'
 require 'open3'
 require 'fileutils'
-require_relative 'command'
 
 module Helpers
   def self.efi?
@@ -29,14 +28,6 @@ module Helpers
 
   def self.add_file(path, content = '')
     File.write path, content if ! File.exist? path
-  end
-
-  def self.run_chroot(cmd, path)
-    script = "chroot #{path} /bin/bash -c \"
-      source /etc/profile
-      #{cmd}
-    \""
-    Getch::Command.new(script).run!
   end
 
   def self.mkdir(dir)

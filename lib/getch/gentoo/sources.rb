@@ -19,7 +19,7 @@ module Getch
       end
 
       def make
-        if DEFAULT_OPTIONS[:fs] == 'lvm' or DEFAULT_OPTIONS[:encrypt]
+        if DEFAULT_OPTIONS[:fs] == 'lvm' || DEFAULT_OPTIONS[:fs] == 'zfs' || DEFAULT_OPTIONS[:encrypt]
           @filesystem.make
         else
           make_kernel

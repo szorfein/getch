@@ -153,4 +153,11 @@ module Getch
       end
     end
   end
+
+  class Chroot < Command
+    def initialize(cmd)
+      super
+      @cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile; #{cmd}\""
+    end
+  end
 end

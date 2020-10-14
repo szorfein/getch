@@ -49,7 +49,7 @@ module Getch
         end
 
         def exec(cmd)
-          Helpers::run_chroot(cmd, MOUNTPOINT)
+          Getch::Chroot.new(cmd).run!
         end
       end
     end
