@@ -7,7 +7,8 @@ It also require a disk (only one for now) with a minimum of 20G.
 
 BIOS system will use Grub2 and UEFI, systemd-boot. Filesystem supported by Getch are for now:
 + ext4
-+ lvm
++ LVM
++ ZFS
 
 Encryption is also supported.
 
@@ -28,7 +29,7 @@ When you boot from an `iso`, you can install `ruby`, `getch` and correct your `P
     # source ~/.zshrc # or ~/.bashrc
 
 ## Usage
-Just ensure than the script is run with a root account, not just sudo.
+Just ensure than the script is run with a root account.
 
     # getch -h
 
@@ -51,6 +52,10 @@ Encrypt with ext4 and create a home directory /home/ninja
 
     # getch --format ext4 --encrypt --username ninja
 
+With ZFS:
+
+    # getch --format zfs
+
 ## Troubleshooting
 
 #### LVM
@@ -59,6 +64,14 @@ Unless your old LVM volume group is also named `vg0`, `getch` may fail to partit
 #### Encryption enable on BIOS with ext4
 To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and another time for the initramfs (Genkernel). [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
+
+#### With ZFS
+When you boot, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just reboot on your ISO:
+
+    # zpool import -N -R /mnt zpool
+    # zpool export -a
+
+And it's all.
 
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
