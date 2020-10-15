@@ -20,10 +20,11 @@ module Getch
           def install_deps
             exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
             exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)
+            exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/)
             Getch::Garden.new('-a zfs').run!
             Getch::Make.new("make modules_prepare").run!
             Getch::Make.new("make -j$(nproc)").run!
-            Getch::Emerge.new('genkernel sys-fs/zfs').pkg!
+            Getch::Emerge.new('genkernel sys-fs/zfs sys-apps/systemd sys-fs/cryptsetup').pkg!
           end
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
@@ -72,6 +73,7 @@ EOF
               'INSTALL="yes"',
               'MENUCONFIG="no"',
               'CLEAN="yes"',
+              'KEYMAP="yes"',
               'SAVE_CONFIG="yes"',
               'MOUNTBOOT="no"',
               'MRPROPER="no"',

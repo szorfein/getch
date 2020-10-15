@@ -8,6 +8,7 @@ module Getch
             gen_uuid
             @root_dir = MOUNTPOINT
             @init = '/usr/lib/systemd/systemd'
+            crypttab
           end
 
           def fstab
@@ -24,9 +25,16 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs"
+              "options root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{DEFAULT_OPTIONS[:keymap]}"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
+          end
+
+          def crypttab
+            datas = [
+              "cryptswap UUID=#{@uuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256"
+            ]
+            File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
           end
 
           # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
@@ -34,7 +42,7 @@ module Getch
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
-              "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs\""
+              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{DEFAULT_OPTIONS[:keymap}}\""
             ]
             File.write("#{file}", cmdline.join("\n"), mode: 'a')
           end
@@ -43,13 +51,12 @@ module Getch
 
           def gen_uuid
             @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp()
-            @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
             @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
           end
 
           def data_fstab
             boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
-            swap = @dev_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
+            swap = @dev_swap ? "/dev/mapper/cryptswap none swap discard 0 0" : ''
 
             [ boot_efi, swap ]
           end
