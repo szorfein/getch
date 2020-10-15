@@ -20,6 +20,7 @@ module Getch
             exec("rm -rf #{MOUNTPOINT}/*")
             exec("zpool import -N -R #{MOUNTPOINT} #{@pool_name}")
             exec("zpool import -N -R #{MOUNTPOINT} #{@boot_pool_name}") if @dev_boot
+            exec("zfs load-key -a")
             mount_swap
             mount_root
             mount_boot
@@ -57,10 +58,7 @@ module Getch
 
           def exec(cmd)
             @log.info("==> #{cmd}")
-            system(cmd)
-            unless $?.success?
-              raise "Error with #{cmd}"
-            end
+            Helpers::sys(cmd)
           end
         end
       end

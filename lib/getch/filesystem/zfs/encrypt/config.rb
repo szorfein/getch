@@ -42,7 +42,7 @@ module Getch
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
-              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{DEFAULT_OPTIONS[:keymap}}\""
+              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{DEFAULT_OPTIONS[:keymap]}\""
             ]
             File.write("#{file}", cmdline.join("\n"), mode: 'a')
           end

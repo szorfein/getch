@@ -142,7 +142,7 @@ module Getch
           # /         - Root
 
           def exec(cmd)
-            Getch::Command.new(cmd).run!
+            Helpers::sys(cmd)
           end
         end
       end

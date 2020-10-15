@@ -1,3 +1,4 @@
+## 0.1.0, release 2020-10-15
 * Add the (Zeta) filesystem ZFS
 * `emerge --depclean` to save space.
 * Add a message when getch have finish, keep /mnt/gentoo if you need to add something.
