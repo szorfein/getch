@@ -32,14 +32,14 @@ module Getch
         opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb)") do |disk|
           @disk = disk
         end
-        opts.on("-f", "--format FS", "Can be ext4, lvm. Default use ext4") do |fs|
+        opts.on("-f", "--format FS", "Can be ext4, lvm or zfs. Default use ext4") do |fs|
           @fs = fs
           DEFAULT_OPTIONS[:fs] = fs # dont known why, but it should be enforce
         end
-        opts.on("-u", "--username USERNAME", "Initialize /home/username") do |user|
+        opts.on("-u", "--username USERNAME", "Create a partition /home and add a new user /home/USERNAME") do |user|
           @username = user
         end
-        opts.on("--encrypt", "Encrypt your system with Luks2.") do
+        opts.on("--encrypt", "Encrypt your system.") do
           @encrypt = true
         end
         opts.on("--verbose", "Write more messages to the standard output.") do

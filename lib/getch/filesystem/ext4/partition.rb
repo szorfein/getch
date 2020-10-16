@@ -48,9 +48,14 @@ module Getch
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
 
           exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
-          exec("sgdisk -n2:0:+15G -t2:8304 /dev/#{@disk}")
-          exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
-          exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}") if @dev_home
+          exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
+
+          if @dev_home
+            exec("sgdisk -n3:0:+18G -t3:8304 /dev/#{@disk}")
+            exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}")
+          else
+            exec("sgdisk -n3:0:0 -t3:8304 /dev/#{@disk}")
+          end
         end
 
         def partition_bios
@@ -61,9 +66,14 @@ module Getch
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
 
           exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-          exec("sgdisk -n2:0:+15G -t2:8304 /dev/#{@disk}")
-          exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
-          exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}") if @dev_home
+          exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
+
+          if @dev_home
+            exec("sgdisk -n3:0:+18G -t3:8304 /dev/#{@disk}")
+            exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}")
+          else
+            exec("sgdisk -n3:0:0 -t3:8304 /dev/#{@disk}")
+          end
         end
 
         def exec(cmd)

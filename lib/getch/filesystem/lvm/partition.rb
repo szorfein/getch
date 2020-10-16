@@ -56,9 +56,15 @@ module Getch
           exec("pvcreate -f #{@dev_root}")
           exec("vgcreate -f #{@vg} #{@dev_root}")
           # Wipe old signature: https://github.com/chef-cookbooks/lvm/issues/45
-          exec("lvcreate -y -Wy -Zy -L 15G -n root #{@vg}")
           exec("lvcreate -y -Wy -Zy -L #{mem} -n swap #{@vg}")
-          exec("lvcreate -y -Wy -Zy -l 100%FREE -n home #{@vg}") if @user
+
+          if @user
+            exec("lvcreate -y -Wy -Zy -L 18G -n root #{@vg}")
+            exec("lvcreate -y -Wy -Zy -l 100%FREE -n home #{@vg}")
+          else
+            exec("lvcreate -y -Wy -Zy -L 100%FREE -n root #{@vg}")
+          end
+
           exec("vgchange --available y")
         end
 
