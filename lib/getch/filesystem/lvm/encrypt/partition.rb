@@ -1,3 +1,5 @@
+require_relative '../clean'
+
 module Getch
   module FileSystem
     module Lvm
@@ -13,7 +15,7 @@ module Getch
           def run_partition
             return if STATES[:partition ]
             clear_struct
-            cleaning
+            Getch::FileSystem::Clean.hdd(@disk)
             partition
             encrypt
             lvm
@@ -29,18 +31,6 @@ module Getch
 
             exec("sgdisk -Z /dev/#{@disk}")
             exec("wipefs -a /dev/#{@disk}")
-          end
-
-          def cleaning
-            puts
-            print "Cleaning data on #{@disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? (n,y) "
-            case gets.chomp
-            when /^y|^Y/
-              bloc=`blockdev --getbsz /dev/#{@disk}`.chomp
-              exec("dd if=/dev/urandom of=/dev/#{@disk} bs=#{bloc} status=progress")
-            else
-              return
-            end
           end
 
           def partition

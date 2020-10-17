@@ -1,3 +1,5 @@
+require_relative '../clean'
+
 module Getch
   module FileSystem
     module Zfs
@@ -13,7 +15,7 @@ module Getch
           def run_partition
             return if STATES[:partition ]
             clear_struct
-            cleaning
+            Getch::FileSystem::Clean.hdd(@disk)
             partition
             zfs
             @state.partition
@@ -32,20 +34,6 @@ module Getch
 
             exec("sgdisk -Z /dev/#{@disk}")
             exec("wipefs -a /dev/#{@disk}")
-          end
-
-          # See https://wiki.archlinux.org/index.php/Solid_state_drive/Memory_cell_clearing
-          # for SSD
-          def cleaning
-            @bloc=`blockdev --getbsz /dev/#{@disk}`.chomp
-            puts
-            print "Cleaning data on #{@disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? (n,y) "
-            case gets.chomp
-            when /^y|^Y/
-              exec("dd if=/dev/urandom of=/dev/#{@disk} bs=#{@bloc} status=progress")
-            else
-              return
-            end
           end
 
           def partition
