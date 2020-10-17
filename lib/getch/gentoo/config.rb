@@ -76,6 +76,11 @@ module Getch
         Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
+      def cpuflags
+        Getch::Emerge.new("app-portage/cpuid2cpuflags").pkg!
+        Getch::Chroot.new("echo \"*/* $(cpuid2cpuflags)\" >> /etc/portage/package.use/00cpuflags").run!
+      end
+
       private
 
       def control_options(options)

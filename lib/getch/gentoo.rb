@@ -33,6 +33,7 @@ module Getch
         config.network
         config.systemd(options)
         config.hostname
+        config.cpuflags
         @state.config
       end
 

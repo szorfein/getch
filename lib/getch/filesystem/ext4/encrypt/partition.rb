@@ -1,5 +1,3 @@
-require_relative '../clean'
-
 module Getch
   module FileSystem
     module Ext4

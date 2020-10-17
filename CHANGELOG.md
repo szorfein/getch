@@ -1,3 +1,6 @@
+* Add cpuflags with app-portage/cpuid2cpuflags
++ Use the whole disk space available for / when option --username is unset
+
 ## 0.1.0, release 2020-10-15
 * Add the (Zeta) filesystem ZFS
 * `emerge --depclean` to save space.
