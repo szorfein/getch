@@ -14,6 +14,7 @@ Encryption is also supported.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
++ [Archaeidae](https://github.com/szorfein/archaeidae): Custom Archiso that includes ZFS support.
 
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  

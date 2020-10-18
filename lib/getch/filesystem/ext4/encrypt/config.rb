@@ -28,7 +28,7 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options crypt_root=UUID=#{@uuid_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
+              "options crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
           end

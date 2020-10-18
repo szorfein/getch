@@ -1,3 +1,4 @@
+* Add cpu name to COMMON_FLAGS
 * Add cpuflags with app-portage/cpuid2cpuflags
 + Use the whole disk space available for / when option --username is unset
 

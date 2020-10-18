@@ -27,7 +27,6 @@ module Getch
           else
             File.write(tmp, l, mode: 'a')
           end
-          line_count += 1
         }
 
         FileUtils.copy_file(tmp, @make, preserve = true)

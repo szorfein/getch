@@ -16,7 +16,7 @@ module Getch
 
           def run
             return if STATES[:mount]
-            #mount_swap
+            mount_swap
             mount_root
             mount_boot
             mount_home
