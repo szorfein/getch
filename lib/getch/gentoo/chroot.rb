@@ -7,6 +7,12 @@ module Getch
         mount
       end
 
+      def cpuflags
+        Getch::Emerge.new("app-portage/cpuid2cpuflags").pkg!
+        cpuflags = `chroot #{MOUNTPOINT} /bin/bash -c "source /etc/profile; cpuid2cpuflags"`.chomp
+        File.write("#{MOUNTPOINT}/etc/portage/package.use/00cpuflags", "*/* #{cpuflags}")
+      end
+
       def update
         return if STATES[:gentoo_update]
         puts "Downloading the last ebuilds for Gentoo..."
@@ -80,11 +86,7 @@ module Getch
       end
 
       def exec_chroot(cmd)
-        script = "chroot #{MOUNTPOINT} /bin/bash -c \"
-          source /etc/profile
-          #{cmd}
-        \""
-        Getch::Command.new(script).run!
+        Getch::Chroot.new(cmd).run!
       end
     end
   end

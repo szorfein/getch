@@ -33,13 +33,13 @@ module Getch
         config.network
         config.systemd(options)
         config.hostname
-        config.cpuflags
         @state.config
       end
 
       def chroot
         chroot = Getch::Gentoo::Chroot.new()
         chroot.update
+        chroot.cpuflags
         chroot.systemd
         chroot.world
         return if STATES[:gentoo_kernel]

@@ -7,12 +7,32 @@ module Getch
     class Config
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
+        @log = Getch::Log.new
       end
 
       def portage
         nproc = `nproc`.chomp()
         grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
         quiet = DEFAULT_OPTIONS[:verbose] ? '' : "EMERGE_DEFAULT_OPTS=\"--jobs=#{nproc} --load-average=#{nproc}\""
+
+        # Add cpu name
+        cpu=`gcc -c -Q -march=native --help=target | grep march | awk '{print $2}' | head -1`.chomp
+        @log.debug "CPU found ==> #{cpu}"
+
+        tmp = Tempfile.new('make.conf')
+
+        File.open(@make).each { |l|
+          if l.match(/^COMMON_FLAGS/)
+            File.write(tmp, "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe\"\n", mode: 'a')
+          else
+            File.write(tmp, l, mode: 'a')
+          end
+          line_count += 1
+        }
+
+        FileUtils.copy_file(tmp, @make, preserve = true)
+
+        # Add the rest
         data = [
           '',
           'ACCEPT_KEYWORDS="amd64"',
@@ -74,11 +94,6 @@ module Getch
         Helpers::add_file("#{portage}/package.use/zzz_via_autounmask")
         Helpers::add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
         Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
-      end
-
-      def cpuflags
-        Getch::Emerge.new("app-portage/cpuid2cpuflags").pkg!
-        Getch::Chroot.new("echo \"*/* $(cpuid2cpuflags)\" >> /etc/portage/package.use/00cpuflags").run!
       end
 
       private

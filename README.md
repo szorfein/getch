@@ -5,8 +5,8 @@ A CLI tool to install Gentoo.
 Actually, Getch support only the [AMD64 handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64) and only with the last `stage3-amd64-systemd`.  
 It also require a disk (only one for now) with a minimum of 20G.  
 
-BIOS system will use Grub2 and UEFI, systemd-boot. Filesystem supported by Getch are for now:
-+ ext4
+BIOS system will use `Grub2` and `systemd-boot` for UEFI. Filesystem supported by Getch are for now:
++ Ext4
 + LVM
 + ZFS
 

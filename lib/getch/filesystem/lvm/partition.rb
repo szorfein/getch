@@ -50,7 +50,7 @@ module Getch
             exec("lvcreate -y -Wy -Zy -L 18G -n root #{@vg}")
             exec("lvcreate -y -Wy -Zy -l 100%FREE -n home #{@vg}")
           else
-            exec("lvcreate -y -Wy -Zy -L 100%FREE -n root #{@vg}")
+            exec("lvcreate -y -Wy -Zy -l 100%FREE -n root #{@vg}")
           end
 
           exec("vgchange --available y")
