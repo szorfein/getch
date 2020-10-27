@@ -6,14 +6,17 @@ module Getch
           def initialize
             super
             @state = Getch::States.new()
+            @clean = Getch::FileSystem::Clean
+            @partition = Getch::FileSystem::Partition.new
             @log = Log.new
             run_partition
           end
 
           def run_partition
             return if STATES[:partition ]
-            clear_struct
-            Getch::FileSystem::Clean.hdd(@disk)
+            @clean.old_vg(@dev_root, @vg)
+            @clean.struct(@disk)
+            @clean.hdd(@disk)
             partition
             encrypt
             lvm
@@ -22,22 +25,13 @@ module Getch
 
           private
 
-          def clear_struct
-            oldvg = `vgdisplay | grep #{@vg}`.chomp
-            exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group
-            exec("pvremove -f #{@dev_root}") if oldvg != '' and File.exist? @dev_root # remove older volume group
-
-            exec("sgdisk -Z /dev/#{@disk}")
-            exec("wipefs -a /dev/#{@disk}")
-          end
-
           def partition
             if Helpers::efi?
-              exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
+              @partition.efi(@disk)
               exec("sgdisk -n2:0:+0 -t2:8e00 /dev/#{@disk}")
             else
-              exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-              exec("sgdisk -n2:0:+128MiB -t2:8300 /dev/#{@disk}")
+              @partition.gpt(@disk)
+              @partition.boot(@disk)
               exec("sgdisk -n3:0:+0 -t3:8e00 /dev/#{@disk}")
             end
           end

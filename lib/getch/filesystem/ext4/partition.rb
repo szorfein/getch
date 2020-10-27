@@ -5,13 +5,15 @@ module Getch
         def initialize
           super
           @state = Getch::States.new()
+          @clean = Getch::FileSystem::Clean
+          @partition = Getch::FileSystem::Partition.new
           run_partition
         end
 
         def run_partition
           return if STATES[:partition ]
-          clear_struct
-          Getch::FileSystem::Clean.hdd(@disk)
+          @clean.struct(@disk)
+          @clean.hdd(@disk)
           if Helpers::efi?
             partition_efi
           else
@@ -22,28 +24,16 @@ module Getch
 
         private
 
-        def clear_struct
-          exec("sgdisk -Z /dev/#{@disk}")
-          exec("wipefs -a /dev/#{@disk}")
-        end
-
         # Follow https://wiki.archlinux.org/index.php/Partitioning
         def partition_efi
           # /boot/efi - EFI system partition - 260MB
-          # /         - Root
           # swap      - Linux Swap - size of the ram
+          # /         - Root
           # /home     - Home
-          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-
-          exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
-          exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
-
-          if @dev_home
-            exec("sgdisk -n3:0:+18G -t3:8304 /dev/#{@disk}")
-            exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}")
-          else
-            exec("sgdisk -n3:0:0 -t3:8304 /dev/#{@disk}")
-          end
+          @partition.efi(@disk)
+          @partition.swap(@disk)
+          @partition.root(3, "8304", @disk)
+          @partition.home(4, "8302", @disk) if @dev_home
         end
 
         def partition_bios
@@ -51,21 +41,10 @@ module Getch
           # /         - Root
           # swap      - Linux Swap - size of the ram
           # /home     - Home
-          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-
-          exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-          exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
-
-          if @dev_home
-            exec("sgdisk -n3:0:+18G -t3:8304 /dev/#{@disk}")
-            exec("sgdisk -n4:0:0 -t4:8302 /dev/#{@disk}")
-          else
-            exec("sgdisk -n3:0:0 -t3:8304 /dev/#{@disk}")
-          end
-        end
-
-        def exec(cmd)
-          Getch::Command.new(cmd).run!
+          @partition.gpt(@disk)
+          @partition.swap(@disk)
+          @partition.root(3, "8304", @disk)
+          @partition.home(4, "8302", @disk) if @dev_home
         end
       end
     end

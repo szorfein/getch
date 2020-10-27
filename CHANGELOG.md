@@ -1,3 +1,5 @@
+* New set of options --separate-{boot,swap} to install them on another disk
+* Refactor FileSystem::Mount
 * Add cpu name to COMMON_FLAGS
 * Add cpuflags with app-portage/cpuid2cpuflags
 + Use the whole disk space available for / when option --username is unset

@@ -15,6 +15,8 @@ module Getch
     disk: 'sda',
     fs: 'ext4',
     username: nil,
+    boot_disk: nil,
+    swap_disk: nil,
     encrypt: false,
     verbose: false
   }
@@ -57,6 +59,8 @@ module Getch
     puts "disk: #{DEFAULT_OPTIONS[:disk]}"
     puts "fs: #{DEFAULT_OPTIONS[:fs]}"
     puts "username: #{DEFAULT_OPTIONS[:username]}"
+    puts "boot disk: #{DEFAULT_OPTIONS[:boot_disk]}"
+    puts "swap disk: #{DEFAULT_OPTIONS[:swap_disk]}"
     puts "encrypt: #{DEFAULT_OPTIONS[:encrypt]}"
     puts
     print "Continue? (n,y) "

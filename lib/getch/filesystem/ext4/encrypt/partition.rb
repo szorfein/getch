@@ -5,15 +5,17 @@ module Getch
         class Partition < Getch::FileSystem::Ext4::Encrypt::Device
           def initialize
             super
-            @state = Getch::States.new()
+            @state = Getch::States.new
+            @partition = Getch::FileSystem::Partition.new
+            @clean = Getch::FileSystem::Clean
             @log = Log.new
             run_partition
           end
 
           def run_partition
             return if STATES[:partition ]
-            clear_struct
-            Getch::FileSystem::Clean.hdd(@disk)
+            @clean.struct(@disk)
+            @clean.hdd(@disk)
             if Helpers::efi?
               partition_efi
               encrypt_efi
@@ -26,28 +28,16 @@ module Getch
 
           private
 
-          def clear_struct
-            exec("sgdisk -Z /dev/#{@disk}")
-            exec("wipefs -a /dev/#{@disk}")
-          end
-
           # Follow https://wiki.archlinux.org/index.php/Partitioning
           def partition_efi
             # /boot/efi - EFI system partition - 260MB
-            # /         - Root
             # swap      - Linux Swap - size of the ram
+            # /         - Root
             # /home     - Home
-            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-
-            exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
-
-            if @dev_home
-              exec("sgdisk -n3:0:+18G -t3:8309 /dev/#{@disk}")
-              exec("sgdisk -n4:0:0 -t4:8309 /dev/#{@disk}")
-            else
-              exec("sgdisk -n3:0:0 -t3:8309 /dev/#{@disk}")
-            end
+            @partition.efi(@disk)
+            @partition.swap(@disk)
+            @partition.root(3, "8309", @disk)
+            @partition.home(4, "8309", @disk) if @dev_home
           end
 
           def encrypt_efi
@@ -83,25 +73,18 @@ module Getch
             key_name = "crypto_keyfile.bin"
             @key_path = "#{keys_dir}/#{key_name}"
             FileUtils.mkdir keys_dir, mode: 0700 if ! Dir.exist?(keys_dir)
-            Getch::Command.new("dd bs=512 count=4 if=/dev/urandom of=#{@key_path}").run!
+            exec("dd bs=512 count=4 if=/dev/urandom of=#{@key_path}")
           end
 
           def partition_bios
             # None      - Bios Boot Partition - 1MiB
-            # /         - Root
             # swap      - Linux Swap - size of the ram
+            # /         - Root
             # /home     - Home
-            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-
-            exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
-
-            if @dev_home
-              exec("sgdisk -n3:0:+18G -t3:8309 /dev/#{@disk}")
-              exec("sgdisk -n4:0:0 -t4:8309 /dev/#{@disk}")
-            else
-              exec("sgdisk -n3:0:0 -t3:8309 /dev/#{@disk}")
-            end
+            @partition.gpt(@disk)
+            @partition.swap(@disk)
+            @partition.root(3, "8309", @disk)
+            @partition.home(4, "8309", @disk) if @dev_home
           end
 
           def exec(cmd)

@@ -16,7 +16,8 @@ module Getch
         quiet = DEFAULT_OPTIONS[:verbose] ? '' : "EMERGE_DEFAULT_OPTS=\"--jobs=#{nproc} --load-average=#{nproc}\""
 
         # Add cpu name
-        cpu=`gcc -c -Q -march=native --help=target | grep march | awk '{print $2}' | head -1`.chomp
+        cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
+        raise "Error, no cpu found" if ! cpu or cpu == ""
         @log.debug "CPU found ==> #{cpu}"
 
         tmp = Tempfile.new('make.conf')
@@ -61,13 +62,13 @@ module Getch
           line_count += 1
         }
 
-        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf", preserve = false)
+        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf", preserve = true)
       end
 
       def network
         src = '/etc/resolv.conf'
         dest = "#{MOUNTPOINT}/etc/resolv.conf"
-        FileUtils.copy_file(src, dest, preserve = false)
+        FileUtils.copy_file(src, dest, preserve = true)
       end
 
       def systemd(options)
