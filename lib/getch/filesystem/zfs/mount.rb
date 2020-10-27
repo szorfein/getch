@@ -9,7 +9,8 @@ module Getch
           @root_dir = MOUNTPOINT
           @boot_dir = "#{@root_dir}/boot"
           @boot_efi_dir = "#{@root_dir}/boot/efi"
-          @state = Getch::States.new()
+          @mount = Getch::FileSystem::Mount.new
+          @state = Getch::States.new
           @log = Getch::Log.new
         end
 
@@ -19,33 +20,19 @@ module Getch
           exec("rm -rf #{MOUNTPOINT}/*")
           exec("zpool import -N -R #{MOUNTPOINT} #{@pool_name}")
           exec("zpool import -N -R #{MOUNTPOINT} #{@boot_pool_name}") if @dev_boot
-          mount_swap
+          @mount.swap(@dev_swap)
           mount_root
           mount_boot
-          mount_boot_efi
+          @mount.boot_efi(@dev_boot_efi)
           exec("zfs mount -a")
           @state.mount
         end
 
         private
 
-        def mount_swap
-          if Helpers::grep?('/proc/swaps', /^\/dev/)
-            exec("swapoff #{@dev_swap}")
-          end
-
-          exec("swapon #{@dev_swap}")
-        end
-
         def mount_root
           Helpers::mkdir(@root_dir)
           exec("zfs mount #{@pool_name}/ROOT/gentoo")
-        end
-
-        def mount_boot_efi
-          return if ! @dev_boot_efi
-          Helpers::mkdir(@boot_efi_dir)
-          exec("mount #{@dev_boot_efi} #{@boot_efi_dir}")
         end
 
         def mount_boot
