@@ -26,14 +26,14 @@ module Getch
 
         # Follow https://wiki.archlinux.org/index.php/Partitioning
         def partition_efi
-          # /boot/efi - EFI system partition - 260MB
-          # swap      - Linux Swap - size of the ram
-          # /         - Root
-          # /home     - Home
-          @partition.efi(@disk)
-          @partition.swap(@disk)
-          @partition.root(3, "8304", @disk)
-          @partition.home(4, "8302", @disk) if @dev_home
+          # /efi   - EFI system partition - 260MB
+          # swap   - Linux Swap - size of the ram
+          # /      - Root
+          # /home  - Home
+          @partition.efi(@dev_esp)
+          @partition.swap(@dev_swap)
+          @partition.root(@dev_root, "8304")
+          @partition.home(@dev_home, "8302") if @dev_home
         end
 
         def partition_bios
@@ -41,10 +41,10 @@ module Getch
           # /         - Root
           # swap      - Linux Swap - size of the ram
           # /home     - Home
-          @partition.gpt(@disk)
-          @partition.swap(@disk)
-          @partition.root(3, "8304", @disk)
-          @partition.home(4, "8302", @disk) if @dev_home
+          @partition.gpt(@dev_gpt)
+          @partition.swap(@dev_swap)
+          @partition.root(@dev_root, "8304")
+          @partition.home(@dev_home, "8302") if @dev_home
         end
       end
     end

@@ -2,7 +2,7 @@ require 'optparse'
 
 module Getch
   class Options
-    attr_reader :language, :zoneinfo, :keymap, :disk, :fs, :username, :boot_disk, :swap_disk, :encrypt, :verbose
+    attr_reader :language, :zoneinfo, :keymap, :disk, :fs, :username, :boot_disk, :cache_disk, :home_disk, :encrypt, :verbose
 
     def initialize(argv)
       @language = DEFAULT_OPTIONS[:language]
@@ -12,7 +12,8 @@ module Getch
       @fs = DEFAULT_OPTIONS[:fs]
       @username = DEFAULT_OPTIONS[:username]
       @boot_disk = DEFAULT_OPTIONS[:boot_disk]
-      @swap_disk = DEFAULT_OPTIONS[:swap_disk]
+      @cache_disk = DEFAULT_OPTIONS[:cache_disk]
+      @home_disk = DEFAULT_OPTIONS[:home_disk]
       @encrypt = DEFAULT_OPTIONS[:encrypt]
       @verbose = DEFAULT_OPTIONS[:verbose]
       parse(argv)
@@ -38,16 +39,20 @@ module Getch
           @fs = fs
           DEFAULT_OPTIONS[:fs] = fs # dont known why, but it should be enforce
         end
-        opts.on("-u", "--username USERNAME", "Create a partition /home and add a new user /home/USERNAME") do |user|
+        opts.on("-u", "--username USERNAME", "Create a new user /home/USERNAME with password.") do |user|
           @username = user
         end
-        opts.on("--separate-boot DISK", "Disk for the boot partition, default use #{@disk}") do |boot|
+        opts.on("--separate-boot DISK", "Disk for the boot/efi partition, default use #{@disk}") do |boot|
           @boot_disk = boot
           DEFAULT_OPTIONS[:boot_disk] = boot
         end
-        opts.on("--separate-swap DISK", "Disk for the swap partition, default use #{@disk}") do |swap|
-          @swap_disk = swap
-          DEFAULT_OPTIONS[:swap_disk] = swap
+        opts.on("--separate-cache DISK", "Disk for the swap partition, add ZIL/L2ARC for ZFS when set, default use #{@disk}") do |swap|
+          @cache_disk = swap
+          DEFAULT_OPTIONS[:cache_disk] = swap
+        end
+        opts.on("--separate-home DISK", "Disk for the /home partition, default is nil") do |home|
+          @home_disk = home
+          DEFAULT_OPTIONS[:home_disk] = home
         end
         opts.on("--encrypt", "Encrypt your system.") do
           @encrypt = true

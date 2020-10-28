@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Getch
   module FileSystem
     module Lvm
@@ -7,10 +5,6 @@ module Getch
         class Mount < Getch::FileSystem::Lvm::Encrypt::Device
           def initialize
             super
-            @root_dir = MOUNTPOINT
-            @boot_dir = "#{@root_dir}/boot"
-            @boot_efi_dir = "#{@root_dir}/boot/efi"
-            @home_dir = @user ? "#{@root_dir}/home/#{@user}" : nil
             @mount = Getch::FileSystem::Mount.new
             @state = Getch::States.new
           end
@@ -20,7 +14,7 @@ module Getch
             @mount.swap(@lv_swap)
             @mount.root(@lv_root)
             @mount.boot(@dev_boot)
-            @mount.boot_efi(@dev_boot_efi)
+            @mount.esp(@dev_esp)
             @mount.home(@lv_home)
             @state.mount
           end

@@ -3,6 +3,7 @@ module Getch
   end
 end
 
+require_relative 'filesystem/device'
 require_relative 'filesystem/clean'
 require_relative 'filesystem/mount'
 

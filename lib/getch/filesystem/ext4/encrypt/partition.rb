@@ -30,14 +30,14 @@ module Getch
 
           # Follow https://wiki.archlinux.org/index.php/Partitioning
           def partition_efi
-            # /boot/efi - EFI system partition - 260MB
-            # swap      - Linux Swap - size of the ram
-            # /         - Root
-            # /home     - Home
-            @partition.efi(@disk)
-            @partition.swap(@disk)
-            @partition.root(3, "8309", @disk)
-            @partition.home(4, "8309", @disk) if @dev_home
+            # /efi  - EFI system partition - 260MB
+            # swap  - Linux Swap - size of the ram
+            # /     - Root
+            # /home - Home
+            @partition.efi(@dev_esp)
+            @partition.swap(@dev_swap)
+            @partition.root(@dev_root, "8309")
+            @partition.home(@dev_home, "8309") if @dev_home
           end
 
           def encrypt_efi
@@ -81,10 +81,10 @@ module Getch
             # swap      - Linux Swap - size of the ram
             # /         - Root
             # /home     - Home
-            @partition.gpt(@disk)
-            @partition.swap(@disk)
-            @partition.root(3, "8309", @disk)
-            @partition.home(4, "8309", @disk) if @dev_home
+            @partition.gpt(@dev_esp)
+            @partition.swap(@dev_swap)
+            @partition.root(@dev_root, "8309")
+            @partition.home(@dev_home, "8309") if @dev_home
           end
 
           def exec(cmd)

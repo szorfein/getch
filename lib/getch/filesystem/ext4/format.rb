@@ -4,18 +4,16 @@ module Getch
       class Format < Getch::FileSystem::Ext4::Device
         def initialize
           super
-          @fs = 'ext4'
           @state = Getch::States.new()
           format
         end
 
         def format
           return if STATES[:format]
-          puts "Format #{@disk} with #{@fs}"
-          exec("mkfs.fat -F32 #{@dev_boot_efi}") if Helpers::efi?
+          exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
           exec("mkswap -f #{@dev_swap}")
-          exec("mkfs.#{@fs} -F #{@dev_root}")
-          exec("mkfs.#{@fs} -F #{@dev_home}") if @dev_home
+          exec("mkfs.ext4 -F #{@dev_root}")
+          exec("mkfs.ext4 -F #{@dev_home}") if @dev_home
           @state.format
         end
 

@@ -30,7 +30,7 @@ module Getch
         bootctl_dep
         puts "Configuring systemd-boot."
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
-        esp = '/boot/efi'
+        esp = '/efi'
         exec_chroot("bootctl --path #{esp} install")
         datas_loader = [
           'default gentoo',

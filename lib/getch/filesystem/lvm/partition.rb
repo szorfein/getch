@@ -24,12 +24,12 @@ module Getch
 
         def partition
           if Helpers::efi?
-            @partition.efi(@disk)
-            exec("sgdisk -n2:0:+0 -t2:8e00 /dev/#{@disk}")
+            @partition.efi(@dev_esp)
+            @partition.root(@dev_root, "8e00")
           else
-            @partition.gpt(@disk)
-            @partition.boot(@disk)
-            exec("sgdisk -n3:0:+0 -t3:8e00 /dev/#{@disk}")
+            @partition.gpt(@dev_gpt)
+            @partition.boot(@dev_boot)
+            @partition.root(@dev_root, "8e00")
           end
         end
 

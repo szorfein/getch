@@ -28,15 +28,15 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
+              "options crypt_root=PARTUUID=#{@partuuid_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
           end
 
           def crypttab
-            home = @dev_home ? "crypthome UUID=#{@uuid_home} /root/secretkeys/crypto_keyfile.bin luks" : ''
+            home = @home_disk ? "crypthome UUID=#{@uuid_home} /root/secretkeys/crypto_keyfile.bin luks" : ''
             datas = [
-              "cryptswap UUID=#{@uuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256",
+              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256",
               home
             ]
             File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
@@ -46,7 +46,7 @@ module Getch
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [
-              "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
+              "GRUB_CMDLINE_LINUX=\"crypt_root=PARTUUID=#{@partuuid_root} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
             File.write(file, cmdline.join("\n"), mode: 'a')
@@ -56,15 +56,15 @@ module Getch
 
           def gen_uuid
             @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
+            @partuuid_swap = `lsblk -o "PARTUUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
             @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
+            @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
             @uuid_root = `lsblk -d -o "UUID" #{@luks_root} | tail -1`.chomp() if @dev_root
             @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @luks_home
           end
 
           def data_fstab
-            boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
+            boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /boot/efi vfat noauto,noatime 1 2" : ''
             swap = @dev_swap ? "#{@luks_swap} none swap discard 0 0 " : ''
             root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
             home = @dev_home ? "#{@luks_home} /home/#{@user} ext4 defaults 0 2" : ''

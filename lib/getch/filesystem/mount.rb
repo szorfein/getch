@@ -27,7 +27,7 @@ module Getch
         exec("mount #{dev} #{@root_dir}")
       end
 
-      def efi(dev)
+      def esp(dev)
         return if ! dev
         Helpers::mkdir(@boot_efi_dir)
         exec("mount #{dev} #{@boot_efi_dir}")

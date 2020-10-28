@@ -4,6 +4,8 @@ module Getch
       class Partition < Getch::FileSystem::Zfs::Device
         def initialize
           super
+          @clean = Getch::FileSystem::Clean
+          @partition = Getch::FileSystem::Partition.new
           @state = Getch::States.new()
           @log = Getch::Log.new()
           run_partition
@@ -11,8 +13,9 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
-          clear_struct
-          Getch::FileSystem::Clean.hdd(@disk)
+          @clean.old_zpool
+          @clean.struct(@disk_boot, @disk_cache, @disk, @disk_home)
+          @clean.hdd(@disk_boot, @disk_cache, @disk, @disk_home)
           partition
           zfs
           @state.partition
@@ -20,30 +23,16 @@ module Getch
 
         private
 
-        def clear_struct
-          oldvg = `vgdisplay | grep #{@vg}`.chomp
-          oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
-          if oldzpool[0] != "" and $?.success?
-            oldzpool.each { |p| exec("zpool destroy #{p}") if p }
-          end
-          exec("vgremove -f #{@vg}") if oldvg != '' # remove older volume group
-          exec("pvremove -f #{@dev_root}") if oldvg != '' and File.exist? @dev_root # remove older volume group
-
-          exec("sgdisk -Z /dev/#{@disk}")
-          exec("wipefs -a /dev/#{@disk}")
-        end
-
         def partition
-          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          if Helpers::efi?
-            exec("sgdisk -n1:1M:+260M -t1:EF00 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+#{mem} -t2:8200 /dev/#{@disk}")
-            exec("sgdisk -n3:0:+0 -t3:BF00 /dev/#{@disk}")
+          if @efi
+            @partition.efi(@dev_esp)
+            @partition.swap(@dev_swap)
+            @partition.root(@dev_root, "BF00") if @root_part != 1
           else
-            exec("sgdisk -n1:1MiB:+1MiB -t1:EF02 /dev/#{@disk}")
-            exec("sgdisk -n2:0:+2G -t2:BE00 /dev/#{@disk}") # boot pool GRUB
-            exec("sgdisk -n3:0:+#{mem} -t3:8200 /dev/#{@disk}")
-            exec("sgdisk -n4:0:+0 -t4:BF00 /dev/#{@disk}")
+            @partition.gpt(@dev_gpt)
+            exec("sgdisk -n2:0:+2G -t2:BE00 #{@dev_pool}") # boot pool GRUB
+            @partition.swap(@dev_swap)
+            @partition.root(@dev_root, "BF00") if @root_part != 1
           end
         end
 
