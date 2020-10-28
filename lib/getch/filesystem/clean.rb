@@ -15,7 +15,7 @@ module Getch
         end
       end
 
-      def clean_struct(disk)
+      def self.clean_struct(disk)
         return if ! disk
         raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
         Helpers::sys("sgdisk -Z /dev/#{disk}")

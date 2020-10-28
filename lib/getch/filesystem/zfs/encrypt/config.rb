@@ -18,8 +18,8 @@ module Getch
           end
 
           def systemd_boot
-            return if ! Helpers::efi? 
-            esp = '/boot/efi'
+            return if ! @efi
+            esp = '/efi'
             dir = "#{@root_dir}/#{esp}/loader/entries/"
             datas_gentoo = [
               'title Gentoo Linux',
@@ -32,14 +32,14 @@ module Getch
 
           def crypttab
             datas = [
-              "cryptswap UUID=#{@uuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256"
+              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256"
             ]
             File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
           end
 
           # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
           def grub
-            return if Helpers::efi?
+            return if @efi
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
               "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{DEFAULT_OPTIONS[:keymap]}\""
@@ -50,12 +50,12 @@ module Getch
           private
 
           def gen_uuid
-            @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp()
-            @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
+            @partuuid_swap = `lsblk -o "PARTUUID" #{@dev_swap} | tail -1`.chomp()
+            @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
           end
 
           def data_fstab
-            boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
+            boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
             swap = @dev_swap ? "/dev/mapper/cryptswap none swap discard 0 0" : ''
 
             [ boot_efi, swap ]

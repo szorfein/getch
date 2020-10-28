@@ -2,17 +2,32 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
-        class Device
+        class Device < Getch::FileSystem::Device
           def initialize
-            @disk = DEFAULT_OPTIONS[:disk]
-            @user = DEFAULT_OPTIONS[:username]
-            @dev_boot_efi = Helpers::efi? ? "/dev/#{@disk}1" : nil
-            @dev_boot = Helpers::efi? ? nil : "/dev/#{@disk}2"
-            @dev_swap = Helpers::efi? ? "/dev/#{@disk}2" : "/dev/#{@disk}3"
-            @dev_root = Helpers::efi? ? "/dev/#{@disk}3" : "/dev/#{@disk}4"
+            super
             @boot_pool_name = 'bpool'
             @pool_name = 'zpool'
             @zfs_home = @user ? true : false
+          end
+
+          private
+
+          def search_boot
+            super
+            if @boot_disk
+              @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
+            else
+              @dev_boot = @efi ? nil : "/dev/#{@disk}2"
+              @root_part += 1 if ! @efi
+            end
+          end
+
+          def search_root
+            if @root_part == 1
+              @dev_root = "/dev/#{@disk}"
+            else
+              @dev_root = "/dev/#{@disk}#{@root_part}"
+            end
           end
         end
       end

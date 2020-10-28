@@ -1,3 +1,4 @@
+* Change mountpoint for the esp at /efi rather than /boot/efi
 * Replace Garden by Bask https://github.com/szorfein/bask
 * Correct option --username USERNAME, do not create a new partition.
 * New set of options --separate-{boot,cache,home} to install them on another disk

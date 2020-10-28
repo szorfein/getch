@@ -9,7 +9,6 @@ module Getch
             super
             @root_dir = MOUNTPOINT
             @boot_dir = "#{@root_dir}/boot"
-            @boot_efi_dir = "#{@root_dir}/boot/efi"
             @mount = Getch::FileSystem::Mount.new
             @state = Getch::States.new
             @log = Getch::Log.new
@@ -25,7 +24,7 @@ module Getch
             @mount.swap(@dev_swap)
             mount_root
             mount_boot
-            @mount.boot_efi(@dev_boot_efi)
+            @mount.esp(@dev_esp)
             exec("zfs mount -a")
             @state.mount
           end

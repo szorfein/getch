@@ -11,7 +11,7 @@ module Getch
 
           def format
             return if STATES[:format]
-            system("mkfs.fat -F32 #{@dev_boot_efi}") if @dev_boot_efi
+            system("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
             system("mkswap -f #{@dev_swap}")
             @state.format
           end

@@ -14,8 +14,8 @@ module Getch
         def run_partition
           return if STATES[:partition ]
           @clean.old_zpool
-          @clean.struct(@disk_boot, @disk_cache, @disk, @disk_home)
-          @clean.hdd(@disk_boot, @disk_cache, @disk, @disk_home)
+          @clean.struct(@disk, @cache_disk, @home_disk)
+          @clean.hdd(@disk, @cache_disk, @home_disk)
           partition
           zfs
           @state.partition
@@ -30,7 +30,8 @@ module Getch
             @partition.root(@dev_root, "BF00") if @root_part != 1
           else
             @partition.gpt(@dev_gpt)
-            exec("sgdisk -n2:0:+2G -t2:BE00 #{@dev_pool}") # boot pool GRUB
+            # Boot pool for GRUB2
+            exec("sgdisk -n2:0:+2G -t2:BE00 #{@dev_boot}") if @dev_boot
             @partition.swap(@dev_swap)
             @partition.root(@dev_root, "BF00") if @root_part != 1
           end
@@ -49,7 +50,7 @@ module Getch
           Helpers::mkdir(MOUNTPOINT)
             
           @log.debug("ashift found for #{@bloc} - #{ashift}")
-          if ! Helpers::efi? 
+          if @dev_boot
             # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
             @log.info("Creating boot pool on #{@pool_name}")
             exec("zpool create -f \\

@@ -11,6 +11,16 @@ module Getch
         
         private
 
+        def search_boot
+          super
+          if @boot_disk
+            @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
+          else
+            @dev_boot = @efi ? nil : "/dev/#{@disk}2"
+            @root_part += 1 if ! @efi
+          end
+        end
+
         def search_root
           if @root_part == 1
             @dev_root = "/dev/#{@disk}"

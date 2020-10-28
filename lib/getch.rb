@@ -54,16 +54,17 @@ module Getch
 
   def self.resume_options(opts)
     puts "\nBuild Gentoo with the following args:\n"
-    puts "lang: #{DEFAULT_OPTIONS[:language]}"
-    puts "zoneinfo: #{DEFAULT_OPTIONS[:zoneinfo]}"
-    puts "keymap: #{DEFAULT_OPTIONS[:keymap]}"
-    puts "disk: #{DEFAULT_OPTIONS[:disk]}"
-    puts "fs: #{DEFAULT_OPTIONS[:fs]}"
-    puts "username: #{DEFAULT_OPTIONS[:username]}"
+    puts "Lang: #{DEFAULT_OPTIONS[:language]}"
+    puts "Zoneinfo: #{DEFAULT_OPTIONS[:zoneinfo]}"
+    puts "Keymap: #{DEFAULT_OPTIONS[:keymap]}"
+    puts "Disk: #{DEFAULT_OPTIONS[:disk]}"
+    puts "Filesystem: #{DEFAULT_OPTIONS[:fs]}"
+    puts "Username: #{DEFAULT_OPTIONS[:username]}"
+    puts "Encrypt: #{DEFAULT_OPTIONS[:encrypt]}"
+    puts
     puts "separate-boot disk: #{DEFAULT_OPTIONS[:boot_disk]}"
     puts "separate-cache disk: #{DEFAULT_OPTIONS[:cache_disk]}"
     puts "separate-home disk: #{DEFAULT_OPTIONS[:home_disk]}"
-    puts "encrypt: #{DEFAULT_OPTIONS[:encrypt]}"
     puts
     print "Continue? (n,y) "
     case gets.chomp

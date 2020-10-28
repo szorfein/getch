@@ -12,8 +12,8 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
-          @clean.struct(@disk)
-          @clean.hdd(@disk)
+          @clean.struct(@disk, @cache_disk, @home_disk)
+          @clean.hdd(@disk, @cache_disk, @home_disk)
           if Helpers::efi?
             partition_efi
           else

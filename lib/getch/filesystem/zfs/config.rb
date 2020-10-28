@@ -17,7 +17,7 @@ module Getch
 
         def systemd_boot
           return if ! Helpers::efi? 
-          esp = '/boot/efi'
+          esp = '/efi'
           dir = "#{@root_dir}/#{esp}/loader/entries/"
           datas_gentoo = [
             'title Gentoo Linux',
@@ -42,15 +42,14 @@ module Getch
 
         def gen_uuid
           @uuid_swap = `lsblk -o "UUID" #{@dev_swap} | tail -1`.chomp()
-          @uuid_boot = `lsblk -o "UUID" #{@dev_boot} | tail -1`.chomp() if @dev_boot
-          @uuid_boot_efi = `lsblk -o "UUID" #{@dev_boot_efi} | tail -1`.chomp() if @dev_boot_efi
+          @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
         end
 
         def data_fstab
-          boot_efi = @dev_boot_efi ? "UUID=#{@uuid_boot_efi} /boot/efi vfat noauto,noatime 1 2" : ''
+          efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
           swap = @dev_swap ? "UUID=#{@uuid_swap} none swap discard 0 0" : ''
 
-          [ boot_efi, swap ]
+          [ efi, swap ]
         end
       end
     end

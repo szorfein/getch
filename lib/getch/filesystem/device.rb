@@ -23,8 +23,8 @@ module Getch
           @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
           @dev_esp  = @efi ? "/dev/#{@boot_disk}1" : nil
         else
-          @dev_gpt = @efi ? nil : "/dev/#{@disk}1"
-          @dev_esp = @efi ? "/dev/#{@disk}1" : nil
+          @dev_gpt = @efi ? nil : "/dev/#{@disk}#{@root_part}"
+          @dev_esp = @efi ? "/dev/#{@disk}#{@root_part}" : nil
           @boot_disk = @disk # used by grub
           @root_part += 1
         end
@@ -34,7 +34,7 @@ module Getch
         if @cache_disk
           @dev_swap = "/dev/#{@cache_disk}1"
         else
-          @dev_swap = "/dev/#{@disk}2"
+          @dev_swap = "/dev/#{@disk}#{@root_part}"
           @root_part += 1
         end
       end

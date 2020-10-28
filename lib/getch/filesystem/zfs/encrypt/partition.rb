@@ -15,8 +15,8 @@ module Getch
           def run_partition
             return if STATES[:partition ]
             @clean.old_zpool
-            @clean.struct(@disk)
-            @clean.hdd(@disk)
+            @clean.struct(@disk, @cache_disk, @home_disk)
+            @clean.hdd(@disk, @cache_disk, @home_disk)
             partition
             zfs
             @state.partition
@@ -26,31 +26,31 @@ module Getch
 
           def partition
             if Helpers::efi?
-              @partition.efi(@disk)
-              @partition.swap(@disk)
-              exec("sgdisk -n3:0:+0 -t3:BF00 /dev/#{@disk}")
+              @partition.efi(@dev_esp)
+              @partition.swap(@dev_swap)
+              @partition.root(@dev_root, "BF00") if @root_part != 1
             else
-              @partition.gpt(@disk)
-              exec("sgdisk -n2:0:+2G -t2:BE00 /dev/#{@disk}") # boot pool GRUB
-              @partition.swap(@disk, 3)
-              exec("sgdisk -n4:0:+0 -t4:BF00 /dev/#{@disk}")
+              @partition.gpt(@dev_gpt)
+              exec("sgdisk -n2:0:+2G -t2:BE00 #{@dev_boot}") # boot pool GRUB
+              @partition.swap(@dev_swap)
+              @partition.root(@dev_root, "BF00") if @root_part != 1
             end
           end
 
           def zfs
             ashift = case @bloc
-                     when 8096
-                       13
-                     when 4096
-                       12
-                     else # 512
-                       9
-                     end
+              when 8096
+                13
+              when 4096
+                12
+              else # 512
+                9
+              end
 
             Helpers::mkdir(MOUNTPOINT)
 
             @log.debug("ashift found for #{@bloc} - #{ashift}")
-            if ! Helpers::efi? 
+            if @dev_boot
               # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
               @log.info("Creating boot pool on #{@pool_name}")
               exec("zpool create -f \\
