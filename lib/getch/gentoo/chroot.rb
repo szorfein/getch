@@ -43,9 +43,9 @@ module Getch
       end
 
       def kernel_deps
-        puts "Installing Garden..."
-        get_garden
-        garden_dep
+        Getch::Emerge.new("gentoolkit").pkg!
+        exec_chroot("euse -p sys-apps/kmod -E lzma")
+        @pkgs << "sys-apps/kmod"
       end
 
       def install_pkgs
@@ -57,22 +57,6 @@ module Getch
       end
 
       private
-
-      def get_garden
-        return if Dir.exist? "#{MOUNTPOINT}/root/garden-master"
-        url = 'https://github.com/szorfein/garden/archive/master.tar.gz'
-        file = 'garden-master.tar.gz'
-
-        Dir.chdir("#{MOUNTPOINT}/root")
-        Helpers::get_file_online(url, file)
-        Getch::Command.new("tar xzf #{file}").run! if ! Dir.exist? 'garden-master'
-      end
-
-      def garden_dep
-        Getch::Emerge.new("gentoolkit").pkg!
-        exec_chroot("euse -p sys-apps/kmod -E lzma")
-        @pkgs << "sys-apps/kmod"
-      end
 
       def mount
         puts "Populate /proc, /sys and /dev."

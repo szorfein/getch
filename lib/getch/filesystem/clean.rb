@@ -1,28 +1,28 @@
-def clean_hdd(disk)
-  return if ! disk
-  raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
-  puts
-  print "Cleaning data on #{disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? [y,N] "
-  case gets.chomp
-  when /^y|^Y/
-    bloc=`blockdev --getbsz /dev/#{disk}`.chomp
-    Helpers::sys("dd if=/dev/urandom of=/dev/#{disk} bs=#{bloc} status=progress")
-  else
-    return
-  end
-end
-
-def clean_struct(disk)
-  return if ! disk
-  raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
-  Herpers::sys("sgdisk -Z /dev/#{disk}")
-  Helpers::sys("wipefs -a /dev/#{disk}")
-end
-
 module Getch
   module FileSystem
     module Clean
-      def self.hdd(disk)
+      def self.clean_hdd(disk)
+        return if ! disk
+        raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+        puts
+        print "Cleaning data on #{disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? [y,N] "
+        case gets.chomp
+        when /^y|^Y/
+          bloc=`blockdev --getbsz /dev/#{disk}`.chomp
+          Helpers::sys("dd if=/dev/urandom of=/dev/#{disk} bs=#{bloc} status=progress")
+        else
+          return
+        end
+      end
+
+      def clean_struct(disk)
+        return if ! disk
+        raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+        Helpers::sys("sgdisk -Z /dev/#{disk}")
+        Helpers::sys("wipefs -a /dev/#{disk}")
+      end
+
+      def self.hdd(*disks)
         disks.each { |d| clean_hdd(d) }
       end
       # See https://wiki.archlinux.org/index.php/Solid_state_drive/Memory_cell_clearing

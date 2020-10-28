@@ -127,19 +127,21 @@ module Getch
     end
   end
 
-  class Garden
+  class Bask
     def initialize(cmd)
       @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
+      @version = "0.1"
     end
 
     def run!
-      @log.info "Running Garden: #{@cmd}"
+      download_bask if ! Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
+      @log.info "Running Bask: #{@cmd}"
       cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
         && env-update \
-        && cd /root/garden-master \
-        && ./kernel.sh #{@cmd} -k /usr/src/linux\""
+        && cd /root/bask-#{@version} \
+        && ./bask.sh #{@cmd} -k /usr/src/linux\""
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         while line = stdout_err.gets
           puts line
@@ -151,6 +153,18 @@ module Getch
           exit 1
         end
       end
+    end
+
+    private 
+
+    def download_bask
+      @log.info "Installing Bask..."
+      url = "https://github.com/szorfein/bask/archive/v#{@version}.tar.gz"
+      file = "bask-#{@version}.tar.gz"
+
+      Dir.chdir("#{MOUNTPOINT}/root")
+      Helpers::get_file_online(url, file)
+      Getch::Command.new("tar xzf #{file}").run!
     end
   end
 

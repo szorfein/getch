@@ -15,7 +15,7 @@ module Getch
 
       def build_kspp
         puts "Adding KSPP to the kernel source"
-        garden("-b -a systemd")
+        bask("-b -a systemd")
       end
 
       def make
@@ -43,37 +43,37 @@ module Getch
       def virtualbox_guest
         systemd=`systemd-detect-virt`.chomp
         return if ! ismatch?('vmwgfx') || systemd.match(/none/)
-        garden("-a virtualbox-guest")
+        bask("-a virtualbox-guest")
         Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
       end
 
       def qemu_guest
-        garden("-a kvm-guest") if ismatch?('virtio')
-        garden("-a kvm") if ismatch?('kvm')
+        bask("-a kvm-guest") if ismatch?('virtio')
+        bask("-a kvm") if ismatch?('kvm')
       end
 
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
       end
 
-      def garden(cmd)
-        Getch::Garden.new(cmd).run!
+      def bask(cmd)
+        Getch::Bask.new(cmd).run!
       end
 
       def install_wifi
         return if ! ismatch?('cfg80211')
-        garden("-a wifi")
+        bask("-a wifi")
         wifi_drivers
         Getch::Emerge.new("net-wireless/iw wpa_supplicant net-wireless/iwd").pkg!
       end
 
       def install_audio
         return if ! ismatch?('snd_pcm')
-        garden("-a sound")
+        bask("-a sound")
       end
 
       def wifi_drivers
-        garden("-a ath9k-driver") if ismatch?('ath9k')
+        bask("-a ath9k-driver") if ismatch?('ath9k')
       end
     end
   end

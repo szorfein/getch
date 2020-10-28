@@ -44,7 +44,7 @@ module Getch
         def install_deps
           exec("euse -E lvm")
           Getch::Emerge.new('genkernel lvm2').pkg!
-          Getch::Garden.new('-a lvm').run!
+          Getch::Bask.new('-a lvm').run!
           exec("systemctl enable lvm2-monitor")
         end
 

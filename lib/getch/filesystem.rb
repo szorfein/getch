@@ -5,6 +5,7 @@ end
 
 require_relative 'filesystem/device'
 require_relative 'filesystem/clean'
+require_relative 'filesystem/partition'
 require_relative 'filesystem/mount'
 
 require_relative 'filesystem/ext4'

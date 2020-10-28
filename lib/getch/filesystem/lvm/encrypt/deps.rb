@@ -49,7 +49,7 @@ module Getch
             exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)
             exec("euse -E cryptsetup") if ! Helpers::grep?(make_conf, /cryptsetup/)
             Getch::Emerge.new('genkernel systemd sys-fs/cryptsetup lvm2').pkg!
-            Getch::Garden.new('-a lvm').run!
+            Getch::Bask.new('-a lvm').run!
             exec("systemctl enable lvm2-monitor")
           end
 

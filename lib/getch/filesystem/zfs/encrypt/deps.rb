@@ -21,7 +21,7 @@ module Getch
             exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
             exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)
             exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/)
-            Getch::Garden.new('-a zfs').run!
+            Getch::Bask.new('-a zfs').run!
             Getch::Make.new("make modules_prepare").run!
             Getch::Make.new("make -j$(nproc)").run!
             Getch::Emerge.new('genkernel sys-fs/zfs sys-apps/systemd sys-fs/cryptsetup').pkg!

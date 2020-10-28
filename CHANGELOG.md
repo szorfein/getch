@@ -1,5 +1,7 @@
-* New set of options --separate-{boot,swap} to install them on another disk
-* Refactor FileSystem::Mount
+* Replace Garden by Bask https://github.com/szorfein/bask
+* Correct option --username USERNAME, do not create a new partition.
+* New set of options --separate-{boot,cache,home} to install them on another disk
+* Refactor codes
 * Add cpu name to COMMON_FLAGS
 * Add cpuflags with app-portage/cpuid2cpuflags
 + Use the whole disk space available for / when option --username is unset
