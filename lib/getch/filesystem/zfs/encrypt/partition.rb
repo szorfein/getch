@@ -108,7 +108,7 @@ module Getch
 
           # Follow https://wiki.archlinux.org/index.php/Partitioning
           # Partition_efi
-          # /boot/efi - EFI system partition - 260MB
+          # /efi      - EFI system partition - 260MB
           # /         - Root
 
           # Partition_bios

@@ -22,7 +22,7 @@ module Getch
 
           def systemd_boot
             return if ! Helpers::efi?
-            esp = '/boot/efi'
+            esp = '/efi'
             dir = "#{@root_dir}/#{esp}/loader/entries/"
             datas_gentoo = [
               'title Gentoo Linux',
@@ -55,16 +55,16 @@ module Getch
           private
 
           def gen_uuid
-            @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @partuuid_swap = `lsblk -o "PARTUUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
+            @partuuid_root = Helpers::partuuid(@dev_root)
+            @partuuid_swap = Helpers::partuuid(@dev_swap)
             @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
+            @uuid_esp = Helpers::uuid(@dev_esp) if @dev_esp
             @uuid_root = `lsblk -d -o "UUID" #{@luks_root} | tail -1`.chomp() if @dev_root
             @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @luks_home
           end
 
           def data_fstab
-            boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /boot/efi vfat noauto,noatime 1 2" : ''
+            boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
             swap = @dev_swap ? "#{@luks_swap} none swap discard 0 0 " : ''
             root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
             home = @dev_home ? "#{@luks_home} /home/#{@user} ext4 defaults 0 2" : ''

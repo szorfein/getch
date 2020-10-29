@@ -55,4 +55,12 @@ module Helpers
       raise "Error with #{cmd}"
     end
   end
+
+  def self.partuuid(dev)
+    `lsblk -o PARTUUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
+  end
+
+  def self.uuid(dev)
+    `lsblk -do UUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
+  end
 end

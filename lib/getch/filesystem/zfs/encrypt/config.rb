@@ -50,7 +50,7 @@ module Getch
           private
 
           def gen_uuid
-            @partuuid_swap = `lsblk -o "PARTUUID" #{@dev_swap} | tail -1`.chomp()
+            @partuuid_swap = Helpers::partuuid(@dev_swap}
             @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
           end
 

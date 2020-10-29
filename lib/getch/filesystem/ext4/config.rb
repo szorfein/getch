@@ -37,8 +37,8 @@ module Getch
         private
 
         def gen_uuid
-          @partuuid_root = `lsblk -o "PARTUUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-          @partuuid_swap = `lsblk -o "PARTUUID" #{@dev_swap} | tail -1`.chomp() if @dev_swap
+          @partuuid_root = Helpers::partuuid(@dev_root)
+          @partuuid_swap = Helpers::partuuid(@dev_swap)
           @uuid_root = `lsblk -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
           @uuid_esp = `lsblk -o "UUID" #{@dev_esp} | tail -1`.chomp() if @dev_esp
           @uuid_home = `lsblk -o "UUID" #{@dev_home} | tail -1`.chomp() if @dev_home
