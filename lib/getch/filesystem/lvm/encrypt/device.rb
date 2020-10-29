@@ -19,11 +19,11 @@ module Getch
             if @boot_disk
               @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
               @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
-              @dev_esp = @efi ? "/dev/#{@boot_disk}2" : nil
+              @dev_esp = @efi ? "/dev/#{@boot_disk}1" : nil
             else
               @dev_gpt = @efi ? nil : "/dev/#{@disk}1"
               @dev_boot = @efi ? nil : "/dev/#{@disk}2"
-              @dev_esp = @efi ? "/dev/#{@disk}2" : nil
+              @dev_esp = @efi ? "/dev/#{@disk}1" : nil
               @root_part += 1
               @root_part += 1 if ! @efi
             end

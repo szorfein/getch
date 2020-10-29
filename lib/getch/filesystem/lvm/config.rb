@@ -16,7 +16,7 @@ module Getch
         end
 
         def systemd_boot
-          return if ! @esp
+          return if ! @efi
           esp = '/efi'
           dir = "#{@root_dir}/#{esp}/loader/entries/"
           datas_gentoo = [
