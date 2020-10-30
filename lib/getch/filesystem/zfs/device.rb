@@ -4,6 +4,9 @@ module Getch
       class Device < Getch::FileSystem::Device
         def initialize
           super
+          @id = Helpers::pool_id(@dev_root)
+          @boot_pool_name = "bpool-#{@id}"
+          @pool_name = "rpool-#{@id}"
           @zfs_home = @user ? true : false
         end
         
@@ -25,9 +28,6 @@ module Getch
           else
             @dev_root = "/dev/#{@disk}#{@root_part}"
           end
-          @id = Helpers::pool_id(@dev_root)
-          @boot_pool_name = "bpool-#{@id}"
-          @pool_name = "rpool-#{@id}"
         end
       end
     end

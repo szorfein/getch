@@ -3,14 +3,10 @@ module Getch
     module Zfs
       module Encrypt
         class Deps < Getch::FileSystem::Zfs::Encrypt::Device
-          def initialize
-            super
+          def make
             install_deps
             zfs_mountpoint
             auto_module_rebuild
-          end
-
-          def make
             hostid
             options_make
             Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!

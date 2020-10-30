@@ -42,12 +42,7 @@ module Getch
         return if ! dev
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        # Reserve 18G for the system if you need a home partition
-        if DEFAULT_OPTIONS[:username]
-          exec("sgdisk -n#{part}:0:+18G -t#{part}:#{code} #{disk}")
-        else
-          exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
-        end
+        exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
       end
 
       def home(dev, code)

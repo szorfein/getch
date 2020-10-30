@@ -17,7 +17,6 @@ module Getch
           @clean.struct(@disk, @cache_disk, @home_disk)
           @clean.hdd(@disk, @cache_disk, @home_disk)
           partition
-          zfs
           @state.partition
         end
 

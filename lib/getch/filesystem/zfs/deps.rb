@@ -2,20 +2,17 @@ module Getch
   module FileSystem
     module Zfs
       class Deps < Getch::FileSystem::Zfs::Device
-        def initialize
-          super
+        def make
           install_deps
           zfs_mountpoint
           auto_module_rebuild
-        end
-
-        def make
           hostid
           options_make
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
         end
 
         private
+
         def install_deps
           exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
           exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)

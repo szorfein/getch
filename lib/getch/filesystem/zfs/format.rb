@@ -4,7 +4,15 @@ module Getch
       class Format < Getch::FileSystem::Zfs::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @log = Getch::Log.new
+          @state = Getch::States.new
+          if ! @id
+            @log.info "Research pool id for #{@dev_root}..."
+            sleep 2 until Helpers::pool_id(@dev_root)
+            @id = Helpers::pool_id(@dev_root)
+            @boot_pool_name = "bpool-#{@id}"
+            @pool_name = "rpool-#{@id}"
+          end
           format
         end
 
@@ -12,6 +20,8 @@ module Getch
 
         def format
           return if STATES[:format]
+          raise "Error, no id found for #{@dev_root}." if ! @id
+          @log.info "Create #{@id} for #{@pool_name}"
           system("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
           system("mkswap -f #{@dev_swap}")
           zfs
