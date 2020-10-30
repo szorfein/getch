@@ -40,7 +40,7 @@ module Getch
         Helpers::sys("pvremove -f #{disk}") if oldvg != '' and File.exist? disk
       end
 
-      def self.olg_zpool
+      def self.old_zpool
         oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
         if oldzpool[0] != "" and $?.success?
           oldzpool.each { |p| Helpers::sys("zpool destroy #{p}") if p }

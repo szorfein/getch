@@ -63,4 +63,9 @@ module Helpers
   def self.uuid(dev)
     `lsblk -do UUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
   end
+
+  # Used with ZFS for the pool name
+  def self.pool_id(dev)
+    `lsblk -o PARTUUID #{dev}`.delete("\n").delete("PARTUUID").match(/[\w]{5}/)
+  end
 end

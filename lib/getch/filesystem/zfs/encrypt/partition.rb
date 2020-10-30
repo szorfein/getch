@@ -47,6 +47,9 @@ module Getch
                 9
               end
 
+            # Refresh the pool id
+            @id = Helpers::pool_id(@dev_root)
+
             Helpers::mkdir(MOUNTPOINT)
 
             @log.debug("ashift found for #{@bloc} - #{ashift}")
