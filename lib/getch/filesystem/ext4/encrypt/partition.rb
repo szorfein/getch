@@ -81,7 +81,7 @@ module Getch
             # swap      - Linux Swap - size of the ram
             # /         - Root
             # /home     - Home
-            @partition.gpt(@dev_esp)
+            @partition.gpt(@dev_gpt)
             @partition.swap(@dev_swap)
             @partition.root(@dev_root, "8309")
             @partition.home(@dev_home, "8309") if @dev_home
