@@ -48,8 +48,8 @@ module Getch
       end
 
       def qemu_guest
+        bask("-a kvm-host") if ismatch?('kvm')
         bask("-a kvm-guest") if ismatch?('virtio')
-        bask("-a kvm") if ismatch?('kvm')
       end
 
       def ismatch?(arg)
