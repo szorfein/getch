@@ -30,7 +30,7 @@ module Getch
           else
             @partition.gpt(@dev_gpt)
             # Boot pool for GRUB2
-            exec("sgdisk -n2:0:+2G -t2:BE00 #{@dev_boot}") if @dev_boot
+            @partition.boot(@dev_boot)
             @partition.swap(@dev_swap)
             @partition.root(@dev_root, "BF00") if @root_part != 1
           end

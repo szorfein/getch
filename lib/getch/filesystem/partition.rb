@@ -16,7 +16,11 @@ module Getch
         return if ! dev
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        exec("sgdisk -n#{part}:0:+128MiB -t#{part}:8300 #{disk}")
+        if DEFAULT_OPTIONS[:fs] == "zfs"
+          exec("sgdisk -n#{part}:0:+2G -t#{part}:BE00 #{disk}")
+        else
+          exec("sgdisk -n#{part}:0:+128MiB -t#{part}:8300 #{disk}")
+        end
       end
 
       def efi(dev)

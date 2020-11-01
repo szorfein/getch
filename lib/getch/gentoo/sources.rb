@@ -26,8 +26,8 @@ module Getch
         end
       end
 
-      def init_config
-        Getch::Make.new("make localyesconfig").run!
+      def localmodconfig
+        Getch::Make.new("make localmodconfig").run!
       end
 
       private

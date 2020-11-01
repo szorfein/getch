@@ -53,8 +53,8 @@ module Getch
         source = Getch::Gentoo::Sources.new()
         new
         source.build_kspp
-        source.init_config
         source.build_others
+        source.localmodconfig
         source.make
         @state.kernel
       end

@@ -14,11 +14,16 @@ module Getch
           private
 
           def search_boot
-            super
             if @boot_disk
+              @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
               @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
+              @dev_esp  = @efi ? "/dev/#{@boot_disk}1" : nil
             else
-              @dev_boot = @efi ? nil : "/dev/#{@disk}2"
+              @dev_gpt = @efi ? nil : "/dev/#{@disk}#{@root_part}"
+              @dev_esp = @efi ? "/dev/#{@disk}#{@root_part}" : nil
+              @boot_disk = @disk # used by grub
+              @root_part += 1
+              @dev_boot = @efi ? nil : "/dev/#{@disk}#{@root_part}"
               @root_part += 1 if ! @efi
             end
           end

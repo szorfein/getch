@@ -7,7 +7,6 @@ module Getch
         def initialize
           super
           @root_dir = MOUNTPOINT
-          @boot_dir = "#{@root_dir}/boot"
           @mount = Getch::FileSystem::Mount.new
           @state = Getch::States.new
           @log = Getch::Log.new
@@ -36,7 +35,6 @@ module Getch
 
         def mount_boot
           return if ! @dev_boot
-          Helpers::mkdir(@boot_dir)
           exec("zfs mount #{@boot_pool_name}/BOOT/gentoo")
         end
 

@@ -66,7 +66,7 @@ module Getch
         puts 'Password for root'
         cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd\""
         system(cmd)
-        if @user != nil
+        if @user
           puts "Creating user #{@user}"
           exec_chroot("useradd -m -G users,wheel,audio,video #{@user}")
           puts "Password for your user #{@user}"
