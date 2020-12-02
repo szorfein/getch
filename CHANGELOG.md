@@ -1,3 +1,4 @@
+## 0.1.1, release 2020-11-01
 * Change mountpoint for the esp at /efi rather than /boot/efi
 * Replace Garden by Bask https://github.com/szorfein/bask
 * Correct option --username USERNAME, do not create a new partition.

@@ -51,6 +51,7 @@ module Getch
       def install_pkgs
         @pkgs << "app-admin/sudo"
         @pkgs << "app-editors/vim"
+        @pkgs << "sys-kernel/linux-firmware"
         all_pkgs = @pkgs.join(" ")
         puts "Installing #{all_pkgs}..."
         Getch::Emerge.new(all_pkgs).pkg!

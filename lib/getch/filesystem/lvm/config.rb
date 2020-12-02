@@ -16,7 +16,7 @@ module Getch
         end
 
         def systemd_boot
-          return if ! @efi
+          return if !@efi
           esp = '/efi'
           dir = "#{@root_dir}/#{esp}/loader/entries/"
           datas_gentoo = [
@@ -29,7 +29,7 @@ module Getch
         end
 
         def grub
-          return if Helpers::efi?
+          return if @efi
           file = "#{@root_dir}/etc/default/grub"
           cmdline = [ 
             "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=UUID=#{@uuid_root} init=#{@init} dolvm rw\""
