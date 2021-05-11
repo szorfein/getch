@@ -16,16 +16,24 @@ module Getch
           private
 
           def search_boot
-            if @boot_disk
-              @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
-              @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
-              @dev_esp = @efi ? "/dev/#{@boot_disk}1" : nil
+            if @efi
+              if @boot_disk
+                @dev_esp = "/dev/#{@boot_disk}1"
+              else
+                @dev_esp = "/dev/#{@disk}1"
+                @root_part += 1
+              end
             else
-              @dev_gpt = @efi ? nil : "/dev/#{@disk}1"
-              @dev_boot = @efi ? nil : "/dev/#{@disk}2"
-              @dev_esp = @efi ? "/dev/#{@disk}1" : nil
-              @root_part += 1
-              @root_part += 1 if ! @efi
+              if @boot_disk
+                @dev_gpt = "/dev/#{@boot_disk}1"
+                @dev_boot = "/dev/#{@boot_disk}2"
+                @dev_grub = "/dev/#{@boot_disk}"
+              else
+                @dev_gpt = "/dev/#{@disk}1"
+                @dev_boot = "/dev/#{@disk}2"
+                @dev_grub = "/dev/#{@disk}"
+                @root_part += 2
+              end
             end
           end
 

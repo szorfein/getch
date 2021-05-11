@@ -19,14 +19,22 @@ module Getch
 
       private
       def search_boot
-        if @boot_disk
-          @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
-          @dev_esp  = @efi ? "/dev/#{@boot_disk}1" : nil
+        if @efi
+          if @boot_disk
+            @dev_esp = "/dev/#{@boot_disk}#{@root_part}"
+          else
+            @dev_esp = "/dev/#{@disk}#{@root_part}"
+            @root_part += 1
+          end
         else
-          @dev_gpt = @efi ? nil : "/dev/#{@disk}#{@root_part}"
-          @dev_esp = @efi ? "/dev/#{@disk}#{@root_part}" : nil
-          @boot_disk = @disk # used by grub
-          @root_part += 1
+          if @boot_disk
+            @dev_gpt = "/dev/#{@boot_disk}#{@root_part}"
+            @dev_grub = "/dev/#{@boot_disk}"
+          else
+            @dev_gpt = "/dev/#{@disk}#{@root_part}"
+            @dev_grub = "/dev/#{@disk}"
+            @root_part += 1
+          end
         end
       end
 
@@ -46,8 +54,6 @@ module Getch
       def search_home
         if @home_disk
           @dev_home = "/dev/#{@home_disk}1"
-        else
-          @dev_home = nil
         end
       end
     end

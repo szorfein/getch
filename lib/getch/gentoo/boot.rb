@@ -58,7 +58,7 @@ module Getch
         puts 'Installing GRUB...'
         Getch::Emerge.new("sys-boot/grub:2").pkg!
         @config.grub
-        exec_chroot("grub-install /dev/#{@disk}")
+        exec_chroot("grub-install /dev/#{@dev_grub}")
         exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')
       end
 

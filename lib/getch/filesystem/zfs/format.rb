@@ -23,8 +23,8 @@ module Getch
           raise "Error, no id found for #{@dev_root}." if ! @id
           @log.info "Create #{@id} for #{@pool_name}"
           system("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
-          system("mkswap -f #{@dev_swap}")
           zfs
+          cache
           datasets
           @state.format
         end
@@ -47,7 +47,7 @@ module Getch
             # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
             @log.info("Creating boot pool on #{@pool_name}")
             exec("zpool create -f \\
-              -o ashift=#{ashift} -d \\
+              -o ashift=#{ashift} -o autotrim=on -d \\
               -o feature@async_destroy=enabled \\
               -o feature@bookmarks=enabled \\
               -o feature@embedded_data=enabled \\
@@ -66,12 +66,22 @@ module Getch
             ")
           end
 
-          exec("zpool create -f -o ashift=#{ashift} \\
+          exec("zpool create -f -o ashift=#{ashift} -o autotrim=on \\
             -O acltype=posixacl -O canmount=off -O compression=lz4 \\
             -O dnodesize=auto -O normalization=formD -O atime=off \\
             -O xattr=sa -O mountpoint=/ -R #{MOUNTPOINT} \\
             #{@pool_name} #{@dev_root}
           ")
+        end
+
+        def cache
+          system("mkswap -f #{@dev_swap}")
+          if @dev_log
+            exec("zpool add #{@pool_name} log #{@dev_log}")
+          end
+          if @dev_cache
+            exec("zpool add #{@pool_name} cache #{@dev_cache}")
+          end
         end
 
         def datasets
@@ -90,7 +100,9 @@ module Getch
 
           exec("zfs create -o canmount=off -o mountpoint=/ #{@pool_name}/USERDATA")
           exec("zfs create -o canmount=on -o mountpoint=/root #{@pool_name}/USERDATA/root")
-          exec("zfs create -o canmount=on -o mountpoint=/home/#{@user} #{@pool_name}/USERDATA/#{@user}") if @user
+          if @user
+            exec("zfs create -o canmount=on -o mountpoint=/home/#{@user} #{@pool_name}/USERDATA/#{@user}")
+          end
         end
 
         def exec(cmd)

@@ -13,17 +13,35 @@ module Getch
         private
 
         def search_boot
-          if @boot_disk
-            @dev_gpt = @efi ? nil : "/dev/#{@boot_disk}1"
-            @dev_boot = @efi ? nil : "/dev/#{@boot_disk}2"
-            @dev_esp  = @efi ? "/dev/#{@boot_disk}1" : nil
+          if @efi
+            if @boot_disk
+              @dev_esp = "/dev/#{@boot_disk}1"
+            else
+              @dev_esp = "/dev/#{@disk}1"
+              @root_part += 1
+            end
           else
-            @dev_gpt = @efi ? nil : "/dev/#{@disk}#{@root_part}"
-            @dev_esp = @efi ? "/dev/#{@disk}#{@root_part}" : nil
-            @boot_disk = @disk # used by grub
+            if @boot_disk
+              @dev_gpt = "/dev/#{@boot_disk}1"
+              @dev_boot = "/dev/#{@boot_disk}2"
+              @dev_grub = "/dev/#{@boot_disk}"
+            else
+              @dev_gpt = "/dev/#{@disk}1"
+              @dev_boot = "/dev/#{@disk}2"
+              @dev_grub = "/dev/#{@disk}"
+              @root_part += 2
+            end
+          end
+        end
+
+        def search_swap
+          if @cache_disk
+            @dev_swap = "/dev/#{@cache_disk}1"
+            @dev_log = "/dev/#{@cache_disk}2"
+            @dev_cache = "/dev/#{@cache_disk}3"
+          else
+            @dev_swap = "/dev/#{@cache_disk}#{@root_part}"
             @root_part += 1
-            @dev_boot = @efi ? nil : "/dev/#{@disk}#{@root_part}"
-            @root_part += 1 if ! @efi
           end
         end
 

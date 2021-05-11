@@ -11,9 +11,8 @@ module Getch
       end
 
       def portage
-        nproc = `nproc`.chomp()
         grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
-        quiet = DEFAULT_OPTIONS[:verbose] ? '' : "EMERGE_DEFAULT_OPTS=\"--jobs=#{nproc} --load-average=#{nproc}\""
+        nproc = `nproc`.chomp()
 
         # Add cpu name
         cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
@@ -24,7 +23,7 @@ module Getch
 
         File.open(@make).each { |l|
           if l.match(/^COMMON_FLAGS/)
-            File.write(tmp, "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe\"\n", mode: 'a')
+            File.write(tmp, "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe -fomit-frame-pointer\"\n", mode: 'a')
           else
             File.write(tmp, l, mode: 'a')
           end
@@ -35,9 +34,8 @@ module Getch
         # Add the rest
         data = [
           '',
+          "MAKEOPTS=\"-j#{nproc}\"",
           'ACCEPT_KEYWORDS="amd64"',
-          "MAKEOPTS=\"-j#{nproc} -l#{nproc}\"",
-          quiet,
           'INPUT_DEVICES="libinput"',
           grub_pc
         ]
@@ -113,7 +111,7 @@ module Getch
       end
 
       def search_zone(zone)
-        if ! File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
+        if !File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
           raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
       end

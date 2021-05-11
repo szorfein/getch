@@ -47,7 +47,7 @@ module Getch
               # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html
               @log.info("Creating boot pool on #{@pool_name}")
               exec("zpool create -f \\
-                -o ashift=#{ashift} -d \\
+                -o ashift=#{ashift} -o autotrim=on -d \\
                 -o feature@async_destroy=enabled \\
                 -o feature@bookmarks=enabled \\
                 -o feature@embedded_data=enabled \\
@@ -66,7 +66,7 @@ module Getch
               ")
             end
 
-            exec("zpool create -f -o ashift=#{ashift} \\
+            exec("zpool create -f -o ashift=#{ashift} -o autotrim=on \\
               -O encryption=aes-256-gcm \\
               -O keylocation=prompt -O keyformat=passphrase \\
               -O acltype=posixacl -O canmount=off -O compression=lz4 \\

@@ -32,7 +32,7 @@ module Getch
 
           def crypttab
             datas = [
-              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256"
+              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512"
             ]
             File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
           end

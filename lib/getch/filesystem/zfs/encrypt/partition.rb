@@ -18,6 +18,7 @@ module Getch
             @clean.struct(@disk, @cache_disk, @home_disk)
             @clean.hdd(@disk, @cache_disk, @home_disk)
             partition
+            cache
             @state.partition
           end
 
@@ -33,6 +34,15 @@ module Getch
               @partition.boot(@dev_boot)
               @partition.swap(@dev_swap)
               @partition.root(@dev_root, "BF00") if @root_part != 1
+            end
+          end
+
+          def cache
+            if @dev_log
+              exec("sgdisk -n2:0:+4G -t2:BF07 #{cache_disk}")
+            end
+            if @dev_cache
+              exec("sgdisk -n3:0:0 -t3:BF08 #{cache_disk}")
             end
           end
 
