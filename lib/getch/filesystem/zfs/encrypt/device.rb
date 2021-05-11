@@ -41,7 +41,7 @@ module Getch
               @dev_log = "/dev/#{@cache_disk}2"
               @dev_cache = "/dev/#{@cache_disk}3"
             else
-              @dev_swap = "/dev/#{@cache_disk}#{@root_part}"
+              @dev_swap = "/dev/#{@disk}#{@root_part}"
               @root_part += 1
             end
           end

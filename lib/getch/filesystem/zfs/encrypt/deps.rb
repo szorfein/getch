@@ -4,6 +4,7 @@ module Getch
       module Encrypt
         class Deps < Getch::FileSystem::Zfs::Encrypt::Device
           def make
+            unstable_zfs
             install_deps
             zfs_mountpoint
             auto_module_rebuild
@@ -13,6 +14,15 @@ module Getch
           end
 
           private
+          def unstable_zfs
+            conf = "#{MOUNTPOINT}/etc/portage/package.accept_keywords/zfs"
+            data = [
+              "sys-fs/zfs-kmod",
+              "sys-fs/zfs"
+            ]
+            File.write(conf, data.join("\n"), mode: "w")
+          end
+
           def install_deps
             exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
             exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)

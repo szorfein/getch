@@ -4,7 +4,7 @@ module Getch
   module Gentoo
     class Boot
       def initialize(opts)
-        @disk = opts.disk
+        @disk = opts.boot_disk ? opts.boot_disk : opts.disk
         @user = opts.username
         @config = Getch.class_fs::Config.new()
       end
@@ -58,7 +58,7 @@ module Getch
         puts 'Installing GRUB...'
         Getch::Emerge.new("sys-boot/grub:2").pkg!
         @config.grub
-        exec_chroot("grub-install /dev/#{@dev_grub}")
+        exec_chroot("grub-install /dev/#{@disk}")
         exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')
       end
 
