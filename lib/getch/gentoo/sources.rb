@@ -26,10 +26,6 @@ module Getch
         end
       end
 
-      def localmodconfig
-        Getch::Make.new("make localmodconfig").run!
-      end
-
       private
 
       def make_kernel

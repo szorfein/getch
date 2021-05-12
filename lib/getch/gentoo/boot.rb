@@ -13,7 +13,6 @@ module Getch
         @config.fstab
         bootloader
         password
-        cleanup
         the_end
       end
 
@@ -76,10 +75,6 @@ module Getch
       end
 
       private
-
-      def cleanup
-        Getch::Emerge.new("emerge --depclean").run!
-      end
 
       def the_end
         #Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")

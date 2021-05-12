@@ -54,7 +54,6 @@ module Getch
         new
         source.build_kspp
         source.build_others
-        source.localmodconfig
         source.make
         @state.kernel
       end

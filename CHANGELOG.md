@@ -1,4 +1,5 @@
 * DOCS update.
+* Keep Nano for those who need :)
 * ZFS use the last version >=2.0 with kernel stable =5.10
 * ZFS create a Log device and Cache device if getch is used with `--separate-cache`.
 * GRUB or Systemd-boot can now be installed on separate disk with `--separate-boot`.
