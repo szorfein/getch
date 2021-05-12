@@ -3,23 +3,14 @@ module Getch
     module Ext4
       module Encrypt
         class Deps
-          def initialize
-            if Helpers::efi?
-              install_efi
-            else
-              install_bios
-            end
-            install_deps
-          end
-
           def make
+            install_bios unless Helpers::efi?
+            install_deps
             genkernel
             Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
           end
 
           private
-          def install_efi
-          end
 
           def genkernel
             grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'

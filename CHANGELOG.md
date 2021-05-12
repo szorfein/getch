@@ -1,3 +1,4 @@
+## 0.1.2, release 2021-05-12
 * DOCS update.
 * Keep Nano for those who need :)
 * ZFS use the last version >=2.0 with kernel stable =5.10
