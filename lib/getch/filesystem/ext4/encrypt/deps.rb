@@ -36,8 +36,7 @@ module Getch
           end
 
           def install_deps
-            exec("euse -E cryptsetup") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /cryptsetup/)
-            Getch::Emerge.new('genkernel sys-apps/systemd sys-fs/cryptsetup').pkg!
+            Getch::Emerge.new('genkernel sys-apps/systemd').pkg!
           end
 
           def exec(cmd)

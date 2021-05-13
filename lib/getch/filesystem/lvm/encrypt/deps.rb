@@ -37,8 +37,7 @@ module Getch
           def install_deps
             make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
             exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)
-            exec("euse -E cryptsetup") if ! Helpers::grep?(make_conf, /cryptsetup/)
-            Getch::Emerge.new('genkernel systemd sys-fs/cryptsetup lvm2').pkg!
+            Getch::Emerge.new('genkernel systemd lvm2').pkg!
             Getch::Bask.new('-a lvm').run!
             exec("systemctl enable lvm2-monitor")
           end

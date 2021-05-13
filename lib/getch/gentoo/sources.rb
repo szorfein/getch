@@ -7,6 +7,7 @@ module Getch
       end
 
       def build_others
+        cryptsetup
         virtualbox_guest
         qemu_guest
         install_wifi
@@ -34,6 +35,16 @@ module Getch
         Getch::Make.new(cmd).run!
         is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
         raise "No kernel installed, compiling source fail..." if is_kernel == []
+      end
+
+      def cryptsetup
+        return unless DEFAULT_OPTIONS[:encrypt]
+        make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
+
+        puts "Adding support for cryptsetup."
+        bask("-a cryptsetup")
+        exec("euse -E cryptsetup") if !Helpers::grep?(make_conf, /cryptsetup/)
+        Getch::Emerge.new("sys-fs/cryptsetup").pkg!
       end
 
       def virtualbox_guest
