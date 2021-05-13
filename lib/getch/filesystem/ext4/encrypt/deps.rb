@@ -31,8 +31,8 @@ module Getch
           end
 
           def install_bios
+            exec("euse -p sys-boot/grub -D grub_platforms_efi-64")
             exec("euse -p sys-boot/grub -E device-mapper")
-            exec("euse -p sys-fs/cryptsetup -E luks1_default")
           end
 
           def install_deps

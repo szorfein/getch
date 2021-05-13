@@ -28,7 +28,7 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options crypt_root=PARTUUID=#{@partuuid_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
+              "options crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} keymap=#{DEFAULT_OPTIONS[:keymap]} rw"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
           end
@@ -46,7 +46,7 @@ module Getch
             return if Helpers::efi?
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [
-              "GRUB_CMDLINE_LINUX=\"crypt_root=PARTUUID=#{@partuuid_root} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
+              "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{DEFAULT_OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
             File.write(file, cmdline.join("\n"), mode: 'a')
@@ -55,7 +55,6 @@ module Getch
           private
 
           def gen_uuid
-            @partuuid_root = Helpers::partuuid(@dev_root)
             @partuuid_swap = Helpers::partuuid(@dev_swap)
             @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
             @uuid_esp = Helpers::uuid(@dev_esp) if @dev_esp
