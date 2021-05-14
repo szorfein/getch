@@ -1,3 +1,6 @@
+* Add configs for systemd-network to have network after a reboot.
+* Correct permissions (/home/[user] and /etc/portage)
+
 ## 0.1.2, release 2021-05-12
 * DOCS update.
 * Keep Nano for those who need :)

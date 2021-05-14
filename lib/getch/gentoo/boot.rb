@@ -13,6 +13,7 @@ module Getch
         @config.fstab
         bootloader
         password
+        permission
         the_end
       end
 
@@ -30,7 +31,7 @@ module Getch
         puts "Configuring systemd-boot."
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
         esp = '/efi'
-        exec_chroot("bootctl --path #{esp} install")
+        Getch::Chroot.new("bootctl --path #{esp} install").run!
         datas_loader = [
           'default gentoo',
           'timeout 3',
@@ -44,12 +45,12 @@ module Getch
         initramfs = Dir.glob("#{MOUNTPOINT}/boot/initramfs-*.img")
         FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs", preserve: true) if initramfs != []
 
-        exec_chroot("bootctl --path #{esp} update")
+        Getch::Chroot.new("bootctl --path #{esp} update").run!
       end
 
       def bootctl_dep
         puts 'Installing systemd-boot...'
-        exec_chroot("euse -p sys-apps/systemd -E gnuefi")
+        Getch::Chroot.new("euse -p sys-apps/systemd -E gnuefi").run!
         Getch::Emerge.new("sys-apps/systemd efivar").pkg!
       end
 
@@ -57,8 +58,8 @@ module Getch
         puts 'Installing GRUB...'
         Getch::Emerge.new("sys-boot/grub:2").pkg!
         @config.grub
-        exec_chroot("grub-install /dev/#{@disk}")
-        exec_chroot('grub-mkconfig -o /boot/grub/grub.cfg')
+        Getch::Chroot.new("grub-install /dev/#{@disk}").run!
+        Getch::Chroot.new("grub-mkconfig -o /boot/grub/grub.cfg").run!
       end
 
       def password
@@ -67,7 +68,7 @@ module Getch
         system(cmd)
         if @user
           puts "Creating user #{@user}"
-          exec_chroot("useradd -m -G users,wheel,audio,video #{@user}")
+          Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}").run!
           puts "Password for your user #{@user}"
           cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd #{@user}\""
           system(cmd)
@@ -75,6 +76,13 @@ module Getch
       end
 
       private
+
+      def permission
+        FileUtils.chmod_R 0755, "#{MOUNTPOINT}/etc/portage"
+        if @user
+          Getch::Chroot.new("chown -R #{@user}:#{@user} /home/#{@user}").run!
+        end
+      end
 
       def the_end
         #Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")

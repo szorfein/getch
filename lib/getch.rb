@@ -5,6 +5,7 @@ require_relative 'getch/filesystem'
 require_relative 'getch/command'
 require_relative 'getch/helpers'
 require_relative 'getch/log'
+require_relative 'getch/config'
 
 module Getch
 
@@ -99,6 +100,11 @@ module Getch
     gentoo.boot(options)
   end
 
+  def self.configure(options)
+    config = Getch::Config.new
+    config.network
+  end
+
   def self.main(argv)
     options = Options.new(argv)
     DEFAULT_OPTIONS.freeze
@@ -107,5 +113,6 @@ module Getch
     format(options.disk, options.fs, options.username)
     class_fs::Mount.new.run
     init_gentoo(options)
+    configure(options)
   end
 end
