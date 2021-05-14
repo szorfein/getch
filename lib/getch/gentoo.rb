@@ -5,6 +5,7 @@ require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'
 require_relative 'gentoo/sources'
 require_relative 'gentoo/boot'
+require_relative 'gentoo/use'
 
 module Getch
   module Gentoo

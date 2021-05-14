@@ -1,4 +1,5 @@
-* Add configs for systemd-network to have network after a reboot.
+* Config for systemd-resolved, enable DNS over TLS with Quad9 (9.9.9.9)
+* Add configs for systemd-network with DHCP for wifi and ethernet.
 * Correct permissions (/home/[user] and /etc/portage)
 
 ## 0.1.2, release 2021-05-12
