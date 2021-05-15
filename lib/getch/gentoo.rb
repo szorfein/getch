@@ -6,6 +6,7 @@ require_relative 'gentoo/chroot'
 require_relative 'gentoo/sources'
 require_relative 'gentoo/boot'
 require_relative 'gentoo/use'
+require_relative 'gentoo/use_flag'
 
 module Getch
   module Gentoo
@@ -37,11 +38,15 @@ module Getch
         @state.config
       end
 
-      def chroot
+      def chroot(options)
         chroot = Getch::Gentoo::Chroot.new()
         chroot.update
         chroot.cpuflags
         chroot.systemd
+
+        flags = Getch::Gentoo::UseFlag.new(options)
+        flags.apply
+
         chroot.world
         return if STATES[:gentoo_kernel]
         chroot.kernel

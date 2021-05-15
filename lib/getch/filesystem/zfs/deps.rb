@@ -24,8 +24,6 @@ module Getch
         end
 
         def install_deps
-          exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
-          exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)
           Getch::Bask.new('-a zfs').run!
           Getch::Make.new("make modules_prepare").run!
           Getch::Make.new("make -j$(nproc)").run!

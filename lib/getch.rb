@@ -95,7 +95,7 @@ module Getch
     gentoo = Getch::Gentoo
     gentoo.stage3
     gentoo.config(options)
-    gentoo.chroot
+    gentoo.chroot(options)
     gentoo.kernel
     gentoo.boot(options)
   end

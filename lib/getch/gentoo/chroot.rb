@@ -44,8 +44,6 @@ module Getch
 
       def kernel_deps
         Getch::Emerge.new("gentoolkit").pkg!
-        use = Getch::Gentoo::Use.new("sys-apps/kmod")
-        use.add('zstd')
         @pkgs << "sys-apps/kmod"
       end
 

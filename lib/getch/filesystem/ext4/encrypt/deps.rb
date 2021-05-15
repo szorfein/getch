@@ -4,7 +4,6 @@ module Getch
       module Encrypt
         class Deps
           def make
-            install_bios unless Helpers::efi?
             install_deps
             genkernel
             Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
@@ -30,13 +29,8 @@ module Getch
             File.write(file, datas.join("\n"), mode: 'a')
           end
 
-          def install_bios
-            exec("euse -p sys-boot/grub -D grub_platforms_efi-64")
-            exec("euse -p sys-boot/grub -E device-mapper")
-          end
-
           def install_deps
-            Getch::Emerge.new('genkernel sys-apps/systemd').pkg!
+            Getch::Emerge.new('genkernel').pkg!
           end
 
           def exec(cmd)

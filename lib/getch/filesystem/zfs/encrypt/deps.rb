@@ -24,12 +24,10 @@ module Getch
           end
 
           def install_deps
-            exec("euse -E libzfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /libzfs/)
-            exec("euse -E rootfs") if ! Helpers::grep?("#{MOUNTPOINT}/etc/portage/make.conf", /rootfs/)
             Getch::Bask.new('-a zfs').run!
             Getch::Make.new("make modules_prepare").run!
             Getch::Make.new("make -j$(nproc)").run!
-            Getch::Emerge.new('genkernel sys-fs/zfs sys-apps/systemd').pkg!
+            Getch::Emerge.new('genkernel sys-fs/zfs').pkg!
           end
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator

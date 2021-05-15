@@ -27,10 +27,6 @@ module Getch
           File.write(file, datas.join("\n"), mode: 'a')
         end
 
-        def install_bios
-          exec("euse -p sys-boot/grub -E device-mapper")
-        end
-
         def install_deps
           make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
           exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)

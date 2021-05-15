@@ -50,8 +50,7 @@ module Getch
 
       def bootctl_dep
         puts 'Installing systemd-boot...'
-        Getch::Chroot.new("euse -p sys-apps/systemd -E gnuefi").run!
-        Getch::Emerge.new("sys-apps/systemd efivar").pkg!
+        Getch::Emerge.new("efivar").pkg!
       end
 
       def grub

@@ -4,7 +4,6 @@ module Getch
       module Encrypt
         class Deps
           def make
-            install_bios unless Helpers::efi?
             install_deps
             options_make
             Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
@@ -30,15 +29,8 @@ module Getch
             File.write(file, datas.join("\n"), mode: 'a')
           end
 
-          def install_bios
-            exec("euse -p sys-boot/grub -D grub_platforms_efi-64")
-            exec("euse -p sys-boot/grub -E device-mapper")
-          end
-
           def install_deps
-            make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
-            exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)
-            Getch::Emerge.new('genkernel systemd lvm2').pkg!
+            Getch::Emerge.new('genkernel lvm2').pkg!
             Getch::Bask.new('-a lvm').run!
             exec("systemctl enable lvm2-monitor")
           end

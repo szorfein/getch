@@ -53,9 +53,6 @@ module Getch
       ]
       Helpers::create_dir("#{@systemd_net_dir}/resolved.conf.d")
       File.write(conf, datas.join("\n"), mode: 'w')
-
-      use = Getch::Gentoo::Use.new("sys-apps/systemd")
-      use.add('dns-over-tls')
     end
   end
 end
