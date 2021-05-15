@@ -44,7 +44,8 @@ module Getch
 
       def kernel_deps
         Getch::Emerge.new("gentoolkit").pkg!
-        exec_chroot("euse -p sys-apps/kmod -E lzma")
+        use = Getch::Gentoo::Use.new("sys-apps/kmod")
+        use.add('zstd')
         @pkgs << "sys-apps/kmod"
       end
 

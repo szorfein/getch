@@ -132,7 +132,7 @@ module Getch
       @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
-      @version = "0.4"
+      @version = "0.5"
     end
 
     def run!
