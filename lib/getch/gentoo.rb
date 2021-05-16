@@ -1,5 +1,3 @@
-require 'open-uri'
-require 'open3'
 require_relative 'gentoo/stage'
 require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'

@@ -36,7 +36,7 @@ module Getch
           def crypttab
             home = @home_disk ? "crypthome UUID=#{@uuid_home} /root/secretkeys/crypto_keyfile.bin luks" : ''
             datas = [
-              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=256",
+              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512",
               home
             ]
             File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))

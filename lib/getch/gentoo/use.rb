@@ -35,7 +35,7 @@ module Getch
         }
 
         use = list.join(' ')
-        line = "USE=${USE} #{use}\n"
+        line = "USE=\"${USE} #{use}\"\n"
         File.write(@make, line, mode: 'a')
       end
     end

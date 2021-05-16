@@ -1,3 +1,6 @@
+* Stop using `euse` from `gentoolkit`, use native Ruby code here.
+* Optimization on package installation, they shouln't be installed more than once.
+* Regroup use flags under Getch::Gentoo::UseFlag.
 * Upd Bask v0.5 (zstd compression, better support for wifi...)
 * Config for systemd-resolved, enable DNS over TLS with Quad9 (9.9.9.9)
 * Add configs for systemd-network with DHCP for wifi and ethernet.

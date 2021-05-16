@@ -24,7 +24,7 @@ module Getch
       def world
         return if STATES[:gentoo_update]
         puts "Update Gentoo world"
-        Getch::Emerge.new("emerge --update --deep --newuse @world").run!
+        Getch::Emerge.new("emerge --update --deep --changed-use --newuse @world").run!
         @state.update
       end
 

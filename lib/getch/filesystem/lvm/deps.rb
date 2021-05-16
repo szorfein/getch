@@ -28,9 +28,8 @@ module Getch
         end
 
         def install_deps
-          make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
-          exec("euse -E lvm") if ! Helpers::grep?(make_conf, /lvm/)
-          Getch::Emerge.new('genkernel lvm2').pkg!
+          # lvm2 should be alrealy installed
+          Getch::Emerge.new('genkernel').pkg!
           Getch::Bask.new('-a lvm').run!
           exec("systemctl enable lvm2-monitor")
         end
