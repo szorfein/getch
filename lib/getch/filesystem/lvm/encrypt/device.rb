@@ -6,9 +6,9 @@ module Getch
           def initialize
             super
             @vg = 'vg0'
-            @lv_root = "/dev/mapper/#{@vg}-root"
-            @lv_swap = "/dev/mapper/#{@vg}-swap"
-            @lv_home = @home_disk ? "/dev/mapper/#{@vg}-home" : nil
+            @lv_root = "/dev/#{@vg}/root"
+            @lv_swap = "/dev/#{@vg}/swap"
+            @lv_home = @home_disk ? "/dev/#{@vg}/home" : nil
             @luks_root = "/dev/mapper/cryptroot"
             @luks_home = @home_disk ? "/dev/mapper/crypthome" : nil
           end

@@ -43,11 +43,11 @@ module Getch
       end
 
       def kernel_deps
-        Getch::Emerge.new("gentoolkit").pkg!
         @pkgs << "sys-apps/kmod"
       end
 
       def install_pkgs
+        @pkgs << "app-portage/gentoolkit"
         @pkgs << "app-admin/sudo"
         @pkgs << "app-editors/vim"
         @pkgs << "sys-kernel/linux-firmware"

@@ -28,8 +28,7 @@ module Getch
         end
 
         def install_deps
-          # lvm2 should be alrealy installed
-          Getch::Emerge.new('genkernel').pkg!
+          Getch::Emerge.new('sys-fs/lvm2 genkernel').pkg!
           Getch::Bask.new('-a lvm').run!
           exec("systemctl enable lvm2-monitor")
         end
