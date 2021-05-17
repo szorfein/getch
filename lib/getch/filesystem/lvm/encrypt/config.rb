@@ -58,7 +58,7 @@ module Getch
           def data_fstab
             boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
             boot = @dev_boot ? "UUID=#{@uuid_boot} /boot ext4 noauto,noatime 1 2" : ''
-            swap = "#{@lv_swap} none swap discard 0 0"
+            swap = "/dev/mapper/cryptswap none swap discard 0 0"
             root = "#{@lv_root} / ext4 defaults 0 1"
             home = @lv_home ? "#{@lv_home} /home/#{@user} ext4 defaults 0 2" : ''
 

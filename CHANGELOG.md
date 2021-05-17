@@ -1,3 +1,5 @@
+## 0.1.3, release 2021-05-17
+* LVM use the format /dev/vg_name/lv_name for mount/format/fstab.
 * Stop using `euse` from `gentoolkit`, use native Ruby code here.
 * Optimization on package installation, they shouln't be installed more than once.
 * Regroup use flags under Getch::Gentoo::UseFlag.

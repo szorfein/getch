@@ -31,8 +31,8 @@ module Getch
 
           def install_deps
             # lvm2, cryptsetup alrealy installed
-            Getch::Emerge.new('genkernel').pkg!
             Getch::Bask.new('-a lvm').run!
+            Getch::Emerge.new('genkernel').pkg!
             exec("systemctl enable lvm2-monitor")
           end
 
