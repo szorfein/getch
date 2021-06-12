@@ -15,7 +15,6 @@ module Getch
           def run_partition
             return if STATES[:partition ]
             @clean.old_vg(@dev_root, @vg)
-            @clean.struct(@disk, @cache_disk, @home_disk)
             @clean.hdd(@disk, @cache_disk, @home_disk)
             partition
             encrypt

@@ -23,15 +23,14 @@ module Getch
       end
 
       def self.hdd(*disks)
-        disks.each { |d| clean_hdd(d) }
+        disks.each { |d|
+          clean_struct(d)
+          clean_hdd(d)
+        }
       end
       # See https://wiki.archlinux.org/index.php/Solid_state_drive/Memory_cell_clearing
       # for SSD
       def self.sdd
-      end
-
-      def self.struct(*disks)
-        disks.each { |d| clean_struct(d) }
       end
 
       def self.old_vg(disk, vg)

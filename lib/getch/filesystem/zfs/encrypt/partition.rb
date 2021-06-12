@@ -15,7 +15,6 @@ module Getch
           def run
             return if STATES[:partition ]
             @clean.old_zpool
-            @clean.struct(@disk, @cache_disk, @home_disk)
             @clean.hdd(@disk, @cache_disk, @home_disk)
             partition
             cache
