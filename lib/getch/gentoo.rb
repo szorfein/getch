@@ -50,6 +50,7 @@ module Getch
         chroot.kernel
         chroot.kernel_deps
         chroot.install_pkgs
+        chroot.kernel_link
       end
 
       def kernel

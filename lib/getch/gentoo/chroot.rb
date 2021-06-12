@@ -39,7 +39,6 @@ module Getch
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
         @pkgs << "sys-kernel/gentoo-sources"
-        @pkgs << "dev-util/dwarves"
       end
 
       def kernel_deps
@@ -54,6 +53,12 @@ module Getch
         all_pkgs = @pkgs.join(" ")
         puts "Installing #{all_pkgs}..."
         Getch::Emerge.new(all_pkgs).pkg!
+      end
+
+      # create a symbolic link for /usr/src/linux
+      def kernel_link
+        cmd = "eselect kernel set 1"
+        exec_chroot(cmd)
       end
 
       private
