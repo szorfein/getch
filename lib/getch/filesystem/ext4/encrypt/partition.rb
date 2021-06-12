@@ -15,6 +15,7 @@ module Getch
           def run_partition
             return if STATES[:partition ]
             @clean.hdd(@disk, @cache_disk, @home_disk)
+            @clean.boot(@boot_disk, @disk)
             if Helpers::efi?
               partition_efi
               encrypt_efi

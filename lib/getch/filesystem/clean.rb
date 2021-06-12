@@ -33,6 +33,13 @@ module Getch
       def self.sdd
       end
 
+      def self.boot(boot_dev, root_dev)
+        return if !boot_dev
+        if boot_dev != root_dev
+          hdd(boot_dev)
+        end
+      end
+
       def self.old_vg(disk, vg)
         oldvg = `vgdisplay | grep #{vg}`.chomp
         Helpers::sys("vgremove -f #{vg}") if oldvg != ''
