@@ -12,6 +12,7 @@ module Getch
         qemu_guest
         install_wifi
         install_audio
+        flash_mod
       end
 
       def build_kspp
@@ -80,7 +81,33 @@ module Getch
       end
 
       def wifi_drivers
-        bask("-a ath9k-driver") if ismatch?('ath9k')
+        conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
+        File.delete(conf) if File.exists? conf
+
+        if ismatch?('ath9k')
+          bask("-a ath9k-driver")
+        end
+
+        module_load("iwlmvm", conf)
+        module_load("ath9k", conf)
+      end
+
+      def flash_mod
+        conf = "#{MOUNTPOINT}/etc/modules-load.d/usb.conf"
+        File.delete(conf) if File.exists? conf
+
+        module_load("ehci_pci", conf)
+        module_load("rtsx_pci_sdmmc", conf)
+        module_load("sdhci_pci", conf)
+        module_load("uas", conf)
+        module_load("uhci_hcd", conf)
+        module_load("xhci_pci", conf)
+      end
+
+      def module_load(name, file)
+        return unless name
+        return unless ismatch?(name)
+        File.write(file, "#{name}\n", mode: 'a')
       end
     end
   end
