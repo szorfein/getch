@@ -30,7 +30,7 @@ module Getch
           end
 
           def zfs
-            bloc=`blockdev --getbsz #{@dev_root}`.chomp
+            bloc=`blockdev --getpbsz #{@dev_root}`.chomp
             ashift = case bloc
               when 8096
                 13

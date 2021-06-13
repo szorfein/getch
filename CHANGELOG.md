@@ -1,3 +1,7 @@
+* For ZFS, use `blockdev --getpbsz` to find correct bloc (sector) size.
+* Populate `/etc/modules-load.d/` with modules found with `lsmod` (only few wifi's, flash usb related (ehci, ohci, xhci, etc)).
+* Remove the package `dev-util/dwarves`.
+
 ## 0.1.3, release 2021-05-17
 * LVM use the format /dev/vg_name/lv_name for mount/format/fstab.
 * Stop using `euse` from `gentoolkit`, use native Ruby code here.
