@@ -1,3 +1,4 @@
+* Now clean properly another disk used with option s`--separate-x DISK`.
 * For ZFS, use `blockdev --getpbsz` to find correct bloc (sector) size.
 * Populate `/etc/modules-load.d/` with modules found with `lsmod` (only few wifi's, flash usb related (ehci, ohci, xhci, etc)).
 * Remove the package `dev-util/dwarves`.

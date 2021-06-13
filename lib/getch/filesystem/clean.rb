@@ -33,11 +33,12 @@ module Getch
       def self.sdd
       end
 
-      def self.boot(boot_dev, root_dev)
-        return if !boot_dev
-        if boot_dev != root_dev
-          hdd(boot_dev)
-        end
+      def self.external_disk(root_disk, *disks)
+        disks.each { |d|
+          unless d && d != "" && d != nil && d == root_disk
+            hdd(d)
+          end
+        }
       end
 
       def self.old_vg(disk, vg)

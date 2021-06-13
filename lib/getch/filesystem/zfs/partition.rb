@@ -14,8 +14,9 @@ module Getch
         def run_partition
           return if STATES[:partition ]
           @clean.old_zpool
-          @clean.hdd(@disk, @cache_disk, @home_disk)
-          @clean.boot(@boot_disk, @disk)
+          @clean.hdd(@disk)
+          @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
+
           partition
           cache
           @state.partition

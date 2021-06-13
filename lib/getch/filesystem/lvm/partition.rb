@@ -13,8 +13,8 @@ module Getch
         def run_partition
           return if STATES[:partition ]
           @clean.old_vg(@dev_root, @vg)
-          @clean.hdd(@disk, @cache_disk, @home_disk)
-          @clean.boot(@boot_disk, @disk)
+          @clean.hdd(@disk)
+          @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
           partition
           lvm
           @state.partition
