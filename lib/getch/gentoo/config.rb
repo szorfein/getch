@@ -94,6 +94,40 @@ module Getch
         Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
+      def portage_bashrc
+        conf = "#{MOUNTPOINT}/etc/portage/bashrc"
+        content = %q{
+# https://wiki.gentoo.org/wiki/Signed_kernel_module_support
+function pre_pkg_preinst() {
+    # This hook signs any out-of-tree kernel modules.
+    if [[ "$(type -t linux-mod_pkg_preinst)" != "function" ]]; then
+        # The package does not seem to install any kernel modules.
+        return
+    fi
+    # Get the signature algorithm used by the kernel.
+    local module_sig_hash="$(grep -Po '(?<=CONFIG_MODULE_SIG_HASH=").*(?=")' "${KERNEL_DIR}/.config")"
+    # Get the key file used by the kernel.
+    local module_sig_key="$(grep -Po '(?<=CONFIG_MODULE_SIG_KEY=").*(?=")' "${KERNEL_DIR}/.config")"
+    module_sig_key="${module_sig_key:-certs/signing_key.pem}"
+    # Path to the key file or PKCS11 URI
+    if [[ "${module_sig_key#pkcs11:}" == "${module_sig_key}" && "${module_sig_key#/}" == "${module_sig_key}" ]]; then
+        local key_path="${KERNEL_DIR}/${module_sig_key}"
+    else
+        local key_path="${module_sig_key}"
+    fi
+    # Certificate path
+    local cert_path="${KERNEL_DIR}/certs/signing_key.x509"
+    # Sign all installed modules before merging.
+    find "${D%/}/${INSDESTTREE#/}/" -name "*.ko" -exec "${KERNEL_DIR}/scripts/sign-file" "${module_sig_hash}" "${key_path}" "${cert_path}" '{}' \;
+}
+        }
+
+        f = File.new(conf, "w")
+        f.write("#{content}\n")
+        f.chmod(0644)
+        f.close
+      end
+
       private
 
       def control_options(options)
