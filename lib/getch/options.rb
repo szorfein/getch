@@ -27,10 +27,10 @@ module Getch
           @language = lang
         end
         opts.on("-z", "--zoneinfo ZONE", "Default is US/Eastern") do |zone|
-          @zoneinfo = zone
+          @zoneinfo = Getch::Guard.zone(zone)
         end
         opts.on("-k", "--keymap KEY", "Default is us") do |key|
-          @keymap = key
+          @keymap = Getch::Guard.keymap(key)
         end
         opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb), default use #{@disk}") do |disk|
           @disk = Getch::Guard.disk(disk)
