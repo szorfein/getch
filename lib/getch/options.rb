@@ -33,25 +33,25 @@ module Getch
           @keymap = key
         end
         opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb), default use #{@disk}") do |disk|
-          @disk = disk
+          @disk = Getch::Guard.disk(disk)
         end
         opts.on("-f", "--format FS", "Can be ext4, lvm or zfs. Default use ext4") do |fs|
-          @fs = fs
+          @fs = Getch::Guard.format(fs)
           DEFAULT_OPTIONS[:fs] = fs # dont known why, but it should be enforce
         end
         opts.on("-u", "--username USERNAME", "Create a new user /home/USERNAME with password.") do |user|
           @username = user
         end
         opts.on("--separate-boot DISK", "Disk for the boot/efi partition, default use #{@disk}") do |boot|
-          @boot_disk = boot
+          @boot_disk = Getch::Guard.disk(boot)
           DEFAULT_OPTIONS[:boot_disk] = boot
         end
         opts.on("--separate-cache DISK", "Disk for the swap partition, add ZIL/L2ARC for ZFS when set, default use #{@disk}") do |swap|
-          @cache_disk = swap
+          @cache_disk = Getch::Guard.disk(swap)
           DEFAULT_OPTIONS[:cache_disk] = swap
         end
         opts.on("--separate-home DISK", "Disk for the /home partition, default is nil") do |home|
-          @home_disk = home
+          @home_disk = Getch::Guard.disk(home)
           DEFAULT_OPTIONS[:home_disk] = home
         end
         opts.on("--encrypt", "Encrypt your system.") do

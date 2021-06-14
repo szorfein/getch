@@ -1,3 +1,4 @@
+* Control input for `--disk DISK`, `--format FS`.
 * Add a `/etc/portage/bashrc` to automatically signing kernel modules with `Portage`.
 * Now clean properly another disk used with option s`--separate-x DISK`.
 * For ZFS, use `blockdev --getpbsz` to find correct bloc (sector) size.

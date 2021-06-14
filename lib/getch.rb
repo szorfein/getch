@@ -6,6 +6,7 @@ require_relative 'getch/command'
 require_relative 'getch/helpers'
 require_relative 'getch/log'
 require_relative 'getch/config'
+require_relative 'getch/guard'
 
 module Getch
 
