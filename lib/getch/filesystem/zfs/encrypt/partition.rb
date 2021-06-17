@@ -28,22 +28,22 @@ module Getch
           def partition
             if Helpers::efi?
               @partition.efi(@dev_esp)
-              @partition.swap(@dev_swap)
+              @partition.swap(@dev_swap) if !@cache_disk
               @partition.root(@dev_root, "BF00") if @root_part != 1
             else
               @partition.gpt(@dev_gpt)
               @partition.boot(@dev_boot)
-              @partition.swap(@dev_swap)
+              @partition.swap(@dev_swap) if !@cache_disk
               @partition.root(@dev_root, "BF00") if @root_part != 1
             end
           end
 
           def cache
-            if @dev_log
-              exec("sgdisk -n2:0:+4G -t2:BF07 #{cache_disk}")
-            end
-            if @dev_cache
-              exec("sgdisk -n3:0:0 -t3:BF08 #{cache_disk}")
+            if @cache_disk
+              mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+              exec("sgdisk -n1:0:+#{mem} -t1:8200 /dev/#{@cache_disk}")
+              exec("sgdisk -n2:0:+4G -t2:BF07 /dev/#{@cache_disk}")
+              exec("sgdisk -n3:0:0 -t3:BF08 /dev/#{@cache_disk}")
             end
           end
 
