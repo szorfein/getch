@@ -28,6 +28,11 @@ module Getch
         end
       end
 
+      def firewall
+        bask("-a iptables")
+        Getch::Emerge.new("net-firewall/iptables").pkg!
+      end
+
       private
 
       def make_kernel
