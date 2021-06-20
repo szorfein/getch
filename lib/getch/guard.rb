@@ -15,6 +15,7 @@ module Getch::Guard
     raise InvalidDisk, "No disk." unless name
     raise InvalidDisk, "Bad device name #{name}." unless name.match(/^sd[a-z]{1}$/)
     raise InvalidDisk, "Disk /dev/#{name} no found." unless File.exist? "/dev/#{name}"
+    name
   rescue InvalidDisk => e
     puts "#{e.class} => #{e}"
     exit 1
@@ -53,6 +54,7 @@ module Getch::Guard
     if key == []
       raise InvalidKeymap, "Keymap #{name} no found."
     end
+    name
   rescue InvalidKeymap => e
     puts "#{e.class} => #{e}"
     exit 1

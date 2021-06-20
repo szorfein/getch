@@ -8,7 +8,6 @@ module Getch
           @state = Getch::States.new
           if ! @id
             @log.info "Research pool id for #{@dev_root}..."
-            sleep 2 until Helpers::pool_id(@dev_root)
             @id = Helpers::pool_id(@dev_root)
             @boot_pool_name = "bpool-#{@id}"
             @pool_name = "rpool-#{@id}"

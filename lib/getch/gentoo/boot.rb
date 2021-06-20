@@ -18,6 +18,9 @@ module Getch
       end
 
       def bootloader
+        # Ensure than systemd is build with all our flags
+        Getch::Emerge.new("@world").pkg!
+
         if Helpers::efi?
           bootctl
         else

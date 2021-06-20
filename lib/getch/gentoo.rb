@@ -60,6 +60,7 @@ module Getch
         new
         source.build_kspp
         source.build_others
+        source.firewall
         source.make
         @state.kernel
       end

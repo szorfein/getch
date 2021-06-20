@@ -66,6 +66,20 @@ module Helpers
 
   # Used with ZFS for the pool name
   def self.pool_id(dev)
-    `lsblk -o PARTUUID #{dev}`.delete("\n").delete("PARTUUID").match(/[\w]{5}/)
+    if dev.match(/[0-9]/)
+      sleep 1
+      `lsblk -o PARTUUID #{dev}`.delete("\n").delete("PARTUUID").match(/[\w]{5}/)
+    else
+      puts "Please, enter a pool name"
+      while true
+        print "\n> "
+        value = gets
+        if value.match(/[a-z]{4,20}/)
+          return value
+        end
+        puts "Bad name, you enter: #{value}"
+        puts "Valid pool name use character only, between 4-20."
+      end
+    end
   end
 end
