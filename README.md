@@ -72,25 +72,28 @@ Unless your old LVM volume group is also named `vg0`, `getch` may fail to partit
     # pvremove -f /dev/sdb
 
 #### Encryption enable on BIOS with ext4
-To decrypt your disk on BIOS system, you have to enter your password two times. One time for Grub and another time for the initramfs (Genkernel). [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
+To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
-#### With ZFS
-When Gentoo boot, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just reboot on your ISO:
+#### ZFS
+When Gentoo boot the first time, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just `export` your pool from the genkernel shell:
 
-You need the partuuid, pool are create with the first 5 characters, just replace `sdX` by your real device:
+The zpool name should be visible (rpool-150ed here), so enter in the Genkernel shell:
+
+    > shell
+    zpool import -f -N -R /mnt rpool-150ed
+    zpool export -a
+
+Then, just reboot now, it's all.
+
+*INFO*: To create the zpool, getch use the 5 fist characters from the `partuuid`, just replace `sdX` by your real device:
 
     # ls -l /dev/disk/by-partuuid/ | grep sdX4
     -> 150ed969...
-    # zpool import -N -R /mnt rpool-150ed
 
-And export them correctly:
-
-    # zpool export -a
-
-It's all.
+The pool will be called `rpool-150ed`.
 
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
 + lspci
-+ lsmod
++ cat /proc/modules

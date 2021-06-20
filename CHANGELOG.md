@@ -1,3 +1,5 @@
+## 0.1.4, release 2021-06-20
+* Add `iptables`.
 * Control input for options `--disk`, `--format`, `--zoneinfo`, `--keymap`.
 * Add a `/etc/portage/bashrc` to automatically signing kernel modules with `emerge`.
 * Now clean properly another disk used with option `--separate-x DISK`.
