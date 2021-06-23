@@ -74,8 +74,8 @@ module Getch
         File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
         File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}\n")
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
-        File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
+        File.write("#{MOUNTPOINT}/etc/timezone", "#{Getch::OPTIONS[:zoneinfo]}\n")
+        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{Getch::OPTIONS[:keymap]}\n")
       end
 
       def hostname
@@ -131,9 +131,9 @@ function pre_pkg_preinst() {
       private
 
       def control_options
-        search_zone(OPTIONS[:zoneinfo])
-        search_utf8(OPTIONS[:language])
-        search_key(OPTIONS[:keymap])
+        search_zone(Getch::OPTIONS[:zoneinfo])
+        search_utf8(Getch::OPTIONS[:language])
+        search_key(Getch::OPTIONS[:keymap])
       end
 
       def search_key(keys)

@@ -22,7 +22,9 @@ module Getch
       end
 
       def make
-        if OPTIONS[:fs] == 'lvm' || OPTIONS[:fs] == 'zfs' || OPTIONS[:encrypt]
+        if Getch::OPTIONS[:fs] == 'lvm' ||
+            Getch::OPTIONS[:fs] == 'zfs' ||
+            Getch::OPTIONS[:encrypt]
           @filesystem.make
         else
           make_kernel
@@ -45,7 +47,7 @@ module Getch
       end
 
       def cryptsetup
-        return unless OPTIONS[:encrypt]
+        return unless Getch::OPTIONS[:encrypt]
         make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
 
         puts "Adding support for cryptsetup."

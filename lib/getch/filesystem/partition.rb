@@ -16,7 +16,7 @@ module Getch
         return if ! dev
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        if OPTIONS[:fs] == "zfs"
+        if Getch::OPTIONS[:fs] == "zfs"
           exec("sgdisk -n#{part}:0:+2G -t#{part}:BE00 #{disk}")
         else
           exec("sgdisk -n#{part}:0:+128MiB -t#{part}:8300 #{disk}")
@@ -34,7 +34,7 @@ module Getch
         return if ! dev
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        if OPTIONS[:cache_disk]
+        if Getch::OPTIONS[:cache_disk]
           exec("sgdisk -n#{part}:0:0 -t#{part}:8200 #{disk}")
         else
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
@@ -53,7 +53,7 @@ module Getch
         return if ! dev
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        if OPTIONS[:home_disk]
+        if Getch::OPTIONS[:home_disk]
           exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
         end
       end
@@ -66,7 +66,7 @@ module Getch
 
       def exec(cmd)
         @log.debug "Partition disk with #{cmd}"
-        if OPTIONS[:encrypt]
+        if Getch::OPTIONS[:encrypt]
           Helpers::sys(cmd)
         else
           Getch::Command.new(cmd).run!

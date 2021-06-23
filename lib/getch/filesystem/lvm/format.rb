@@ -4,7 +4,7 @@ module Getch
       class Format < Getch::FileSystem::Lvm::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @state = Getch::States.new
           format
         end
 

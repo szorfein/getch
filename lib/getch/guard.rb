@@ -24,7 +24,8 @@ module Getch::Guard
   def self.format(name)
     raise InvalidFormat, "No format specified." unless name
     raise InvalidFormat, "Format #{name} not yet available." if name.match(/btrfs/)
-    raise InvalidFormat, "Format #{name} not supported." unless name.match(/zfs|lvm|zfs/)
+    raise InvalidFormat, "Format #{name} not supported." unless name.match(/zfs|lvm|ext4/)
+    name
   rescue InvalidFormat => e
     puts "#{e.class} => #{e}"
     exit 1

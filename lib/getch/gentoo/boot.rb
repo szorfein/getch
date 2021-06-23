@@ -4,8 +4,10 @@ module Getch
   module Gentoo
     class Boot
       def initialize
-        @disk = OPTIONS[:boot_disk] ? OPTIONS[:boot_disk] : OPTIONS[:disk]
-        @user = OPTIONS[:username]
+        @disk = Getch::OPTIONS[:boot_disk] ?
+          Getch::OPTIONS[:boot_disk] :
+          Getch::OPTIONS[:disk]
+        @user = Getch::OPTIONS[:username]
         @class_fs = Getch::select_fs
         @config = @class_fs::Config.new
       end

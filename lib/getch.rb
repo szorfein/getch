@@ -103,12 +103,12 @@ module Getch
 
     def format
       return if STATES[:format]
-      @class_fs::Format.new(OPTIONS)
+      @class_fs::Format.new
     end
 
     def mount
       return if STATES[:mount]
-      @class_fs::Mount.new(OPTIONS).run
+      @class_fs::Mount.new.run
     end
 
     def install_gentoo

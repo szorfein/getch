@@ -25,7 +25,7 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{OPTIONS[:keymap]}"
+              "options root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
           end
@@ -42,7 +42,7 @@ module Getch
             return if @efi
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
-              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{OPTIONS[:keymap]}\""
+              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}\""
             ]
             File.write("#{file}", cmdline.join("\n"), mode: 'a')
           end
