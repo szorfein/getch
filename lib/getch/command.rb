@@ -59,7 +59,7 @@ module Getch
       block.each do |f|
         begin
           data = f.read_nonblock(@block_size)
-          puts data if DEFAULT_OPTIONS[:verbose]
+          puts data if OPTIONS[:verbose]
         rescue EOFError
           puts ""
         rescue => e

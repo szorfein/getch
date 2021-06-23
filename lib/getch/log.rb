@@ -2,8 +2,9 @@ require 'logger'
 
 module Getch
   class Log
-    def initialize
+    def initialize(verbose = false)
       @log_file = '/tmp/log_install.txt'
+      @verbose = verbose
       check_file
       init_log
       init_log_text
@@ -37,7 +38,7 @@ module Getch
 
     def init_log
       @logger = Logger.new(STDOUT)
-      @logger.level = DEFAULT_OPTIONS[:verbose] ? Logger::DEBUG : Logger::INFO
+      @logger.level = @verbose ? Logger::DEBUG : Logger::INFO
       @logger.formatter = proc { |severity, datetime, progname, msg|
         "#{severity}, #{msg}\n" 
       }

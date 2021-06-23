@@ -3,7 +3,8 @@ module Getch
     class Sources
       def initialize
         @lsmod = `lsmod`.chomp
-        @filesystem = Getch.class_fs::Deps.new()
+        @class_fs = Getch::select_fs
+        @filesystem = @class_fs::Deps.new
       end
 
       def build_others
@@ -21,7 +22,7 @@ module Getch
       end
 
       def make
-        if DEFAULT_OPTIONS[:fs] == 'lvm' || DEFAULT_OPTIONS[:fs] == 'zfs' || DEFAULT_OPTIONS[:encrypt]
+        if OPTIONS[:fs] == 'lvm' || OPTIONS[:fs] == 'zfs' || OPTIONS[:encrypt]
           @filesystem.make
         else
           make_kernel
@@ -44,7 +45,7 @@ module Getch
       end
 
       def cryptsetup
-        return unless DEFAULT_OPTIONS[:encrypt]
+        return unless OPTIONS[:encrypt]
         make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
 
         puts "Adding support for cryptsetup."

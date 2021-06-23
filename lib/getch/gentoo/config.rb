@@ -69,13 +69,13 @@ module Getch
         FileUtils.copy_file(src, dest, preserve = true)
       end
 
-      def systemd(options)
-        control_options(options)
+      def systemd
+        control_options
         File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
         File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}\n")
         File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
-        File.write("#{MOUNTPOINT}/etc/timezone", "#{options.zoneinfo}")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{options.keymap}")
+        File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
+        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
       end
 
       def hostname
@@ -130,10 +130,10 @@ function pre_pkg_preinst() {
 
       private
 
-      def control_options(options)
-        search_zone(options.zoneinfo)
-        search_utf8(options.language)
-        search_key(options.keymap)
+      def control_options
+        search_zone(OPTIONS[:zoneinfo])
+        search_utf8(OPTIONS[:language])
+        search_key(OPTIONS[:keymap])
       end
 
       def search_key(keys)

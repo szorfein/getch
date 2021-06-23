@@ -8,42 +8,40 @@ require_relative 'gentoo/use_flag'
 
 module Getch
   module Gentoo
-    class << self
-      def new
+    class Main
+      def initialize
         @state = Getch::States.new()
       end
 
       def stage3
         return if STATES[:gentoo_base]
-        new
-        stage = Getch::Gentoo::Stage.new()
+        stage = Getch::Gentoo::Stage.new
         stage.get_stage3
         stage.control_files
         stage.checksum
         @state.stage3
       end
 
-      def config(options)
+      def config
         return if STATES[:gentoo_config]
-        new
-        config = Getch::Gentoo::Config.new()
+        config = Getch::Gentoo::Config.new
         config.portage
         config.portage_fs
         config.portage_bashrc
         config.repo
         config.network
-        config.systemd(options)
+        config.systemd
         config.hostname
         @state.config
       end
 
-      def chroot(options)
-        chroot = Getch::Gentoo::Chroot.new()
+      def chroot
+        chroot = Getch::Gentoo::Chroot.new
         chroot.update
         chroot.cpuflags
         chroot.systemd
 
-        flags = Getch::Gentoo::UseFlag.new(options)
+        flags = Getch::Gentoo::UseFlag.new
         flags.apply
 
         chroot.world
@@ -56,8 +54,7 @@ module Getch
 
       def kernel
         return if STATES[:gentoo_kernel]
-        source = Getch::Gentoo::Sources.new()
-        new
+        source = Getch::Gentoo::Sources.new
         source.build_kspp
         source.build_others
         source.firewall
@@ -65,8 +62,8 @@ module Getch
         @state.kernel
       end
 
-      def boot(options)
-        boot = Getch::Gentoo::Boot.new(options)
+      def boot
+        boot = Getch::Gentoo::Boot.new
         boot.start
       end
     end

@@ -3,10 +3,11 @@ require 'fileutils'
 module Getch
   module Gentoo
     class Boot
-      def initialize(opts)
-        @disk = opts.boot_disk ? opts.boot_disk : opts.disk
-        @user = opts.username
-        @config = Getch.class_fs::Config.new()
+      def initialize
+        @disk = OPTIONS[:boot_disk] ? OPTIONS[:boot_disk] : OPTIONS[:disk]
+        @user = OPTIONS[:username]
+        @class_fs = Getch::select_fs
+        @config = @class_fs::Config.new
       end
 
       def start

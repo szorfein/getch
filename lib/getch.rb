@@ -7,21 +7,22 @@ require_relative 'getch/helpers'
 require_relative 'getch/log'
 require_relative 'getch/config'
 require_relative 'getch/guard'
+require_relative 'getch/version'
 
 module Getch
 
-  DEFAULT_OPTIONS = {
-    language: 'en_US',
-    zoneinfo: 'US/Eastern',
-    keymap: 'us',
-    disk: 'sda',
-    fs: 'ext4',
-    username: nil,
-    boot_disk: nil,
-    cache_disk: nil,
-    home_disk: nil,
-    encrypt: false,
-    verbose: false
+  OPTIONS = {
+    :language => 'en_US',
+    :zoneinfo => 'US/Eastern',
+    :keymap => 'us',
+    :disk => false,
+    :fs => 'ext4',
+    :username => false,
+    :boot_disk => false,
+    :cache_disk => false,
+    :home_disk => false,
+    :encrypt => false,
+    :verbose => false
   }
 
   STATES = {
@@ -34,86 +35,94 @@ module Getch
     :gentoo_kernel => false
   }
 
-  MOUNTPOINT = "/mnt/gentoo".freeze
+  MOUNTPOINT = "/mnt/gentoo"
+
   DEFAULT_FS = {
     true => {
-      ext4: Getch::FileSystem::Ext4::Encrypt,
-      lvm: Getch::FileSystem::Lvm::Encrypt,
-      zfs: Getch::FileSystem::Zfs::Encrypt
+      ext4: FileSystem::Ext4::Encrypt,
+      lvm: FileSystem::Lvm::Encrypt,
+      zfs: FileSystem::Zfs::Encrypt
     },
     false => {
-      ext4: Getch::FileSystem::Ext4,
-      lvm: Getch::FileSystem::Lvm,
-      zfs: Getch::FileSystem::Zfs,
+      ext4: FileSystem::Ext4,
+      lvm: FileSystem::Lvm,
+      zfs: FileSystem::Zfs,
     }
   }.freeze
 
-  def self.class_fs
-    encrypt = DEFAULT_OPTIONS[:encrypt]
-    fs = DEFAULT_OPTIONS[:fs].to_sym
-    DEFAULT_FS[encrypt][fs]
+  def self.select_fs
+    encrypt = OPTIONS[:encrypt]
+    fs_sym = OPTIONS[:fs].to_sym
+    DEFAULT_FS[encrypt][fs_sym]
   end
 
-  def self.resume_options(opts)
-    puts "\nBuild Gentoo with the following args:\n"
-    puts "Lang: #{DEFAULT_OPTIONS[:language]}"
-    puts "Zoneinfo: #{DEFAULT_OPTIONS[:zoneinfo]}"
-    puts "Keymap: #{DEFAULT_OPTIONS[:keymap]}"
-    puts "Disk: #{DEFAULT_OPTIONS[:disk]}"
-    puts "Filesystem: #{DEFAULT_OPTIONS[:fs]}"
-    puts "Username: #{DEFAULT_OPTIONS[:username]}"
-    puts "Encrypt: #{DEFAULT_OPTIONS[:encrypt]}"
-    puts
-    puts "separate-boot disk: #{DEFAULT_OPTIONS[:boot_disk]}"
-    puts "separate-cache disk: #{DEFAULT_OPTIONS[:cache_disk]}"
-    puts "separate-home disk: #{DEFAULT_OPTIONS[:home_disk]}"
-    puts
-    print "Continue? (n,y) "
-    case gets.chomp
-    when /^y|^Y/
-      return
-    else
-      exit 1
+  class Main
+    def initialize(argv)
+      argv[:cli]
+      @class_fs = Getch::select_fs
+      @log = Log.new
+      Getch::States.new # Update States
     end
-  end
 
-  def self.format(disk, fs, user)
-    return if STATES[:format] and STATES[:partition]
-    log = Log.new
-    puts
-    print "Partition and format disk #{disk}, this will erase all data, continue? (n,y) "
-    case gets.chomp
-    when /^y|^Y/
-      log.info("Partition start")
-      class_fs::Partition.new
-      class_fs::Format.new
-    else
-      exit 1
+    def resume
+      puts "\nBuild Gentoo with the following args:\n"
+      puts
+      puts "\tLang: #{OPTIONS[:language]}"
+      puts "\tZoneinfo: #{OPTIONS[:zoneinfo]}"
+      puts "\tKeymap: #{OPTIONS[:keymap]}"
+      puts "\tDisk: #{OPTIONS[:disk]}"
+      puts "\tFilesystem: #{OPTIONS[:fs]}"
+      puts "\tUsername: #{OPTIONS[:username]}"
+      puts "\tEncrypt: #{OPTIONS[:encrypt]}"
+      puts
+      puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
+      puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"
+      puts "\tseparate-home disk: #{OPTIONS[:home_disk]}"
+      puts
+      print "Continue? (y,N) "
+      case gets.chomp
+      when /^y|^Y/
+        return
+      else
+        exit
+      end
     end
-  end
 
-  def self.init_gentoo(options)
-    gentoo = Getch::Gentoo
-    gentoo.stage3
-    gentoo.config(options)
-    gentoo.chroot(options)
-    gentoo.kernel
-    gentoo.boot(options)
-  end
+    def partition
+      return if STATES[:partition]
+      puts
+      print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
+      case gets.chomp
+      when /^y|^Y/
+        @log.info("Partition start")
+        @class_fs::Partition.new
+      else
+        exit
+      end
+    end
 
-  def self.configure(options)
-    config = Getch::Config.new
-    config.network
-  end
+    def format
+      return if STATES[:format]
+      @class_fs::Format.new(OPTIONS)
+    end
 
-  def self.main(argv)
-    options = Options.new(argv)
-    DEFAULT_OPTIONS.freeze
-    resume_options(options)
-    Getch::States.new # Update States
-    format(options.disk, options.fs, options.username)
-    class_fs::Mount.new.run
-    init_gentoo(options)
-    configure(options)
+    def mount
+      return if STATES[:mount]
+      @class_fs::Mount.new(OPTIONS).run
+    end
+
+    def install_gentoo
+      gentoo = Getch::Gentoo::Main.new
+      gentoo.stage3
+      gentoo.config
+      gentoo.chroot
+      gentoo.kernel
+      gentoo.boot
+    end
+    
+    def configure
+      config = Getch::Config.new
+      config.network
+    end
   end
 end

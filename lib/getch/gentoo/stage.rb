@@ -4,7 +4,6 @@ require 'open3'
 module Getch
   module Gentoo
     class Stage
-
       def initialize
         @mirror = "https://mirrors.soeasyto.com/distfiles.gentoo.org"
         @release = release

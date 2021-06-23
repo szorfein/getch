@@ -2,8 +2,16 @@
 
 require 'getch'
 
-def main(argv)
-  Getch::main(argv)
-end
+getch = Getch::Main.new(
+  :cli => Getch::Options.new(ARGV)
+)
 
-main(ARGV)
+getch.resume
+
+getch.partition
+getch.format
+getch.mount
+
+getch.install_gentoo
+
+getch.configure

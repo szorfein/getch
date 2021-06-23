@@ -4,12 +4,12 @@ module Getch
       def initialize
         @efi = Helpers::efi?
         @root_part = 1
-        @user = DEFAULT_OPTIONS[:username]
+        @user = OPTIONS[:username]
 
-        @disk = DEFAULT_OPTIONS[:disk]
-        @boot_disk = DEFAULT_OPTIONS[:boot_disk]
-        @cache_disk = DEFAULT_OPTIONS[:cache_disk]
-        @home_disk = DEFAULT_OPTIONS[:home_disk]
+        @disk = OPTIONS[:disk]
+        @boot_disk = OPTIONS[:boot_disk]
+        @cache_disk = OPTIONS[:cache_disk]
+        @home_disk = OPTIONS[:home_disk]
 
         search_boot
         search_swap
