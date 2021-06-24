@@ -122,8 +122,8 @@ module Getch
 
     def install_void
       void = Getch::Void::Main.new
-      void.static_xbps
-      #void.config
+      void.root_fs
+      void.config
       #void.chroot
       #void.boot
     end

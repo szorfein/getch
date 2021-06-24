@@ -46,14 +46,6 @@ module Getch
 
       private
 
-      def systemd
-        File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
-        File.write("#{MOUNTPOINT}/etc/timezone", "#{Getch::OPTIONS[:zoneinfo]}\n")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{Getch::OPTIONS[:keymap]}\n")
-      end
-
-      private
-
       def add_line(file, line)
         raise "No file #{file} found !" unless File.exist? file
         File.write(file, "#{line}\n", mode: 'a')

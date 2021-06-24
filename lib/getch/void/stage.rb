@@ -3,34 +3,34 @@ require 'open3'
 
 module Getch
   module Void
-    class Xbps
+    class RootFS
       def initialize
-        @url = "https://alpha.de.repo.voidlinux.org/static"
-        @file = "sha256sums.txt"
+        @url = "https://alpha.de.repo.voidlinux.org/live/current"
+        @file = "sha256sum.sig"
         @xbps = false
         Dir.chdir(MOUNTPOINT)
       end
 
       def search_archive
-        URI.open("#{@url}/#{@file}") do |file|
-          # Read the bottom/end
-          IO.readlines(file)[-10..-1].each { |l|
-            @xbps = l.split(" ") if l.match(/(^[[:alnum:]]+\s+)xbps-static-static-[\d._]+.x86_64-musl.tar.xz/)
-          }
-        end
+        yurl = "#{@url}/#{@file}"
+        puts "Open #{yurl}"
+        Helpers::get_file_online(yurl, @file)
+        File.open(@file).each { |l|
+          @xbps = l.tr('()', '').split(" ") if l.match(/void-x86_64-musl-ROOTFS-[\d._]+.tar.xz/)
+        }
       end
 
       def download
         raise StandardError, "No file found, retry later." if !@xbps
         return if File.exist? @xbps[1]
-        puts "Downloading #{@xbps[1]}..." # => xbps-static-static-X.XX_X.x86_64-musl.tar.xz
+        puts "Downloading #{@xbps[1]}..."
         Helpers::get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])
       end
 
       def checksum
         print ' => Checking SHA256 checksum...'
         # Should contain 2 spaces...
-        command = "echo #{@xbps[0]}  #{@xbps[1]} | sha256sum --check"
+        command = "echo #{@xbps[3]}  #{@xbps[1]} | sha256sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
           puts "\t[OK]"
@@ -57,7 +57,10 @@ module Getch
       end
 
       def cleaning
-        Dir.glob("xbps-static-static-*.tar.xz").each do |f|
+        Dir.glob("void-x86_64-musl*.tar.xz").each do |f|
+          File.delete(f)
+        end
+        Dir.glob("sha256*").each do |f|
           File.delete(f)
         end
       end

@@ -3,8 +3,6 @@ require_relative 'void/config'
 require_relative 'void/chroot'
 require_relative 'void/sources'
 require_relative 'void/boot'
-require_relative 'void/use'
-require_relative 'void/use_flag'
 
 module Getch
   module Void
@@ -13,9 +11,9 @@ module Getch
         @state = Getch::States.new()
       end
 
-      def static_xbps
+      def root_fs
         return if STATES[:gentoo_base]
-        xbps = Getch::Void::Xbps.new
+        xbps = Getch::Void::RootFS.new
         xbps.search_archive
         xbps.download
         xbps.checksum
