@@ -26,31 +26,22 @@ module Getch
         return if STATES[:gentoo_config]
         config = Getch::Void::Config.new
         config.network
-        config.hostname
+        config.system
+        config.locale
+        config.fstab
         @state.config
       end
 
       def chroot
         chroot = Getch::Void::Chroot.new
         chroot.update
-        chroot.cpuflags
-        chroot.systemd
-
-        chroot.world
         return if STATES[:gentoo_kernel]
-        chroot.kernel
-        chroot.kernel_deps
-        chroot.install_pkgs
-        chroot.kernel_link
+        chroot.install_grub
       end
 
       def kernel
         return if STATES[:gentoo_kernel]
-        source = Getch::Void::Sources.new
-        source.build_kspp
-        source.build_others
-        source.firewall
-        source.make
+        Getch::Void::Sources.new
         @state.kernel
       end
 

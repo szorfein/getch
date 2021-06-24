@@ -5,7 +5,7 @@ module Getch
   module Void
     class Xbps
       def initialize
-        @url = "https://alpha.de.repo.voidlinux.org/static/"
+        @url = "https://alpha.de.repo.voidlinux.org/static"
         @file = "sha256sums.txt"
         @xbps = false
         Dir.chdir(MOUNTPOINT)
