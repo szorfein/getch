@@ -35,6 +35,7 @@ module Getch::Guard
     raise InvalidZone, "No zoneinfo specified." unless name
     raise InvalidZone, "Directory /usr/share/zoneinfo/ no found on this system..." unless Dir.exist? "/usr/share/zoneinfo/"
     raise InvalidZone, "Zoneinfo #{name} is no found in /usr/share/zoneinfo/." unless File.exist? "/usr/share/zoneinfo/#{name}"
+    name
   rescue InvalidZone => e
     puts "#{e.class} => #{e}"
     exit 1

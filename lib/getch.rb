@@ -119,6 +119,14 @@ module Getch
       gentoo.kernel
       gentoo.boot
     end
+
+    def install_void
+      void = Getch::Void::Main.new
+      void.static_xbps
+      #void.config
+      #void.chroot
+      #void.boot
+    end
     
     def configure
       config = Getch::Config.new
