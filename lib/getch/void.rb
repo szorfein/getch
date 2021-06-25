@@ -23,6 +23,7 @@ module Getch
       def config
         return if STATES[:gentoo_config]
         config = Getch::Void::Config.new
+        config.host
         config.network
         config.system
         config.locale
@@ -31,10 +32,13 @@ module Getch
       end
 
       def chroot
+        return if STATES[:gentoo_kernel]
         chroot = Getch::Void::Chroot.new
         chroot.update
-        return if STATES[:gentoo_kernel]
-        chroot.install_grub
+        chroot.fs
+        chroot.extras
+        chroot.grub
+        chroot.install_pkgs
       end
 
       def kernel

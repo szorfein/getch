@@ -11,12 +11,13 @@ module Getch
         Dir.chdir(MOUNTPOINT)
       end
 
+      # Search only the glibc x86_64 for now
       def search_archive
         yurl = "#{@url}/#{@file}"
         puts "Open #{yurl}"
         Helpers::get_file_online(yurl, @file)
         File.open(@file).each { |l|
-          @xbps = l.tr('()', '').split(" ") if l.match(/void-x86_64-musl-ROOTFS-[\d._]+.tar.xz/)
+          @xbps = l.tr('()', '').split(" ") if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
         }
       end
 
@@ -57,7 +58,7 @@ module Getch
       end
 
       def cleaning
-        Dir.glob("void-x86_64-musl*.tar.xz").each do |f|
+        Dir.glob("void-x86_64*.tar.xz").each do |f|
           File.delete(f)
         end
         Dir.glob("sha256*").each do |f|

@@ -61,7 +61,11 @@ module Helpers
   end
 
   def self.uuid(dev)
-    `lsblk -do UUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
+    Dir.glob("/dev/disk/by-uuid/*").each { |f|
+      if File.readlink(f).match(/#{dev}/)
+        return f.delete_prefix("/dev/disk/by-uuid/")
+      end
+    }
   end
 
   # Used with ZFS for the pool name

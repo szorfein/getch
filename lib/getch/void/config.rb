@@ -8,11 +8,20 @@ module Getch
         @log = Getch::Log.new
         @network_dir = "#{MOUNTPOINT}/etc"
         @id = SecureRandom.hex(2)
+        @hostname = "void-hatch-#{@id}"
+        @class_fs = Getch::select_fs
+        @config = @class_fs::Config.new
+      end
+
+      def host
+        print " => Adding hostname #{@hostname}..."
+        conf = "#{@network_dir}/hostname"
+        File.write(conf, "#{@hostname}\n", mode: 'w', chmod: 0744)
+        puts "\s[OK]"
       end
 
       def network
         print " => Copying /etc/resolv.conf..."
-        FileUtils.mkdir_p @network_dir unless Dir.exist? @network_dir
         src = '/etc/resolv.conf'
         dest = "#{@network_dir}/resolv.conf"
         FileUtils.copy_file(src, dest, preserve = true)
@@ -26,20 +35,25 @@ module Getch
         add_line(rc, "HARDWARECLOCK=\"UTC\"") if !search(rc, /^HARDWARECLOCK/)
         add_line(rc, "KEYMAP=\"#{Getch::OPTIONS[:keymap]}\"") if !search(rc, /^KEYMAP/)
         add_line(rc, "TIMEZONE=\"#{Getch::OPTIONS[:zoneinfo]}\"") if !search(rc, /^TIMEZONE/)
-        add_line(rc, "HOSTNAME=\"void-hatch-#{@id}\"") if !search(rc, /^HOSTNAME/)
+        add_line(rc, "HOSTNAME=\"#{@hostname}\"") if !search(rc, /^HOSTNAME/)
         puts "\s[OK]"
       end
 
       def locale
         print " => Updating locale system..."
+        control_options
         conf = "#{MOUNTPOINT}/etc/locale.conf"
         File.write(conf, "LANG=#{@lang}\n")
         add_line(conf, "LC_COLLATE=C")
+        conf = "#{MOUNTPOINT}/etc/default/libc-locales"
+        add_line(conf, @utf8)
+        puts "\s[OK]"
       end
 
       def fstab
         print " => Configuring fstab..."
         conf = "#{MOUNTPOINT}/etc/fstab"
+        @config.fstab
         add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0") if !search(conf, /^tmpfs/)
         puts "\s[OK]"
       end
@@ -66,25 +80,25 @@ module Getch
 
       def search_key(keys)
         @keymap = nil
-        Dir.glob("#{MOUNTPOINT}/usr/share/keymaps/**/#{keys}.map.gz") { |f|
+        Dir.glob("#{MOUNTPOINT}/usr/share/kbd/keymaps/**/#{keys}.map.gz") { |f|
           @keymap = f
         }
         raise ArgumentError, "No keymap #{@keymap} found" if ! @keymap
       end
 
       def search_zone(zone)
-        if !File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
+        unless File.exist? "#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}"
           raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
       end
 
       def search_utf8(lang)
         @utf8, @lang = nil, nil
-        File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each { |l|
+        File.open("#{MOUNTPOINT}/etc/default/libc-locales").each { |l|
           @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
           @lang = $~[0] if l.match(/^#{lang}[. ]+utf\-8/i)
         }
-        raise ArgumentError, "Lang #{lang} no found" if ! @utf8
+        raise ArgumentError, "Lang #{lang} no found" if !@utf8
       end
     end
   end
