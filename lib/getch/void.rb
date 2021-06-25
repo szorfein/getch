@@ -27,7 +27,6 @@ module Getch
         config.network
         config.system
         config.locale
-        config.fstab
         @state.config
       end
 
@@ -37,7 +36,6 @@ module Getch
         chroot.update
         chroot.fs
         chroot.extras
-        chroot.grub
         chroot.install_pkgs
       end
 
@@ -49,7 +47,12 @@ module Getch
 
       def boot
         boot = Getch::Void::Boot.new
-        boot.start
+        boot.new_user
+        boot.fstab
+        boot.dracut
+        boot.grub
+        boot.initramfs
+        boot.finish
       end
     end
   end

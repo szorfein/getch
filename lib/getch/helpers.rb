@@ -86,4 +86,33 @@ module Helpers
       end
     end
   end
+
+  module Void
+    def command(args)
+      print " => Exec: #{args}..."
+      cmd = "sudo chroot #{MOUNTPOINT} /bin/bash -c \"#{args}\""
+      _, stderr, status = Open3.capture3(cmd)
+      if status.success? then
+        puts "\s[OK]"
+        return
+      end
+      raise "\n[-] Fail cmd #{args} - #{stderr}."
+    end
+
+    def command_output(args)
+      print " => Exec: #{args}..."
+      cmd = "sudo chroot #{MOUNTPOINT} /bin/bash -c \"#{args}\""
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        puts
+        while line = stdout_err.gets
+          puts line
+        end
+
+        exit_status = wait_thr.value
+        unless exit_status.success?
+          raise "\n[-] Fail cmd #{args} - #{stdout_err}."
+        end
+      end
+    end
+  end
 end
