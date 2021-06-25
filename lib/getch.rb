@@ -18,6 +18,7 @@ module Getch
     :disk => false,
     :fs => 'ext4',
     :username => false,
+    :os => 'gentoo',
     :boot_disk => false,
     :cache_disk => false,
     :home_disk => false,
@@ -65,7 +66,7 @@ module Getch
     end
 
     def resume
-      puts "\nBuild Gentoo with the following args:\n"
+      puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
       puts "\tZoneinfo: #{OPTIONS[:zoneinfo]}"
@@ -111,6 +112,17 @@ module Getch
       @class_fs::Mount.new.run
     end
 
+    def install
+      if OPTIONS[:os] == 'gentoo'
+        install_gentoo
+      elsif OPTIONS[:os] == 'void'
+        install_void
+      else
+        puts "Options #{OPTIONS[:os]} not supported...."
+        exit 1
+      end
+    end
+
     def install_gentoo
       gentoo = Getch::Gentoo::Main.new
       gentoo.stage3
@@ -124,8 +136,8 @@ module Getch
       void = Getch::Void::Main.new
       void.root_fs
       void.config
-      #void.chroot
-      #void.boot
+      void.chroot
+      void.boot
     end
     
     def configure

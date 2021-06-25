@@ -12,6 +12,6 @@ getch.partition
 getch.format
 getch.mount
 
-getch.install_gentoo
+getch.install
 
 getch.configure

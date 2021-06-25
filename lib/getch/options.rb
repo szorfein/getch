@@ -36,6 +36,10 @@ module Getch
           OPTIONS[:username] = user
         end
 
+        opts.on("-o", "--os NAME", /gentoo|void/, "Instal distro NAME, can be gentoo or void.") do |name|
+          OPTIONS[:os] = name
+        end
+
         opts.on("--separate-boot DISK", "Disk for the boot/efi partition, default use #{@disk}") do |boot|
           OPTIONS[:boot_disk] = Getch::Guard.disk(boot)
         end
