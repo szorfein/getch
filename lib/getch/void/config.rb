@@ -48,8 +48,8 @@ module Getch
         add_line(conf, "LC_COLLATE=C")
         conf = "#{MOUNTPOINT}/etc/default/libc-locales"
         add_line(conf, @utf8)
-        command "xbps-reconfigure -f glibc-locales"
         puts "\s[OK]"
+        command "xbps-reconfigure -f glibc-locales"
       end
 
       private

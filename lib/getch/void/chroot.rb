@@ -1,4 +1,3 @@
-require 'open3'
 require_relative '../helpers'
 
 module Getch

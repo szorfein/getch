@@ -142,8 +142,10 @@ module Getch
     end
     
     def configure
-      config = Getch::Config.new
+      config = Getch::Config::Main.new
       config.network
+      config.wifi
+      config.dns
     end
   end
 end
