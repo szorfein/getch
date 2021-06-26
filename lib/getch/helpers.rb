@@ -90,7 +90,7 @@ module Helpers
   module Void
     def command(args)
       print " => Exec: #{args}..."
-      cmd = "sudo chroot #{MOUNTPOINT} /bin/bash -c \"#{args}\""
+      cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
       _, stderr, status = Open3.capture3(cmd)
       if status.success? then
         puts "\s[OK]"
@@ -101,7 +101,7 @@ module Helpers
 
     def command_output(args)
       print " => Exec: #{args}..."
-      cmd = "sudo chroot #{MOUNTPOINT} /bin/bash -c \"#{args}\""
+      cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         puts
         while line = stdout_err.gets

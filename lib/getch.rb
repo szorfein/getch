@@ -1,6 +1,7 @@
 require_relative 'getch/options'
 require_relative 'getch/states'
 require_relative 'getch/gentoo'
+require_relative 'getch/void'
 require_relative 'getch/filesystem'
 require_relative 'getch/command'
 require_relative 'getch/helpers'

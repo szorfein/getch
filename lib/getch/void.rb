@@ -1,7 +1,7 @@
 require_relative 'void/stage'
 require_relative 'void/config'
 require_relative 'void/chroot'
-require_relative 'void/sources'
+#require_relative 'void/sources'
 require_relative 'void/boot'
 
 module Getch
