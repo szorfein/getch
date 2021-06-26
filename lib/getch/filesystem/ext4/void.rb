@@ -1,7 +1,10 @@
+require_relative '../../helpers'
+
 module Getch
   module FileSystem
     module Ext4
       class Void < Device
+        include Helpers::Void
         attr_reader :boot_disk
 
         def fstab
@@ -19,7 +22,6 @@ module Getch
           content = [
             "hostonly=\"yes\"",
             "omit_dracutmodules+=\" btrfs lvm \"",
-            "compress=\"zstd\"",
             ""
           ]
           File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)

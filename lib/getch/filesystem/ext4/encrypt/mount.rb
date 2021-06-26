@@ -13,7 +13,6 @@ module Getch
 
           def run
             return if STATES[:mount]
-            @mount.swap(@dev_swap)
             @mount.root(@luks_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)

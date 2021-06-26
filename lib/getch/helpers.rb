@@ -119,5 +119,19 @@ module Helpers
       raise "No file #{file} found !" unless File.exist? file
       File.write(file, "#{line}\n", mode: 'a')
     end
+
+    def search(file, text)
+      File.open(file).each { |line|
+        return true if line.match(/#{text}/)
+      }
+      return false
+    end
+
+    # Used only when need password
+    def chroot(cmd)
+      if !system("chroot", Getch::MOUNTPOINT, "/bin/bash", "-c", cmd)
+        raise "[-] Error with: #{cmd}"
+      end
+    end
   end
 end

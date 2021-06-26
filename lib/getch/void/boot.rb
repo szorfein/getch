@@ -34,6 +34,8 @@ module Getch
         @fs.crypttab if @class_fs::Void.method_defined? :crypttab
       end
 
+      # Test dracut in chroot (version in /lib/modules/5.1.7-1):
+      # dracut -H -f --kver 5.1.7-1
       def dracut
         print " => Configuring Dracut..."
         @fs.config_dracut

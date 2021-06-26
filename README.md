@@ -1,5 +1,7 @@
 # Getch
-A CLI tool to install Gentoo.
+A CLI tool to install Gentoo or Void Linux.
+
+**Note** about Void Linux, only the fs `ext4` is working for now (encrypted of not), i'll add the rest later.
 
 ## Description
 Actually, Getch support only the [AMD64 handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64) and only with the last `stage3-amd64-systemd`.  
@@ -20,15 +22,9 @@ Getch is cryptographically signed, so add my public key (if you haven’t alread
 With `gem` installed:
 
     $ gem cert --add <(curl -Ls https://raw.githubusercontent.com/szorfein/getch/master/certs/szorfein.pem)
-
     $ gem install getch -P HighSecurity
 
-When you boot from an `iso`, you can install `ruby`, `getch` and correct your `PATH=` directly with the `bin/setup.sh`:
-
-    # sh <(curl -L https://raw.githubusercontent.com/szorfein/getch/master/bin/setup.sh)
-    # source ~/.zshrc # or ~/.bashrc
-
-If you want to try the master branch:
+If you want to try the master branch (can be unstable):
 
     # git clone https://github.com/szorfein/getch
     # cd getch
@@ -61,6 +57,10 @@ Encrypt with ext4 and create a home directory /home/ninja
 With ZFS:
 
     # getch --format zfs
+
+With `Void Linux`:
+
+    # getch --os void --encrypt -k fr
 
 ## Troubleshooting
 

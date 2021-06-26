@@ -54,13 +54,6 @@ module Getch
 
       private
 
-      def search(file, text)
-        File.open(file).each { |line|
-          return true if line.match(/#{text}/)
-        }
-        return false
-      end
-
       def control_options
         search_zone(OPTIONS[:zoneinfo])
         search_utf8(OPTIONS[:language])
