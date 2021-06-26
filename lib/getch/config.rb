@@ -10,7 +10,8 @@ module Getch
   module Config
     class Main
       def initialize
-        @load = CONFIG_LOAD[OPTIONS[:os]].new
+        os = OPTIONS[:os].to_sym
+        @load = CONFIG_LOAD[os].new
       end
 
       def ethernet

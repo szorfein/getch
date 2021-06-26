@@ -114,5 +114,10 @@ module Helpers
         end
       end
     end
+
+    def add_line(file, line)
+      raise "No file #{file} found !" unless File.exist? file
+      File.write(file, "#{line}\n", mode: 'a')
+    end
   end
 end

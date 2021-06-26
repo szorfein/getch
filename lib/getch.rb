@@ -143,7 +143,7 @@ module Getch
     
     def configure
       config = Getch::Config::Main.new
-      config.network
+      config.ethernet
       config.wifi
       config.dns
     end

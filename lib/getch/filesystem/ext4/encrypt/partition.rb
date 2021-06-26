@@ -18,7 +18,11 @@ module Getch
             @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
             if Helpers::efi?
               partition_efi
-              encrypt_efi
+              if OPTIONS[:os] == 'gentoo'
+                encrypt_efi
+              else
+                encrypt_bios
+              end
             else
               partition_bios
               encrypt_bios

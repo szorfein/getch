@@ -11,6 +11,7 @@ module Getch
         @class_fs = Getch::select_fs
         @fs = @class_fs::Void.new
         @user = OPTIONS[:username]
+        @fs.create_key if @class_fs::Void.method_defined? :create_key
       end
 
       def new_user
@@ -30,6 +31,7 @@ module Getch
         print " => Configuring fstab..."
         @fs.fstab
         puts "\s[OK]"
+        @fs.crypttab if @class_fs::Void.method_defined? :crypttab
       end
 
       def dracut
@@ -44,9 +46,11 @@ module Getch
         print " => Installing Grub on #{disk}..."
         if @efi
           command_output "xbps-install -y grub-x86_64-efi"
+          @fs.config_grub if @class_fs::Void.method_defined? :config_grub
           command_output "grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Void\""
         else
           command_output "xbps-install -y grub"
+          @fs.config_grub if @class_fs::Void.method_defined? :config_grub
           command_output "grub-install /dev/#{disk}"
         end
       end
