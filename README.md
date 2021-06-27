@@ -24,8 +24,8 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ For Gentoo, `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
-+ Void use only Grub2, encryption use luks1.
++ **Gentoo****: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Void**: use only Grub2, encryption use luks1.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)

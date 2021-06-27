@@ -18,7 +18,7 @@ module Getch
           def add_key(name, dev)
             command "dd bs=1 count=64 if=/dev/urandom of=/boot/#{name}"
             puts " => Creating a key for #{dev}, password required:"
-            chroot "cryptsetup luksAddKey #{@dev} /boot/#{name}"
+            chroot "cryptsetup luksAddKey #{dev} /boot/#{name}"
             command "chmod 000 /boot/#{name}"
             #command "chmod -R g-rwx,o-rwx /boot"
           end
