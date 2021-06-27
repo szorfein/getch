@@ -10,9 +10,16 @@ module Getch
 
           # Create key to avoid enter password twice
           def create_key
-            command "dd bs=1 count=64 if=/dev/urandom of=/boot/volume.key"
-            chroot "cryptsetup luksAddKey #{@dev_root} /boot/volume.key"
-            command "chmod 000 /boot/volume.key"
+            add_key("volume.key", @dev_root)
+            add_key("home.key", @dev_home) if @home_disk
+          end
+
+          # Key need to be added in dracut.conf.d and crypttab
+          def add_key(name, dev)
+            command "dd bs=1 count=64 if=/dev/urandom of=/boot/#{name}"
+            puts " => Creating a key for #{dev}, password required:"
+            chroot "cryptsetup luksAddKey #{@dev} /boot/#{name}"
+            command "chmod 000 /boot/#{name}"
             #command "chmod -R g-rwx,o-rwx /boot"
           end
 
@@ -21,6 +28,7 @@ module Getch
             File.write(conf, "\n", mode: 'w', chmod: 0644)
             line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
             add_line(conf, "#{@luks_swap} none swap discard 0 0") if @dev_swap
+            add_line(conf, "#{@luks_home} /home ext4 rw,discard 0 0") if @home_disk
             add_line(conf, "#{@luks_root} / ext4 rw,relatime 0 1")
             add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
           end
@@ -30,16 +38,14 @@ module Getch
             File.write(conf, "\n", mode: 'w', chmod: 0644)
             line_crypttab("cryptswap", @dev_swap, "/dev/urandom", "swap,cipher=aes-xts-plain64:sha256,size=512") if @dev_swap
             line_crypttab("cryptroot", @dev_root, "/boot/volume.key", "luks")
+            line_crypttab("crypthome", @dev_home, "/boot/home.key", "luks") if @home_disk
           end
 
           def config_grub
             conf = "#{MOUNTPOINT}/etc/default/grub"
-            content = [
-              "GRUB_ENABLE_CRYPTODISK=y",
-              ""
-            ]
-            if !search(conf, "GRUB_ENABLE_CRYPTODISK=y")
-              File.write(conf, content.join("\n"), mode: 'a', chmod: 644)
+            content = "GRUB_ENABLE_CRYPTODISK=y"
+            unless search(conf, content)
+              File.write(conf, "#{content}\n", mode: 'a')
             end
           end
 
@@ -52,6 +58,7 @@ module Getch
               ""
             ]
             File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
+            #add_line(conf, "install_items+=\" /boot/home.key \"") if @home_disk
           end
 
           def kernel_cmdline_dracut

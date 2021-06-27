@@ -1,21 +1,38 @@
 # Getch
-A CLI tool to install Gentoo or Void Linux.
+A CLI tool to install Gentoo or Void Linux with default:
++ DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
++ Vim | Nano installed.
++ Iptables installed (not configured).
++ Sudo installed (not configured).
++ No GUI installed.
+
+Hardened System:
++ sysctl.conf with TCP/IP stack hardening  and more [Arch](https://wiki.archlinux.org/title/Sysctl)
++ Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
++ Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
 
 **Note** about Void Linux, only the fs `ext4` is working for now (encrypted of not), i'll add the rest later.
 
 ## Description
-Actually, Getch support only the [AMD64 handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64) and only with the last `stage3-amd64-systemd`.  
+Actually, Getch support only the `x86_64` architecture and only with the following archives:
++ **Gentoo**: `stage3-amd64-systemd`.
++ **Void**: `rootfs glibc` [src](https://voidlinux.org/download/).
 
-BIOS system will use `Grub2` and `systemd-boot` for UEFI. Filesystem supported by Getch are for now:
+Filesystem supported (with or without encryption)
 + Ext4
-+ LVM
++ Lvm
 + ZFS
 
-Encryption is also supported.
+Boot Manager:
++ For Gentoo, `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
++ Void use only Grub2, encryption use luks1.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
 + [Archaeidae](https://github.com/szorfein/archaeidae): Custom Archiso that includes ZFS support.
+
+## Dependencies
+Getch is build without external libs, so it only require `ruby >= 2.5`.
 
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
@@ -42,19 +59,19 @@ For a french user:
 
     # getch --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
 
-Install Gentoo on LVM:
+Install Gentoo on LVM and use a different root disk `/dev/sdc`
 
-    # getch --format lvm --disk sda
+    # getch --format lvm --disk sdc
 
 Encrypt your disk with LVM with a french keymap
 
     # getch --format lvm --encrypt --keymap fr
 
-Encrypt with ext4 and create a home directory /home/ninja
+Encrypt with ext4 and create a new user `ninja`:
 
     # getch --format ext4 --encrypt --username ninja
 
-With ZFS:
+With ZFS, if used with `--encrypt`, it use the native ZFS encryption:
 
     # getch --format zfs
 
@@ -97,3 +114,5 @@ The pool will be called `rpool-150ed`.
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
 + lspci
 + cat /proc/modules
+
+Any recommandations are welcome. 
