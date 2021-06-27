@@ -12,7 +12,7 @@ module Getch
           File.write(conf, "\n", mode: 'w', chmod: 0644)
           line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
           line_fstab(@dev_boot, "/boot ext4 noauto,rw,relatime 0 0") if @dev_boot
-          add_line(conf, "#{@lv_swap} swap swap rw,noatime,discard 0 0") if @dev_swap
+          add_line(conf, "#{@lv_swap} swap swap rw,noatime,discard 0 0") if @lv_swap
           add_line(conf, "#{@lv_home} /home/#{@user} ext4 rw,noatime,discard 0 2") if @lv_home
           add_line(conf, "#{@lv_root} / ext4 rw,relatime 0 1")
           add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")

@@ -1,8 +1,12 @@
+require_relative '../../../helpers'
+
 module Getch
   module FileSystem
     module Lvm
       module Encrypt
-        class Partition < Getch::FileSystem::Lvm::Encrypt::Device
+        class Partition < Device
+          include Helpers::Cryptsetup
+
           def initialize
             super
             @state = Getch::States.new()
@@ -19,7 +23,7 @@ module Getch
             @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
 
             partition
-            encrypt
+            encrypting
             lvm
             @state.partition
           end
@@ -37,11 +41,10 @@ module Getch
             end
           end
 
-          def encrypt
-            @log.info("Format root")
-            Helpers::sys("cryptsetup luksFormat #{@dev_root}")
-            @log.debug("Opening root")
-            Helpers::sys("cryptsetup open --type luks #{@dev_root} cryptroot")
+          def encrypting
+            @log.info("Cryptsetup")
+            encrypt(@dev_root)
+            open_crypt(@dev_root, "cryptroot")
           end
 
           def lvm

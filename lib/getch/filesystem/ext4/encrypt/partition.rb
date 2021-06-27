@@ -1,8 +1,12 @@
+require_relative '../../../helpers'
+
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
-        class Partition < Getch::FileSystem::Ext4::Encrypt::Device
+        class Partition < Device
+          include Helpers::Cryptsetup
+
           def initialize
             super
             @state = Getch::States.new
@@ -18,15 +22,10 @@ module Getch
             @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
             if Helpers::efi?
               partition_efi
-              if OPTIONS[:os] == 'gentoo'
-                encrypt_efi
-              else
-                encrypt_bios
-              end
             else
               partition_bios
-              encrypt_bios
             end
+            encrypting
             @state.partition
           end
 
@@ -44,19 +43,10 @@ module Getch
             @partition.home(@dev_home, "8309") if @dev_home
           end
 
-          def encrypt_efi
-            @log.info("Format root")
-            Helpers::sys("cryptsetup luksFormat #{@dev_root}")
-            @log.debug("Opening root")
-            Helpers::sys("cryptsetup open --type luks #{@dev_root} cryptroot")
-            encrypt_home
-          end
-
-          def encrypt_bios
-            @log.info("Format root for bios")
-            Helpers::sys("cryptsetup luksFormat --type luks1 #{@dev_root}")
-            @log.debug("Opening root")
-            Helpers::sys("cryptsetup open --type luks1 #{@dev_root} cryptroot")
+          def encrypting
+            @log.info("Cryptsetup")
+            encrypt(@dev_root}
+            open_crypt(@dev_root, "cryptroot")
             encrypt_home
           end
 

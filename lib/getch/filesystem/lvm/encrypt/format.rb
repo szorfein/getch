@@ -15,7 +15,6 @@ module Getch
             puts "Format #{@disk}"
             exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
             exec("mkfs.#{@fs} -F #{@dev_boot}") if @dev_boot
-            exec("mkswap -f #{@lv_swap}")
             exec("mkfs.#{@fs} -F #{@lv_root}")
             exec("mkfs.#{@fs} -F #{@lv_home}") if @lv_home
             @state.format
