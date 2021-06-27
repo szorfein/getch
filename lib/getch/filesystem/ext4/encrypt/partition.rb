@@ -45,7 +45,7 @@ module Getch
 
           def encrypting
             @log.info("Cryptsetup")
-            encrypt(@dev_root}
+            encrypt(@dev_root)
             open_crypt(@dev_root, "cryptroot")
             encrypt_home
           end

@@ -1,4 +1,4 @@
-+ Can install Void Linux (only ext4 for now, encrypt or not)
++ Can install Void Linux (only ext4, lvm for now, encrypt or not)
 
 ## 0.1.4, release 2021-06-20
 * Install `iptables` by default.

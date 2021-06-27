@@ -2,7 +2,7 @@ module Getch
   module FileSystem
     module Lvm
       module Encrypt
-        class Mount < Getch::FileSystem::Lvm::Encrypt::Device
+        class Mount < Device
           def initialize
             super
             @mount = Getch::FileSystem::Mount.new
@@ -11,7 +11,6 @@ module Getch
 
           def run
             return if STATES[:mount]
-            @mount.swap(@lv_swap)
             @mount.root(@lv_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)

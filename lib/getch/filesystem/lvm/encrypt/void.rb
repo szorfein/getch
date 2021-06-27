@@ -37,8 +37,8 @@ module Getch
           def crypttab
             conf = "#{MOUNTPOINT}/etc/crypttab"
             File.write(conf, "\n", mode: 'w', chmod: 0644)
-            add_line(conf, "#{@lv_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512")
-            line_crypttab("cryptroot", @dev_root, "/boot/volume.key", "luks")
+            add_line(conf, "cryptswap #{@lv_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512")
+            line_crypttab(@vg, @dev_root, "/boot/volume.key", "luks")
             line_crypttab("crypthome", @dev_home, "/boot/home.key", "luks") if @home_disk
           end
 

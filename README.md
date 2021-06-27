@@ -11,7 +11,7 @@ Hardened System:
 + Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
 + Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
 
-**Note** about Void Linux, only the fs `ext4` is working for now (encrypted of not), i'll add the rest later.
+**Note** about Void Linux, only fs `ext4` and `lvm` are working for now (encrypted or not), i'll add the rest later.
 
 ## Description
 Actually, Getch support only the `x86_64` architecture and only with the following archives:
@@ -24,7 +24,7 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ **Gentoo****: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Gentoo**: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
 + **Void**: use only Grub2, encryption use luks1.
 
 The ISO images i was able to test and that works:
