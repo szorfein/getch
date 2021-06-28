@@ -28,7 +28,10 @@ module Getch
         end
 
         def kernel_cmdline_dracut
-          conf = "#{MOUNTPOINT}/etc/defaut/grub"
+        end
+
+        def config_grub
+          conf = "#{MOUNTPOINT}/etc/default/grub"
           c="GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo\""
           unless search(conf, c)
             File.write(conf, "#{c}\n", mode: 'a')
@@ -48,29 +51,9 @@ module Getch
           Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
-          #Helpers::sys("sed -Ei \"s|/mnt/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          fork { system("chroot", MOUNTPOINT, "/bin/bash", "-c", "/etc/sv/zed/run") }
+          Helpers::sys("sed -Ei \"s|/mnt/gentoo/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
           command "ln -fs /etc/sv/zed #{service_dir}"
-        end
-
-        def s_uuid(dev)
-          device = dev.delete_prefix("/dev/")
-          Dir.glob("/dev/disk/by-partuuid/*").each { |f|
-            link = File.readlink(f)
-            return f.delete_prefix("/dev/disk/by-partuuid/") if link.match(/#{device}$/)
-          }
-        end
-
-        def line_fstab(dev, rest)
-          conf = "#{MOUNTPOINT}/etc/fstab"
-          device = s_uuid(dev)
-          raise "No partuuid for #{dev} #{device}" if !device
-          raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
-          add_line(conf, "PARTUUID=#{device} #{rest}")
-        end
-
-        def add_line(file, line)
-          raise "No file #{file} found !" unless File.exist? file
-          File.write(file, "#{line}\n", mode: 'a')
         end
       end
     end

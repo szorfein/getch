@@ -85,22 +85,6 @@ module Getch
             }
           end
 
-          def s_uuid(dev)
-            device = dev.delete_prefix("/dev/")
-            Dir.glob("/dev/disk/by-partuuid/*").each { |f|
-              link = File.readlink(f)
-              return f.delete_prefix("/dev/disk/by-partuuid/") if link.match(/#{device}$/)
-            }
-          end
-
-          def line_fstab(dev, rest)
-            conf = "#{MOUNTPOINT}/etc/fstab"
-            device = s_uuid(dev)
-            raise "No partuuid for #{dev} #{device}" if !device
-            raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
-            add_line(conf, "PARTUUID=#{device} #{rest}")
-          end
-
           # line_crypttab("cryptswap", "sda2", "/dev/urandom", "luks")
           def line_crypttab(mapname, dev, point, rest)
             conf = "#{MOUNTPOINT}/etc/crypttab"

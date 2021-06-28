@@ -138,6 +138,22 @@ module Helpers
         raise "[-] Error with: #{cmd}"
       end
     end
+
+    def s_uuid(dev)
+      device = dev.delete_prefix("/dev/")
+      Dir.glob("/dev/disk/by-partuuid/*").each { |f|
+        link = File.readlink(f)
+        return f.delete_prefix("/dev/disk/by-partuuid/") if link.match(/#{device}$/)
+      }
+    end
+
+    def line_fstab(dev, rest)
+      conf = "#{Getch::MOUNTPOINT}/etc/fstab"
+      device = s_uuid(dev)
+      raise "No partuuid for #{dev} #{device}" if !device
+      raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
+      add_line(conf, "PARTUUID=#{device} #{rest}")
+    end
   end
 
   module Cryptsetup

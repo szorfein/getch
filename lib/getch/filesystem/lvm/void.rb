@@ -39,29 +39,6 @@ module Getch
           puts "+ Enter in your system: chroot /mnt /bin/bash"
           puts "+ Reboot with: shutdown -r now"
         end
-
-        private
-
-        def s_uuid(dev)
-          device = dev.delete_prefix("/dev/")
-          Dir.glob("/dev/disk/by-partuuid/*").each { |f|
-            link = File.readlink(f)
-            return f.delete_prefix("/dev/disk/by-partuuid/") if link.match(/#{device}$/)
-          }
-        end
-
-        def line_fstab(dev, rest)
-          conf = "#{MOUNTPOINT}/etc/fstab"
-          device = s_uuid(dev)
-          raise "No partuuid for #{dev} #{device}" if !device
-          raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
-          add_line(conf, "PARTUUID=#{device} #{rest}")
-        end
-
-        def add_line(file, line)
-          raise "No file #{file} found !" unless File.exist? file
-          File.write(file, "#{line}\n", mode: 'a')
-        end
       end
     end
   end
