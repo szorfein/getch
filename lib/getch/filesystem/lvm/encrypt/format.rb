@@ -2,7 +2,7 @@ module Getch
   module FileSystem
     module Lvm
       module Encrypt
-        class Format < Getch::FileSystem::Lvm::Encrypt::Device
+        class Format < Device
           def initialize
             super
             @fs = 'ext4'

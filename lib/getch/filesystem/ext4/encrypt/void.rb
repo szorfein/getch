@@ -27,7 +27,8 @@ module Getch
             conf = "#{MOUNTPOINT}/etc/fstab"
             File.write(conf, "\n", mode: 'w', chmod: 0644)
             line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
-            add_line(conf, "#{@luks_swap} none swap discard 0 0") if @dev_swap
+            line_fstab(@dev_boot, "/boot ext4 noauto,rw,relatime 0 0") if @dev_boot
+            add_line(conf, "#{@luks_swap} none swap sw 0 0") if @dev_swap
             add_line(conf, "#{@luks_home} /home ext4 rw,discard 0 0") if @home_disk
             add_line(conf, "#{@luks_root} / ext4 rw,relatime 0 1")
             add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
@@ -36,7 +37,7 @@ module Getch
           def crypttab
             conf = "#{MOUNTPOINT}/etc/crypttab"
             File.write(conf, "\n", mode: 'w', chmod: 0644)
-            line_crypttab("cryptswap", @dev_swap, "/dev/urandom", "swap,cipher=aes-xts-plain64:sha256,size=512") if @dev_swap
+            line_crypttab("cryptswap", @dev_swap, "/dev/urandom", "swap,discard,cipher=aes-xts-plain64:sha256,size=512") if @dev_swap
             line_crypttab("cryptroot", @dev_root, "/boot/volume.key", "luks")
             line_crypttab("crypthome", @dev_home, "/boot/home.key", "luks") if @home_disk
           end

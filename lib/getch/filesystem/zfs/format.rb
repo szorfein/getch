@@ -1,7 +1,7 @@
 module Getch
   module FileSystem
     module Zfs
-      class Format < Getch::FileSystem::Zfs::Device
+      class Format < Device
         def initialize
           super
           @log = Getch::Log.new

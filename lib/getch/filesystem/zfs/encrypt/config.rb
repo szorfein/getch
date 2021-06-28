@@ -32,7 +32,7 @@ module Getch
 
           def crypttab
             datas = [
-              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512"
+              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512"
             ]
             File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
           end
@@ -56,7 +56,7 @@ module Getch
 
           def data_fstab
             boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
-            swap = @dev_swap ? "/dev/mapper/cryptswap none swap discard 0 0" : ''
+            swap = @dev_swap ? "/dev/mapper/cryptswap none swap sw 0 0" : ''
 
             [ boot_efi, swap ]
           end

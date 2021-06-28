@@ -1,7 +1,7 @@
 module Getch
   module FileSystem
     module Zfs
-      class Config < Getch::FileSystem::Zfs::Device
+      class Config < Device
         def initialize
           super
           gen_uuid

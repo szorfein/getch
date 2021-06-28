@@ -1,7 +1,7 @@
 module Getch
   module FileSystem
     module Zfs
-      class Partition < Getch::FileSystem::Zfs::Device
+      class Partition < Device
         def initialize
           super
           @clean = Getch::FileSystem::Clean
@@ -27,6 +27,7 @@ module Getch
         def partition
           if @efi
             @partition.efi(@dev_esp)
+            @partition.boot(@dev_boot) if Getch::OPTIONS[:os] == 'void'
             @partition.swap(@dev_swap) if !@cache_disk
             @partition.root(@dev_root, "BF00") if @root_part != 1
           else

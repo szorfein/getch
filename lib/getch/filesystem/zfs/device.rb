@@ -16,9 +16,14 @@ module Getch
           if @efi
             if @boot_disk
               @dev_esp = "/dev/#{@boot_disk}1"
+              @dev_boot = "/dev/#{@boot_disk}2" if Getch::OPTIONS[:os] == 'void'
             else
               @dev_esp = "/dev/#{@disk}1"
               @root_part += 1
+              if Getch::OPTIONS[:os] == 'void'
+                @dev_boot = "/dev/#{@disk}#{@root_part}"
+                @root_part += 1
+              end
             end
           else
             if @boot_disk
