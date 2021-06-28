@@ -25,6 +25,14 @@ module Getch
       def wifi
         @load.wifi
       end
+
+      def sysctl
+        pwd = File.expand_path(File.dirname(__FILE__))
+        dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
+
+        Helpers::mkdir dest
+        Helpers::cp("#{pwd}/assets/network-stack.conf", dest)
+      end
     end
   end
 end

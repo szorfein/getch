@@ -25,7 +25,7 @@ Filesystem supported (with or without encryption)
 
 Boot Manager:
 + **Gentoo**: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
-+ **Void**: use only Grub2, encryption use luks1.
++ **Void**: use only Grub2, encryption for the root fs use luks1.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)

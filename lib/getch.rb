@@ -146,6 +146,7 @@ module Getch
       config.ethernet
       config.wifi
       config.dns
+      config.sysctl
     end
   end
 end

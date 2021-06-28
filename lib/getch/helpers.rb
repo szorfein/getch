@@ -38,6 +38,11 @@ module Helpers
     File.write file, '' if ! File.exist? file
   end
 
+  def self.cp(src, dest)
+    raise "Src file #{src} no found" unless File.exist? src
+    FileUtils.cp(src, dest)
+  end
+
   def self.grep?(file, regex)
     is_found = false
     return is_found if ! File.exist? file

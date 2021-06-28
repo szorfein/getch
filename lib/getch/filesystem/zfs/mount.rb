@@ -17,7 +17,7 @@ module Getch
           exec("zpool export -a")
           exec("rm -rf #{MOUNTPOINT}/*")
           exec("zpool import -N -R #{MOUNTPOINT} #{@pool_name}")
-          exec("zpool import -N -R #{MOUNTPOINT} #{@boot_pool_name}") if @dev_boot
+          exec("zpool import -f -N -R #{MOUNTPOINT} #{@boot_pool_name}") if @dev_boot
           @mount.swap(@dev_swap)
           mount_root
           mount_boot

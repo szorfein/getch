@@ -28,7 +28,7 @@ module Getch
 
         def kernel_cmdline_dracut
           conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-          c="kernel_cmdline=\"root=#{@dev_root} rootflags=rw,relatime\""
+          c="kernel_cmdline=\"root=ZFS:#{@pool_name}/ROOT/gentoo\""
           File.write(conf, "#{c}\n", mode: 'w', chmod: 0644)
         end
 
