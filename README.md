@@ -15,8 +15,8 @@ Hardened System:
 
 ## Description
 Actually, Getch support only the `x86_64` architecture and only with the following archives:
-+ **Gentoo**: `stage3-amd64-systemd`.
-+ **Void**: `rootfs glibc` [src](https://voidlinux.org/download/).
++ **Gentoo**: `stage3-amd64-systemd` [Gentoo](https://www.gentoo.org/downloads/).
++ **Void**: `rootfs glibc` [Void](https://voidlinux.org/download/).
 
 Filesystem supported (with or without encryption)
 + Ext4

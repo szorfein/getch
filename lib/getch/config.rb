@@ -31,7 +31,7 @@ module Getch
         dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
         Helpers::mkdir dest
-        Helpers::cp("#{pwd}/assets/network-stack.conf", dest)
+        Helpers::cp("#{pwd}/../../assets/network-stack.conf", dest)
       end
     end
   end

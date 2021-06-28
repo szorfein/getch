@@ -13,6 +13,7 @@ module Getch
           line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
           line_fstab(@dev_swap, "swap swap rw,noatime,discard 0 0") if @dev_swap
           add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
+          zfs_zed # mountpoint for zfs
         end
 
         def config_dracut
@@ -27,9 +28,11 @@ module Getch
         end
 
         def kernel_cmdline_dracut
-          conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-          c="kernel_cmdline=\"root=ZFS:#{@pool_name}/ROOT/gentoo\""
-          File.write(conf, "#{c}\n", mode: 'w', chmod: 0644)
+          conf = "#{MOUNTPOINT}/etc/defaut/grub"
+          c="GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo\""
+          unless search(conf, c)
+            File.write(conf, "#{c}\n", mode: 'a')
+          end
         end
 
         def finish
@@ -38,6 +41,16 @@ module Getch
         end
 
         private
+
+        def zfs_zed
+          service_dir = "/etc/runit/runsvdir/default/"
+
+          Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
+          Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
+          Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
+          #Helpers::sys("sed -Ei \"s|/mnt/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          command "ln -fs /etc/sv/zed #{service_dir}"
+        end
 
         def s_uuid(dev)
           device = dev.delete_prefix("/dev/")

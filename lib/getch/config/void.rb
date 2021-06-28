@@ -11,7 +11,7 @@ module Getch
 
       # Enable dhcpcd service
       def ethernet
-        command "ln -s /etc/sv/dhcpcd #{@service_dir}"
+        command "ln -fs /etc/sv/dhcpcd #{@service_dir}"
       end
 
       # with Quad9
@@ -37,8 +37,8 @@ module Getch
         ]
         File.write(conf, content.join("\n"), mode: 'a', chmod: 0644)
         # Enabling dbus and iwd
-        command "ln -s /etc/sv/dbus #{@service_dir}"
-        command "ln -s /etc/sv/iwd #{@service_dir}"
+        command "ln -fs /etc/sv/dbus #{@service_dir}"
+        command "ln -fs /etc/sv/iwd #{@service_dir}"
       end
     end
   end
