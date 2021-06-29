@@ -8,6 +8,7 @@ module Getch
           @boot_pool_name = "bpool-#{@id}"
           @pool_name = "rpool-#{@id}"
           @zfs_home = @user ? true : false
+          @n = Getch::OPTIONS[:os]
         end
         
         private

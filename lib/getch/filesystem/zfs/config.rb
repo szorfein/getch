@@ -23,7 +23,7 @@ module Getch
             'title Gentoo Linux',
             'linux /vmlinuz',
             'initrd /initramfs',
-            "options resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs"
+            "options resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs"
           ]
           File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
         end
@@ -33,7 +33,7 @@ module Getch
           return if Helpers::efi?
           file = "#{@root_dir}/etc/default/grub"
           cmdline = [ 
-            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/gentoo init=#{@init} dozfs\""
+            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs\""
           ]
           File.write("#{file}", cmdline.join("\n"), mode: 'a')
         end

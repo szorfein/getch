@@ -1,7 +1,7 @@
 module Getch
   module FileSystem
     module Zfs
-      class Deps < Getch::FileSystem::Zfs::Device
+      class Deps < Device
         def make
           unstable_zfs
           install_deps
@@ -37,7 +37,7 @@ module Getch
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           exec("ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
           exec("systemctl start zfs-zed.service")
-          Helpers::sys("sed -Ei \"s|/mnt/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", "#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
           exec("systemctl enable zfs-zed.service")
           exec("systemctl enable zfs.target")
         end

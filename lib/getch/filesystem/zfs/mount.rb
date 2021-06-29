@@ -30,12 +30,12 @@ module Getch
 
         def mount_root
           Helpers::mkdir(@root_dir)
-          exec("zfs mount #{@pool_name}/ROOT/gentoo")
+          exec("zfs mount #{@pool_name}/ROOT/#{@n}")
         end
 
         def mount_boot
           return if ! @dev_boot
-          exec("zfs mount #{@boot_pool_name}/BOOT/gentoo")
+          exec("zfs mount #{@boot_pool_name}/BOOT/#{@n}")
         end
 
         def exec(cmd)

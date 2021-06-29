@@ -40,6 +40,10 @@ module Getch
         command "ln -fs /etc/sv/dbus #{@service_dir}"
         command "ln -fs /etc/sv/iwd #{@service_dir}"
       end
+
+      def shell
+        command "chsh -s /bin/bash"
+      end
     end
   end
 end

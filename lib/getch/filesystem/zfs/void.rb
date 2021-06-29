@@ -7,13 +7,24 @@ module Getch
         include Helpers::Void
         attr_reader :boot_disk
 
+        def initialize
+          super
+          hostid
+          zfs_zed # mountpoint for zfs
+        end
+
+        # Fstab contain:
+        # > /efi noauto
+        # > swap
+        # > /boot zfs-legacy
+        # > /tmp
         def fstab
           conf = "#{MOUNTPOINT}/etc/fstab"
           File.write(conf, "\n", mode: 'w', chmod: 0644)
           line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
           line_fstab(@dev_swap, "swap swap rw,noatime,discard 0 0") if @dev_swap
+          add_line(conf, "#{@bpool-name}/BOOT/#{@n} /boot zfs defaults 0 0") if @dev_boot
           add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
-          zfs_zed # mountpoint for zfs
         end
 
         def config_dracut
@@ -28,14 +39,12 @@ module Getch
         end
 
         def kernel_cmdline_dracut
+          command "zfs set mountpoint=legacy #{@boot_pool_name}/BOOT/#{@n}"
         end
 
         def config_grub
-          conf = "#{MOUNTPOINT}/etc/default/grub"
-          c="GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/gentoo\""
-          unless search(conf, c)
-            File.write(conf, "#{c}\n", mode: 'a')
-          end
+          grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}",
+                       "boot=zfs:#{@boot_pool_name}/BOOT/#{@n}")
         end
 
         def finish
@@ -51,9 +60,16 @@ module Getch
           Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
-          fork { system("chroot", MOUNTPOINT, "/bin/bash", "-c", "/etc/sv/zed/run") }
-          Helpers::sys("sed -Ei \"s|/mnt/gentoo/?|/|\" #{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          fork { command "/etc/sv/zed/run" }
+          sleep 2
+          system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", "#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
           command "ln -fs /etc/sv/zed #{service_dir}"
+        end
+
+        def hostid
+          conf = "#{MOUNTPOINT}/etc/hostid"
+          hostid_value=`hostid`.chomp
+          File.write(conf, "#{hostid_value}\n", mode: 'w', chmod: 644)
         end
       end
     end

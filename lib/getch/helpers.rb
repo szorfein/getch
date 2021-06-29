@@ -154,6 +154,17 @@ module Helpers
       raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
       add_line(conf, "PARTUUID=#{device} #{rest}")
     end
+
+    def grub_cmdline(*args)
+      conf = "#{Getch::MOUNTPOINT}/etc/default/grub"
+      list = args.join(" ")
+      secs = "GRUB_CMDLINE_LINUX=\"#{list} init_on_alloc=1 init_on_free=1"
+      secs += " slab_nomerge pti=on slub_debug=ZF vsyscall=none\""
+      raise "No default/grub found" unless File.exist? conf
+      unless search(conf, "GRUB_CMDLINE_LINUX=")
+        File.write(conf, "#{secs}\n", mode: 'a')
+      end
+    end
   end
 
   module Cryptsetup

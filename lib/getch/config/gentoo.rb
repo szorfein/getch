@@ -51,6 +51,9 @@ module Getch
         Getch::Chroot.new('systemctl enable systemd-networkd').run!
         Getch::Chroot.new('systemctl enable systemd-resolved').run!
       end
+
+      def shell
+      end
     end
   end
 end

@@ -98,7 +98,11 @@ When Gentoo boot the first time, the pool may fail to start, it's happen when th
 The zpool name should be visible (rpool-150ed here), so enter in the Genkernel shell:
 
     > shell
-    zpool import -f -N -R /mnt rpool-150ed
+    zpool import -f -N -R /tmp rpool-150ed
+
+Import also the `bpool` if you have GRUB installed.
+
+    zpool import -f -N -R /tmp bpool-150ed
     zpool export -a
 
 Then, just reboot now, it's all.
