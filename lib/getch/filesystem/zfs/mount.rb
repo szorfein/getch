@@ -1,12 +1,9 @@
-require 'fileutils'
-
 module Getch
   module FileSystem
     module Zfs
-      class Mount < Getch::FileSystem::Zfs::Device
+      class Mount < Device
         def initialize
           super
-          @root_dir = MOUNTPOINT
           @mount = Getch::FileSystem::Mount.new
           @state = Getch::States.new
           @log = Getch::Log.new
@@ -29,7 +26,7 @@ module Getch
         private
 
         def mount_root
-          Helpers::mkdir(@root_dir)
+          Helpers::mkdir(MOUNTPOINT)
           exec("zfs mount #{@pool_name}/ROOT/#{@n}")
         end
 

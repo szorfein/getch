@@ -2,7 +2,7 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
-        class Deps < Getch::FileSystem::Zfs::Encrypt::Device
+        class Deps < Device
           def make
             unstable_zfs
             install_deps

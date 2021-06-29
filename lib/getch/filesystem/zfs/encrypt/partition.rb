@@ -2,7 +2,7 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
-        class Partition < Getch::FileSystem::Zfs::Encrypt::Device
+        class Partition < Device
           def initialize
             super
             @state = Getch::States.new()
@@ -28,6 +28,7 @@ module Getch
           def partition
             if Helpers::efi?
               @partition.efi(@dev_esp)
+              @partition.boot(@dev_boot) if Getch::OPTIONS[:os] == 'void'
               @partition.swap(@dev_swap) if !@cache_disk
               @partition.root(@dev_root, "BF00") if @root_part != 1
             else

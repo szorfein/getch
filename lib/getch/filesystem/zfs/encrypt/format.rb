@@ -2,7 +2,7 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
-        class Format < Getch::FileSystem::Zfs::Encrypt::Device
+        class Format < Device
           def initialize
             super
             @log = Getch::Log.new()
@@ -22,7 +22,6 @@ module Getch
             return if STATES[:format]
             raise "Error, no id found for #{@dev_root}." if ! @id
             system("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
-            system("mkswap -f #{@dev_swap}")
             zfs
             datasets
             @state.format
@@ -79,15 +78,15 @@ module Getch
             exec("zfs create -o canmount=off -o mountpoint=none #{@pool_name}/ROOT")
             exec("zfs create -o canmount=off -o mountpoint=none #{@boot_pool_name}/BOOT") if @dev_boot
 
-            exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/gentoo")
-            exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/gentoo") if @dev_boot
+            exec("zfs create -o canmount=noauto -o mountpoint=/ #{@pool_name}/ROOT/#{@n}")
+            exec("zfs create -o canmount=noauto -o mountpoint=/boot #{@boot_pool_name}/BOOT/#{@n}") if @dev_boot
 
-            exec("zfs create -o canmount=off #{@pool_name}/ROOT/gentoo/usr")
-            exec("zfs create #{@pool_name}/ROOT/gentoo/usr/src")
-            exec("zfs create -o canmount=off #{@pool_name}/ROOT/gentoo/var")
-            exec("zfs create #{@pool_name}/ROOT/gentoo/var/log")
-            exec("zfs create #{@pool_name}/ROOT/gentoo/var/db")
-            exec("zfs create #{@pool_name}/ROOT/gentoo/var/tmp")
+            exec("zfs create -o canmount=off #{@pool_name}/ROOT/#{@n}/usr")
+            exec("zfs create #{@pool_name}/ROOT/#{@n}/usr/src")
+            exec("zfs create -o canmount=off #{@pool_name}/ROOT/#{@n}/var")
+            exec("zfs create #{@pool_name}/ROOT/#{@n}/var/log")
+            exec("zfs create #{@pool_name}/ROOT/#{@n}/var/db")
+            exec("zfs create #{@pool_name}/ROOT/#{@n}/var/tmp")
 
             exec("zfs create -o canmount=off -o mountpoint=/ #{@pool_name}/USERDATA")
             exec("zfs create -o canmount=on -o mountpoint=/root #{@pool_name}/USERDATA/root")

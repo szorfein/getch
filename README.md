@@ -124,7 +124,7 @@ You should see something in the boot (initramfs, vmlinuz).. Recreate the initram
 
 Transform the boot pool in legacy mode and add this to the fstab:
 
-    # zpool set mountpoint=legacy bpool150ed/BOOT/void
+    # zfs set mountpoint=legacy bpool150ed/BOOT/void
     # echo "bpool150ed/BOOT/void /boot zfs defaults 0 0" >> /etc/fstab
     # mount /boot
 
