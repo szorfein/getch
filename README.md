@@ -92,17 +92,13 @@ Unless your old LVM volume group is also named `vg0`, `getch` may fail to partit
 To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
-#### ZFS
+#### ZFS for Gentoo
 When Gentoo boot the first time, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just `export` your pool from the genkernel shell:
 
 The zpool name should be visible (rpool-150ed here), so enter in the Genkernel shell:
 
     > shell
     zpool import -f -N -R /tmp rpool-150ed
-
-Import also the `bpool` if you have GRUB installed.
-
-    zpool import -f -N -R /tmp bpool-150ed
     zpool export -a
 
 Then, just reboot now, it's all.
@@ -113,6 +109,26 @@ Then, just reboot now, it's all.
     -> 150ed969...
 
 The pool will be called `rpool-150ed`.
+
+#### ZFS for Void Linux - Enable the boot pool
+You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
+By default, your /boot is empty because your boot pool is not imported...
+
+    # zpool import -N bpool150ed
+    # zfs mount bpool150ed/BOOT/void
+    # ls /boot
+
+You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
+
+    # xbps-reconfigure -fa
+
+Transform the boot pool in legacy mode and add this to the fstab:
+
+    # zpool set mountpoint=legacy bpool150ed/BOOT/void
+    # echo "bpool150ed/BOOT/void /boot zfs defaults 0 0" >> /etc/fstab
+    # mount /boot
+
+The /boot should not be empty again and then, reboot. `fstab` should do this automatically now.   
 
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:

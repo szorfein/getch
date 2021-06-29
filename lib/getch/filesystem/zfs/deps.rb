@@ -10,6 +10,7 @@ module Getch
           hostid
           options_make
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+          zed_update_path
         end
 
         private
@@ -37,9 +38,16 @@ module Getch
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           exec("ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
           exec("systemctl start zfs-zed.service")
-          system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", "#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
           exec("systemctl enable zfs-zed.service")
           exec("systemctl enable zfs.target")
+        end
+
+        def zed_update_path
+          Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
+            if !system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
+              raise "system exec sed"
+            end
+          }
         end
 
         def auto_module_rebuild
@@ -64,8 +72,7 @@ EOF
         end
 
         def hostid
-          hostid_value=`hostid`.chomp
-          File.write("#{MOUNTPOINT}/etc/hostid", hostid_value, mode: 'w')
+          exec "zgenhostid $(hostid)"
         end
 
         def options_make

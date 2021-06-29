@@ -43,11 +43,11 @@ module Getch
         end
 
         def config_grub
-          grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}",
-                       "boot=zfs:#{@boot_pool_name}/BOOT/#{@n}")
+          grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", "zfs_force=1")
         end
 
         def finish
+          zed_update_path
           puts "+ Enter in your system: chroot /mnt /bin/bash"
           puts "+ Reboot with: shutdown -r now"
         end
@@ -61,20 +61,19 @@ module Getch
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           fork { command "/etc/sv/zed/run" }
-          sleep 4
+          command "ln -fs /etc/sv/zed #{service_dir}"
+        end
+
+        def zed_update_path
           Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
-            raise "No file #{f}" unless File.exist? f
             if !system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
               raise "System exec sed"
             end
           }
-          command "ln -fs /etc/sv/zed #{service_dir}"
         end
 
         def hostid
-          conf = "#{MOUNTPOINT}/etc/hostid"
-          hostid_value=`hostid`.chomp
-          File.write(conf, "#{hostid_value}\n", mode: 'w', chmod: 644)
+          command "zgenhostid $(hostid)"
         end
       end
     end

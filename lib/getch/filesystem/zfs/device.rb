@@ -5,8 +5,8 @@ module Getch
         def initialize
           super
           @id = Helpers::pool_id(@dev_root)
-          @boot_pool_name = "bpool#{@id}"
-          @pool_name = "rpool#{@id}"
+          @boot_pool_name = "bpool-#{@id}"
+          @pool_name = "rpool-#{@id}"
           @zfs_home = @user ? true : false
           @n = Getch::OPTIONS[:os]
         end
