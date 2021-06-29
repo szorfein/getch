@@ -9,8 +9,8 @@ module Getch
           if ! @id
             @log.info "Research pool id for #{@dev_root}..."
             @id = Helpers::pool_id(@dev_root)
-            @boot_pool_name = "bpool-#{@id}"
-            @pool_name = "rpool-#{@id}"
+            @boot_pool_name = "bpool#{@id}"
+            @pool_name = "rpool#{@id}"
           end
           format
         end

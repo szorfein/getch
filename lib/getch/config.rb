@@ -33,6 +33,10 @@ module Getch
         Helpers::mkdir dest
         Helpers::cp("#{pwd}/../../assets/network-stack.conf", dest)
       end
+      
+      def shell
+        @load.shell
+      end
     end
   end
 end

@@ -23,7 +23,7 @@ module Getch
           File.write(conf, "\n", mode: 'w', chmod: 0644)
           line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
           line_fstab(@dev_swap, "swap swap rw,noatime,discard 0 0") if @dev_swap
-          add_line(conf, "#{@bpool-name}/BOOT/#{@n} /boot zfs defaults 0 0") if @dev_boot
+          #add_line(conf, "#{@boot_pool_name}/BOOT/#{@n} /boot zfs defaults 0 0") if @dev_boot
           add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
         end
 
@@ -39,7 +39,7 @@ module Getch
         end
 
         def kernel_cmdline_dracut
-          command "zfs set mountpoint=legacy #{@boot_pool_name}/BOOT/#{@n}"
+          #command "zfs set mountpoint=legacy #{@boot_pool_name}/BOOT/#{@n}"
         end
 
         def config_grub
@@ -61,8 +61,13 @@ module Getch
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           fork { command "/etc/sv/zed/run" }
-          sleep 2
-          system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", "#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*")
+          sleep 4
+          Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
+            raise "No file #{f}" unless File.exist? f
+            if !system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
+              raise "System exec sed"
+            end
+          }
           command "ln -fs /etc/sv/zed #{service_dir}"
         end
 
