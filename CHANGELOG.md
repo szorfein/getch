@@ -3,6 +3,7 @@
 + ZFS write the hostid with `zgenhostid $(hostid)`
 + Add a systctl.conf to enforce TCP/IP stack hardened.
 + README improved.
++ More close of the community standard [github](https://github.com/szorfein/getch/community).
 
 ## 0.1.4, release 2021-06-20
 * Install `iptables` by default.
