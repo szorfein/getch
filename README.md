@@ -130,6 +130,15 @@ Transform the boot pool in legacy mode and add this to the fstab:
 
 The /boot should not be empty again and then, reboot. `fstab` should do this automatically now.   
 
+#### ZFS Encrypted with Void
+Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
+
+    # ls /lib/dracut/hooks/initqueue/finished/*
+    # rm /lib/dracut/hooks/initqueue/finished/dev*
+    # exit
+
+Dracut should finally start `mount-zfs.sh` and ask for your password. After you first login, follow instructions above for recompile the initramfs and mount the boot pool and your good.
+
 ## Issues
 If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
 + lspci

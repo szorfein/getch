@@ -1,4 +1,8 @@
-+ Can install Void Linux (only ext4, lvm for now, encrypt or not)
++ Getch can also install [Void Linux](https://voidlinux.org/).
++ New option `-o|--os NAME`, work only with NAME = gentoo | void.
++ ZFS write the hostid with `zgenhostid $(hostid)`
++ Add a systctl.conf to enforce TCP/IP stack hardened.
++ README improved.
 
 ## 0.1.4, release 2021-06-20
 * Install `iptables` by default.

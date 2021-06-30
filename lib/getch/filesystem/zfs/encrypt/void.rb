@@ -34,6 +34,7 @@ module Getch
             content = [
               "hostonly=\"yes\"",
               "omit_dracutmodules+=\" btrfs lvm \"",
+              "install_items+=\" /etc/crypttab \"",
               ""
             ]
             File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
