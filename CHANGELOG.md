@@ -1,3 +1,4 @@
+## 0.1.6, release 2021-06-30
 + Getch can also install [Void Linux](https://voidlinux.org/).
 + New option `-o|--os NAME`, work only with NAME = gentoo | void.
 + ZFS write the hostid with `zgenhostid $(hostid)`

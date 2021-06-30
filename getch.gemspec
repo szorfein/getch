@@ -17,8 +17,7 @@ Gem::Specification.new do |s|
   s.license = "MIT"
   s.required_ruby_version = '>= 2.5.0'
 
-  s.files = `git ls-files`.split(" ")
-  s.files.reject! { |fn| fn.include? "certs" }
+  s.files = Dir.glob('{assets,lib}/**/*', File::FNM_DOTMATCH)
 
   s.executables = [ 'getch' ]
   s.extra_rdoc_files = ['README.md']

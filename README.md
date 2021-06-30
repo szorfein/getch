@@ -4,14 +4,13 @@ A CLI tool to install Gentoo or Void Linux with default:
 + Vim | Nano installed.
 + Iptables installed (not configured).
 + Sudo installed (not configured).
++ [iwd](https://iwd.wiki.kernel.org/) installed if wifi is detected.
 + No GUI installed.
 
 Hardened System:
-+ sysctl.conf with TCP/IP stack hardening  and more [Arch](https://wiki.archlinux.org/title/Sysctl)
++ sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
 + Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
 + Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
-
-**Note** about Void Linux, only fs `ext4` and `lvm` are working for now (encrypted or not), i'll add the rest later.
 
 ## Description
 Actually, Getch support only the `x86_64` architecture and only with the following archives:
@@ -81,8 +80,8 @@ With `Void Linux`:
 
 ## Troubleshooting
 
-#### LVM
-Unless your old LVM volume group is also named `vg0`, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`. An short example how doing this with a volume group named `vg0`:
+#### Old VG for LVM
+If a old volume group exist, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`. An short example how doing this with a volume group named `vg0`:
 
     # vgdisplay | grep vg0
     # vgremove -f vg0
@@ -138,10 +137,3 @@ Well, another weird issue, the first time you boot on your encrypted pool, nothi
     # exit
 
 Dracut should finally start `mount-zfs.sh` and ask for your password. After you first login, follow instructions above for recompile the initramfs and mount the boot pool and your good.
-
-## Issues
-If need more support for your hardware (network, sound card, ...), you can submit a [new issue](https://github.com/szorfein/getch/issues/new) and post the output of the following command:
-+ lspci
-+ cat /proc/modules
-
-Any recommandations are welcome. 

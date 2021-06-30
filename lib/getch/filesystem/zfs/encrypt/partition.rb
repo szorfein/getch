@@ -58,6 +58,7 @@ module Getch
           # /         - Root
 
           def exec(cmd)
+            @log.info("===> #{cmd}")
             Helpers::sys(cmd)
           end
         end

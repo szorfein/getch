@@ -24,7 +24,7 @@ module Getch
           OPTIONS[:keymap] = Getch::Guard.keymap(key)
         end
 
-        opts.on("-d", "--disk DISK", "Disk where install Gentoo (sda,sdb), default use #{@disk}") do |disk|
+        opts.on("-d", "--disk DISK", "Root Disk where install the system (sda,sdb)") do |disk|
           OPTIONS[:disk] = Getch::Guard.disk(disk)
         end
 
@@ -40,19 +40,19 @@ module Getch
           OPTIONS[:os] = name
         end
 
-        opts.on("--separate-boot DISK", "Disk for the boot/efi partition, default use #{@disk}") do |boot|
+        opts.on("--separate-boot DISK", "Use a different DISK for the /boot or /efi partition.") do |boot|
           OPTIONS[:boot_disk] = Getch::Guard.disk(boot)
         end
 
-        opts.on("--separate-cache DISK", "Disk for the swap partition, add ZIL/L2ARC for ZFS when set, default use #{@disk}") do |swap|
+        opts.on("--separate-cache DISK", "Use a different DISK for the swap partition, add ZIL/L2ARC for ZFS when set.") do |swap|
           OPTIONS[:cache_disk] = Getch::Guard.disk(swap)
         end
 
-        opts.on("--separate-home DISK", "Disk for the /home partition, default is nil") do |home|
+        opts.on("--separate-home DISK", "Use a different DISK for the /home partition.") do |home|
           OPTIONS[:home_disk] = Getch::Guard.disk(home)
         end
 
-        opts.on("--encrypt", "Encrypt your system.") do
+        opts.on("--encrypt", "Encrypt your system, use LUKS or native encryption for ZFS.") do
           OPTIONS[:encrypt] = true
         end
 

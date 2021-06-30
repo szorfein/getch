@@ -67,6 +67,7 @@ module Getch
     end
 
     def resume
+      raise "No disk, use at least getch with -d DISK" if !OPTIONS[:disk]
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
