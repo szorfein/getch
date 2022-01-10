@@ -8,6 +8,7 @@ module Getch::Gentoo
 
     def apply
       systemd
+      pam
       kmod
       grub
       zfs
@@ -22,6 +23,15 @@ module Getch::Gentoo
       use = Getch::Gentoo::Use.new('sys-apps/systemd')
       flags << 'dns-over-tls'
       flags << 'gnuefi' if @efi
+      use.add(flags)
+    end
+
+    def pam
+      flags = []
+      use = Getch::Gentoo::Use.new('sys-auth/pambase')
+      flags << '-passwdqc'
+      flags << 'pwquality'
+      flags << 'sha512'
       use.add(flags)
     end
 

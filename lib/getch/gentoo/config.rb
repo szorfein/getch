@@ -37,6 +37,7 @@ module Getch
           "MAKEOPTS=\"-j#{nproc}\"",
           'ACCEPT_KEYWORDS="amd64"',
           'INPUT_DEVICES="libinput"',
+          'USE=\"${USE} verify-sig audit"',
           grub_pc
         ]
         File.write(@make, data.join("\n"), mode: "a")
