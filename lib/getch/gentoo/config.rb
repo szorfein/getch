@@ -29,7 +29,7 @@ module Getch
           end
         }
 
-        FileUtils.copy_file(tmp, @make, preserve = true)
+        FileUtils.copy_file(tmp, @make)
 
         # Add the rest
         data = [
@@ -61,13 +61,13 @@ module Getch
           line_count += 1
         }
 
-        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf", preserve = true)
+        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf")
       end
 
       def network
         src = '/etc/resolv.conf'
         dest = "#{MOUNTPOINT}/etc/resolv.conf"
-        FileUtils.copy_file(src, dest, preserve = true)
+        FileUtils.copy_file(src, dest)
       end
 
       def systemd

@@ -25,7 +25,7 @@ module Getch
         print " => Copying /etc/resolv.conf..."
         src = '/etc/resolv.conf'
         dest = "#{@network_dir}/resolv.conf"
-        FileUtils.copy_file(src, dest, preserve = true)
+        FileUtils.copy_file(src, dest)
         puts "\s[Ok]"
       end
 

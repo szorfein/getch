@@ -46,10 +46,10 @@ module Getch
         @config.systemd_boot
         File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
 
-        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz", preserve: true)
+        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz")
 
         initramfs = Dir.glob("#{MOUNTPOINT}/boot/initramfs-*.img")
-        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs", preserve: true) if initramfs != []
+        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs") if initramfs != []
 
         Getch::Chroot.new("bootctl --path #{esp} update").run!
       end
