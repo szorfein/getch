@@ -1,4 +1,4 @@
-# lib/use_flag.rb
+# frozen_string_literal: true
 
 module Getch::Gentoo
   class UseFlag

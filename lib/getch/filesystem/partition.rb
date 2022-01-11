@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     class Partition

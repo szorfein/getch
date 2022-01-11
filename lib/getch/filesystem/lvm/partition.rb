@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -12,6 +14,7 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+
           @clean.old_vg(@dev_root, @vg)
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 
 module Getch
@@ -22,6 +24,7 @@ module Getch
 
           def systemd_boot
             return unless Helpers.efi?
+
             esp = '/efi'
             dir = "#{@root_dir}/#{esp}/loader/entries/"
             datas_gentoo = [

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'open3'
 require 'fileutils'
@@ -59,7 +61,7 @@ module Helpers
   end
 
   def self.partuuid(dev)
-    `lsblk -o PARTUUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
+    `lsblk -o PARTUUID #{dev}`.match(/\w+-\w+-\w+-\w+-\w+/)
   end
 
   def self.uuid(dev)
@@ -74,7 +76,7 @@ module Helpers
   def self.pool_id(dev)
     if dev.match(/[0-9]/)
       sleep 1
-      `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/[\w]{5}/)
+      `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/\w{5}/)
     else
       puts 'Please, enter a pool name'
       while true
@@ -104,11 +106,9 @@ module Helpers
     def command_output(args)
       print " => Exec: #{args}..."
       cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
         puts
-        while line = stdout_err.gets
-          puts line
-        end
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?
@@ -127,7 +127,7 @@ module Helpers
       File.open(file).each { |line|
         return true if line.match(/#{text}/)
       }
-      return false
+      false
     end
 
     # Used only when need password
@@ -148,7 +148,7 @@ module Helpers
     def line_fstab(dev, rest)
       conf = "#{Getch::MOUNTPOINT}/etc/fstab"
       device = s_uuid(dev)
-      raise "No partuuid for #{dev} #{device}" if !device
+      raise "No partuuid for #{dev} #{device}" unless device
       raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
 
       add_line(conf, "PARTUUID=#{device} #{rest}")

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module Gentoo
     class Chroot
@@ -15,6 +17,7 @@ module Getch
 
       def update
         return if STATES[:gentoo_update]
+
         puts 'Downloading the last ebuilds for Gentoo...'
         Helpers.create_dir("#{MOUNTPOINT}/var/db/repos/gentoo")
         cmd = 'emaint sync --auto'
@@ -23,6 +26,7 @@ module Getch
 
       def world
         return if STATES[:gentoo_update]
+
         puts 'Update Gentoo world'
         Getch::Emerge.new('emerge --update --deep --changed-use --newuse @world').run!
         @state.update
@@ -36,6 +40,7 @@ module Getch
 
       def kernel
         return if Dir.exist? "#{MOUNTPOINT}/usr/src/linux"
+
         license = "#{MOUNTPOINT}/etc/portage/package.license"
         File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
         @pkgs << 'sys-kernel/gentoo-sources'

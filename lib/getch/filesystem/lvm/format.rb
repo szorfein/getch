@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -10,6 +12,7 @@ module Getch
 
         def format
           return if STATES[:format]
+
           exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
           exec("mkfs.ext4 -F #{@dev_boot}") if @dev_boot
           exec("mkswap -f #{@lv_swap}")

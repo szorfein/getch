@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'config/gentoo'
 require_relative 'config/void'
 

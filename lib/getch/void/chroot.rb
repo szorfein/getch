@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module Void
     class Chroot
@@ -12,6 +14,7 @@ module Getch
       # https://docs.voidlinux.org/installation/guides/chroot.html#install-base-system-rootfs-method-only
       def update
         return if STATES[:gentoo_update]
+
         command_output '/usr/bin/xbps-install -Suy xbps' # y to force (--yes)
         command_output '/usr/bin/xbps-install -uy'
         command_output '/usr/bin/xbps-install -y base-system'

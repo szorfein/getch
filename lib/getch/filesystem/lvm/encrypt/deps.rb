@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -10,6 +12,7 @@ module Getch
           end
 
           private
+
           def options_make
             grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [

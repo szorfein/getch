@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'getch/options'
 require_relative 'getch/states'
 require_relative 'getch/gentoo'
@@ -94,6 +96,7 @@ module Getch
 
     def partition
       return if STATES[:partition]
+
       puts
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
@@ -107,11 +110,13 @@ module Getch
 
     def format
       return if STATES[:format]
+
       @class_fs::Format.new
     end
 
     def mount
       return if STATES[:mount]
+
       @class_fs::Mount.new.run
     end
 

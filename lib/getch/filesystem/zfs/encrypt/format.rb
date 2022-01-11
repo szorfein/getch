@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Zfs
@@ -7,7 +9,7 @@ module Getch
             super
             @log = Getch::Log.new()
             @state = Getch::States.new()
-            if ! @id
+            unless @id
               @log.info "Research pool id for #{@dev_root}..."
               @id = Helpers.pool_id(@dev_root)
               @boot_pool_name = "bpool-#{@id}"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'open3'
 
@@ -6,7 +8,7 @@ module Getch
     class RootFS
       def initialize
         @url = 'https://alpha.de.repo.voidlinux.org/live/current'
-        @file = 'sha256sum.sig'
+        @file = 'sha256sum.txt'
         @xbps = false
         Dir.chdir(MOUNTPOINT)
       end
@@ -16,9 +18,9 @@ module Getch
         yurl = "#{@url}/#{@file}"
         puts "Open #{yurl}"
         Helpers.get_file_online(yurl, @file)
-        File.open(@file).each { |l|
+        File.open(@file).each do |l|
           @xbps = l.tr('()', '').split(' ') if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
-        }
+        end
       end
 
       def download

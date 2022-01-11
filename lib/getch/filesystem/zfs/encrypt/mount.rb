@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Zfs
@@ -12,6 +14,7 @@ module Getch
 
           def run
             return if STATES[:mount]
+
             exec('zpool export -a')
             exec("rm -rf #{MOUNTPOINT}/*")
             exec("zpool import -N -R #{MOUNTPOINT} #{@pool_name}")
@@ -33,6 +36,7 @@ module Getch
 
           def mount_boot
             return unless @dev_boot
+
             exec("zfs mount #{@boot_pool_name}/BOOT/#{@n}")
           end
 

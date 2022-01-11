@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 
 module Getch
@@ -71,13 +73,13 @@ module Getch
         puts 'Password for root'
         cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd\""
         system(cmd)
-        if @user
-          puts "Creating user #{@user}"
-          Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}").run!
-          puts "Password for your user #{@user}"
-          cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd #{@user}\""
-          system(cmd)
-        end
+        return unless @user
+
+        puts "Creating user #{@user}"
+        Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}").run!
+        puts "Password for your user #{@user}"
+        cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd #{@user}\""
+        system(cmd)
       end
 
       private

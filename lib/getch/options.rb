@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'optparse'
 
 module Getch
@@ -68,7 +70,7 @@ module Getch
         begin
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
-          STDERR.puts e.message, "\n", opts
+          warn e.message, "\n", opts
           exit 1
         end
       end

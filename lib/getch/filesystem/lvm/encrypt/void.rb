@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -87,7 +89,7 @@ module Getch
           def line_crypttab(mapname, dev, point, rest)
             conf = "#{MOUNTPOINT}/etc/crypttab"
             device = s_uuid(dev)
-            raise "No partuuid for #{dev} #{device}" if !device
+            raise "No partuuid for #{dev} #{device}" unless device
             raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
             add_line(conf, "#{mapname} PARTUUID=#{device} #{point} #{rest}")
           end

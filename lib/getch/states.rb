@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 module Getch
@@ -45,7 +47,7 @@ module Getch
     private
 
     def save
-      File.open(@file, 'w') { |f| YAML::dump(STATES, f) }
+      File.open(@file, 'w') { |f| YAML.dump(STATES, f) }
     end
 
     def load_state()
@@ -54,7 +56,7 @@ module Getch
         STATES.merge!(state_file)
       else
         save
-        STDERR.puts 'Initialize states'
+        warn 'Initialize states'
       end
     end
   end
