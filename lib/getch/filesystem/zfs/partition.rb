@@ -28,13 +28,13 @@ module Getch
           if @efi
             @partition.efi(@dev_esp)
             @partition.boot(@dev_boot) if Getch::OPTIONS[:os] == 'void'
-            @partition.swap(@dev_swap) if !@cache_disk
+            @partition.swap(@dev_swap) unless @cache_disk
             @partition.root(@dev_root, 'BF00') if @root_part != 1
           else
             @partition.gpt(@dev_gpt)
             # Boot pool for GRUB2
             @partition.boot(@dev_boot)
-            @partition.swap(@dev_swap) if !@cache_disk
+            @partition.swap(@dev_swap) unless @cache_disk
             @partition.root(@dev_root, 'BF00') if @root_part != 1
           end
         end

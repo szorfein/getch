@@ -58,7 +58,8 @@ module Getch
 
       def virtualbox_guest
         systemd=`systemd-detect-virt`.chomp
-        return if ! ismatch?('vmwgfx') || systemd.match(/none/)
+        return unless ismatch?('vmwgfx') || systemd.match(/none/)
+
         bask('-a virtualbox-guest')
         Getch::Emerge.new('app-emulation/virtualbox-guest-additions').pkg!
       end
@@ -77,14 +78,16 @@ module Getch
       end
 
       def install_wifi
-        return if ! ismatch?('cfg80211')
+        return unless ismatch?('cfg80211')
+
         bask('-a wifi')
         wifi_drivers
         Getch::Emerge.new('net-wireless/iw wpa_supplicant net-wireless/iwd').pkg!
       end
 
       def install_audio
-        return if ! ismatch?('snd_pcm')
+        return unless ismatch?('snd_pcm')
+
         bask('-a sound')
       end
 

@@ -146,7 +146,7 @@ module Helpers
     def line_fstab(dev, rest)
       conf = "#{Getch::MOUNTPOINT}/etc/fstab"
       device = s_uuid(dev)
-      raise "No partuuid for #{dev} #{device}" if !device
+      raise "No partuuid for #{dev} #{device}" unless device
       raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
 
       add_line(conf, "PARTUUID=#{device} #{rest}")

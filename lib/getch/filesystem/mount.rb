@@ -13,7 +13,8 @@ module Getch
       end
 
       def swap(dev)
-        return if ! dev
+        return unless dev
+
         if Helpers.grep?('/proc/swaps', /^\/dev/)
           exec("swapoff #{dev}")
         end
@@ -22,25 +23,29 @@ module Getch
       end
 
       def root(dev)
-        return if ! dev
+        return unless dev
+
         Helpers.mkdir(@root_dir)
         exec("mount #{dev} #{@root_dir}")
       end
 
       def esp(dev)
-        return if ! dev
+        return unless dev
+
         Helpers.mkdir(@boot_efi_dir)
         exec("mount #{dev} #{@boot_efi_dir}")
       end
 
       def boot(dev)
-        return if ! dev
+        return unless dev
+
         Helpers.mkdir(@boot_dir)
         exec("mount #{dev} #{@boot_dir}")
       end
 
       def home(dev)
-        return if ! dev
+        return unless dev
+
         Helpers.mkdir(@home_dir)
         exec("mount #{dev} #{@home_dir}")
       end
