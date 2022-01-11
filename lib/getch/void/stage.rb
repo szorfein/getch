@@ -6,7 +6,7 @@ module Getch
     class RootFS
       def initialize
         @url = 'https://alpha.de.repo.voidlinux.org/live/current'
-        @file = 'sha256sum.sig'
+        @file = 'sha256sum.txt'
         @xbps = false
         Dir.chdir(MOUNTPOINT)
       end

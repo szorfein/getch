@@ -18,7 +18,8 @@ module Getch
         chroot 'passwd'
         puts
         return unless @user
-        print ' => Creating a new user #{@user}...'
+
+        print " => Creating a new user #{@user}..."
         puts "\s[OK]"
         command "useradd -m -G users,wheel,audio,video #{@user}"
         puts " => Add a password for #{@user}."
