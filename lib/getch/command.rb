@@ -18,7 +18,10 @@ module Getch
         code = wait_thr.value
 
         # only stderr
-        @log.debug stderr.readline until stderr.eof.nil?
+        begin
+          @log.debug stderr.readline until stderr.eof.nil?
+        rescue
+        end
 
         begin
           files = [stdout, stderr]
