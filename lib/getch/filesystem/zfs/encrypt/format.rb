@@ -29,7 +29,8 @@ module Getch
 
           def zfs
             bloc=`blockdev --getpbsz #{@dev_root}`
-            ashift = case bloc
+            ashift =
+              case bloc
               when /8096/
                 13
               when /4096/
