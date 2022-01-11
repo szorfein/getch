@@ -19,6 +19,7 @@ module Getch
 
           def systemd_boot
             return unless Helpers.efi?
+
             esp = '/efi'
             dir = "#{@root_dir}/#{esp}/loader/entries/"
             datas_gentoo = [
@@ -39,12 +40,13 @@ module Getch
 
           def grub
             return if Helpers.efi?
+
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
               "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root real_root=#{@lv_root} init=#{@init} dolvm rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{Getch::OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
-            File.write("#{file}", cmdline.join("\n"), mode: 'a')
+            File.write(file, cmdline.join("\n"), mode: 'a')
           end
 
           private

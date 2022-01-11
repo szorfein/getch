@@ -18,7 +18,8 @@ module Getch
           end
 
           def systemd_boot
-            return if ! @efi
+            return unless @efi
+
             esp = '/efi'
             dir = "#{@root_dir}/#{esp}/loader/entries/"
             datas_gentoo = [
@@ -40,11 +41,12 @@ module Getch
           # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
           def grub
             return if @efi
+
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
               "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}\""
             ]
-            File.write("#{file}", cmdline.join("\n"), mode: 'a')
+            File.write(file, cmdline.join("\n"), mode: 'a')
           end
 
           private
@@ -56,7 +58,7 @@ module Getch
 
           def data_fstab
             boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
-            swap = @dev_swap ? "/dev/mapper/cryptswap none swap sw 0 0" : ''
+            swap = @dev_swap ? '/dev/mapper/cryptswap none swap sw 0 0' : ''
 
             [ boot_efi, swap ]
           end

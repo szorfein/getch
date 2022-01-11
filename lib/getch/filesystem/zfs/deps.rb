@@ -9,7 +9,7 @@ module Getch
           auto_module_rebuild
           hostid
           options_make
-          Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+          Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
           zed_update_path
         end
 
@@ -18,16 +18,16 @@ module Getch
         def unstable_zfs
           conf = "#{MOUNTPOINT}/etc/portage/package.accept_keywords/zfs"
           data = [
-            "sys-fs/zfs-kmod",
-            "sys-fs/zfs"
+            'sys-fs/zfs-kmod',
+            'sys-fs/zfs'
           ]
-          File.write(conf, data.join("\n"), mode: "w")
+          File.write(conf, data.join("\n"), mode: 'w')
         end
 
         def install_deps
           Getch::Bask.new('-a zfs').run!
-          Getch::Make.new("make modules_prepare").run!
-          Getch::Make.new("make -j$(nproc)").run!
+          Getch::Make.new('make modules_prepare').run!
+          Getch::Make.new('make -j$(nproc)').run!
           Getch::Emerge.new('genkernel sys-fs/zfs').pkg!
         end
 
@@ -36,16 +36,16 @@ module Getch
           Helpers.mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
-          exec("ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
-          exec("systemctl start zfs-zed.service")
-          exec("systemctl enable zfs-zed.service")
-          exec("systemctl enable zfs.target")
+          exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
+          exec('systemctl start zfs-zed.service')
+          exec('systemctl enable zfs-zed.service')
+          exec('systemctl enable zfs.target')
         end
 
         def zed_update_path
           Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
-            unless system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
-              raise "system exec sed"
+            unless system('sed', '-Ei', "s|#{MOUNTPOINT}/?|/|", f)
+              raise 'system exec sed'
             end
           }
         end
@@ -72,7 +72,7 @@ EOF
         end
 
         def hostid
-          exec "zgenhostid $(hostid)"
+          exec 'zgenhostid $(hostid)'
         end
 
         def options_make

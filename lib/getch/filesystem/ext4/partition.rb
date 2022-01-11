@@ -12,6 +12,7 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
           if Helpers.efi?
@@ -32,8 +33,8 @@ module Getch
           # /home  - Home
           @partition.efi(@dev_esp)
           @partition.swap(@dev_swap)
-          @partition.root(@dev_root, "8304")
-          @partition.home(@dev_home, "8302") if @dev_home
+          @partition.root(@dev_root, '8304')
+          @partition.home(@dev_home, '8302') if @dev_home
         end
 
         def partition_bios
@@ -43,8 +44,8 @@ module Getch
           # /home     - Home
           @partition.gpt(@dev_gpt)
           @partition.swap(@dev_swap)
-          @partition.root(@dev_root, "8304")
-          @partition.home(@dev_home, "8302") if @dev_home
+          @partition.root(@dev_root, '8304')
+          @partition.home(@dev_home, '8302') if @dev_home
         end
       end
     end

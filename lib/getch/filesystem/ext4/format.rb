@@ -10,6 +10,7 @@ module Getch
 
         def format
           return if STATES[:format]
+
           exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
           exec("mkswap -f #{@dev_swap}")
           exec("mkfs.ext4 -F #{@dev_root}")

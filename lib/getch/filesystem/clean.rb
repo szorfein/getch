@@ -36,11 +36,11 @@ module Getch
       end
 
       def self.external_disk(root_disk, *disks)
-        disks.each { |d|
-          unless d && d != "" && d != nil && d == root_disk
+        disks.each do |d|
+          unless d && d != '' && d != nil && d == root_disk
             hdd(d)
           end
-        }
+        end
       end
 
       def self.old_vg(disk, vg)
@@ -51,7 +51,7 @@ module Getch
 
       def self.old_zpool
         oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
-        if oldzpool[0] != "" and $?.success?
+        if oldzpool[0] != '' and $?.success?
           oldzpool.each { |p| Helpers.sys("zpool destroy #{p}") if p }
         end
       end

@@ -9,7 +9,7 @@ module Getch
     end
 
     def run!
-      @log.info "Running command: " + @cmd.gsub(/\"/, '')
+      @log.info 'Running command: ' + @cmd.gsub(/\"/, '')
 
       Open3.popen3(@cmd) do |stdin, stdout, stderr, wait_thr|
         stdin.close_write
@@ -61,7 +61,7 @@ module Getch
           data = f.read_nonblock(@block_size)
           puts data if OPTIONS[:verbose]
         rescue EOFError
-          puts ""
+          puts
         rescue => e
           puts "Fatal - #{e}"
         end
@@ -79,13 +79,13 @@ module Getch
 
     def run!
       @log.info "Running emerge: #{@cmd}"
-      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && #{@cmd}")
+      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
       read_exit
     end
 
     def pkg!
       @log.info "Running emerge pkg: #{@cmd}"
-      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && emerge --changed-use #{@cmd}")
+      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
       read_exit
     end
 
@@ -132,11 +132,11 @@ module Getch
       @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
-      @version = "0.5"
+      @version = '0.5'
     end
 
     def run!
-      download_bask if ! Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
+      download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
       @log.info "Running Bask: #{@cmd}"
       cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
         && env-update \
@@ -158,7 +158,7 @@ module Getch
     private 
 
     def download_bask
-      @log.info "Installing Bask..."
+      @log.info 'Installing Bask...'
       url = "https://github.com/szorfein/bask/archive/v#{@version}.tar.gz"
       file = "bask-#{@version}.tar.gz"
 

@@ -5,7 +5,7 @@ module Getch
   module Gentoo
     class Stage
       def initialize
-        @mirror = "https://mirrors.soeasyto.com/distfiles.gentoo.org"
+        @mirror = 'https://mirrors.soeasyto.com/distfiles.gentoo.org'
         @release = release
         @stage_file="stage3-amd64-systemd-#{@release}.tar.xz"
       end
@@ -28,16 +28,16 @@ module Getch
         Dir.chdir(MOUNTPOINT)
         return if File.exist?(@stage_file)
         puts "Download the last #{@stage_file}, please wait..."
-        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file, @stage_file)
+        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file, @stage_file)
       end
 
       def control_files
-        puts "Download the DIGESTS"
-        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS", "#{@stage_file}.DIGESTS")
-        puts "Download the DIGESTS.asc"
-        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS.asc", "#{@stage_file}.DIGESTS.asc")
+        puts 'Download the DIGESTS'
+        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.DIGESTS', "#{@stage_file}.DIGESTS")
+        puts 'Download the DIGESTS.asc'
+        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.DIGESTS.asc', "#{@stage_file}.DIGESTS.asc")
         puts "Download the CONTENTS.gz"
-        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".CONTENTS.gz", "#{@stage_file}.CONTENTS.gz")
+        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.CONTENTS.gz', "#{@stage_file}.CONTENTS.gz")
       end
 
       def checksum
@@ -45,7 +45,7 @@ module Getch
         command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS.asc | sha512sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
-          puts "Checksum is ok"
+          puts 'Checksum is ok'
           decompress
           cleaning
         else
@@ -54,7 +54,7 @@ module Getch
         end
       end
 
-      private 
+      private
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage
       def decompress
@@ -64,9 +64,7 @@ module Getch
       end
 
       def cleaning
-        Dir.glob("stage3-amd64-systemd*").each do |f|
-          File.delete(f)
-        end
+        Dir.glob('stage3-amd64-systemd*').each { |f| File.delete(f) }
       end
     end
   end

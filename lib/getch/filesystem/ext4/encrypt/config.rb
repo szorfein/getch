@@ -44,6 +44,7 @@ module Getch
 
           def grub
             return if Helpers.efi?
+
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [
               "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{Getch::OPTIONS[:keymap]}\"",
@@ -72,10 +73,11 @@ module Getch
           end
 
           def move_secret_keys
-            return if ! @luks_home
-            puts "Moving secret keys"
+            return unless @luks_home
+
+            puts 'Moving secret keys'
             keys_path = "#{@root_dir}/root/secretkeys"
-            FileUtils.mv("/root/secretkeys", keys_path) if ! Dir.exist?(keys_path)
+            FileUtils.mv('/root/secretkeys', keys_path) unless Dir.exist? keys_path
           end
         end
       end

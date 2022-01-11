@@ -6,7 +6,7 @@ module Getch
           def make
             install_deps
             genkernel
-            Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
           end
 
           private

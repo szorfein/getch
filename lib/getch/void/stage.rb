@@ -5,8 +5,8 @@ module Getch
   module Void
     class RootFS
       def initialize
-        @url = "https://alpha.de.repo.voidlinux.org/live/current"
-        @file = "sha256sum.sig"
+        @url = 'https://alpha.de.repo.voidlinux.org/live/current'
+        @file = 'sha256sum.sig'
         @xbps = false
         Dir.chdir(MOUNTPOINT)
       end
@@ -17,14 +17,14 @@ module Getch
         puts "Open #{yurl}"
         Helpers.get_file_online(yurl, @file)
         File.open(@file).each { |l|
-          @xbps = l.tr('()', '').split(" ") if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
+          @xbps = l.tr('()', '').split(' ') if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
         }
       end
 
       def download
-        raise StandardError, "No file found, retry later." unless @xbps
-
+        raise StandardError, 'No file found, retry later.' unless @xbps
         return if File.exist? @xbps[1]
+
         puts "Downloading #{@xbps[1]}..."
         Helpers.get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])
       end
@@ -59,12 +59,8 @@ module Getch
       end
 
       def cleaning
-        Dir.glob("void-x86_64*.tar.xz").each do |f|
-          File.delete(f)
-        end
-        Dir.glob("sha256*").each do |f|
-          File.delete(f)
-        end
+        Dir.glob('void-x86_64*.tar.xz').each { |f| File.delete(f) }
+        Dir.glob('sha256*').each { |f| File.delete(f) }
       end
     end
   end

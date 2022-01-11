@@ -54,7 +54,7 @@ module Getch
         STATES.merge!(state_file)
       else
         save
-        STDERR.puts "Initialize states"
+        STDERR.puts 'Initialize states'
       end
     end
   end
