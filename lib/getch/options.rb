@@ -68,7 +68,7 @@ module Getch
         begin
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
-          STDERR.puts e.message, "\n", opts
+          $stderr.puts e.message, "\n", opts
           exit 1
         end
       end

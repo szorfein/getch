@@ -16,9 +16,9 @@ module Getch
         yurl = "#{@url}/#{@file}"
         puts "Open #{yurl}"
         Helpers.get_file_online(yurl, @file)
-        File.open(@file).each { |l|
+        File.open(@file).each do |l|
           @xbps = l.tr('()', '').split(' ') if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
-        }
+        end
       end
 
       def download

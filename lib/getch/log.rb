@@ -37,7 +37,7 @@ module Getch
     end
 
     def init_log
-      @logger = Logger.new(STDOUT)
+      @logger = Logger.new($stdout)
       @logger.level = @verbose ? Logger::DEBUG : Logger::INFO
       @logger.formatter = proc { |severity, _, _, msg|
         "#{severity}, #{msg}\n" 
