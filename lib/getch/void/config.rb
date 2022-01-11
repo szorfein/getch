@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'securerandom'
 
@@ -76,8 +78,8 @@ module Getch
       def search_utf8(lang)
         @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/etc/default/libc-locales").each { |l|
-          @utf8 = $~[0] if l.match(/#{lang}[. ]+[utf\-8 ]+/i)
-          @lang = $~[0] if l.match(/#{lang}[. ]+utf\-8/i)
+          @utf8 = $~[0] if l.match(/#{lang}[. ]+[utf-8 ]+/i)
+          @lang = $~[0] if l.match(/#{lang}[. ]+utf-8/i)
         }
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end

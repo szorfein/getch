@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'open3'
 require 'fileutils'
@@ -59,7 +61,7 @@ module Helpers
   end
 
   def self.partuuid(dev)
-    `lsblk -o PARTUUID #{dev}`.match(/[\w]+-[\w]+-[\w]+-[\w]+-[\w]+/)
+    `lsblk -o PARTUUID #{dev}`.match(/\w+-\w+-\w+-\w+-\w+/)
   end
 
   def self.uuid(dev)
@@ -74,7 +76,7 @@ module Helpers
   def self.pool_id(dev)
     if dev.match(/[0-9]/)
       sleep 1
-      `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/[\w]{5}/)
+      `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/\w{5}/)
     else
       puts 'Please, enter a pool name'
       while true
@@ -125,7 +127,7 @@ module Helpers
       File.open(file).each { |line|
         return true if line.match(/#{text}/)
       }
-      return false
+      false
     end
 
     # Used only when need password

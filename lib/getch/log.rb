@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module Getch
@@ -40,7 +42,7 @@ module Getch
       @logger = Logger.new($stdout)
       @logger.level = @verbose ? Logger::DEBUG : Logger::INFO
       @logger.formatter = proc { |severity, _, _, msg|
-        "#{severity}, #{msg}\n" 
+        "#{severity}, #{msg}\n"
       }
     end
 

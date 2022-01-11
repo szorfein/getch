@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -12,6 +14,7 @@ module Getch
 
           def format
             return if STATES[:format]
+
             puts "Format #{@disk}"
             exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
             exec("mkfs.#{@fs} -F #{@dev_boot}") if @dev_boot
@@ -21,6 +24,7 @@ module Getch
           end
 
           private
+
           def exec(cmd)
             Getch::Command.new(cmd).run!
           end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module Gentoo
     class Sources
@@ -48,8 +50,8 @@ module Getch
 
       def cryptsetup
         return unless Getch::OPTIONS[:encrypt]
-        make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
 
+        make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
         puts 'Adding support for cryptsetup.'
         bask('-a cryptsetup')
         Getch::Chroot.new('euse -E cryptsetup').run! unless Helpers.grep?(make_conf, /cryptsetup/)
@@ -95,10 +97,7 @@ module Getch
         conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
         File.delete(conf) if File.exist? conf
 
-        if ismatch?('ath9k')
-          bask('-a ath9k-driver')
-        end
-
+        bask('-a ath9k-driver') if ismatch?('ath9k')
         module_load('iwlmvm', conf)
         module_load('ath9k', conf)
       end
@@ -118,6 +117,7 @@ module Getch
       def module_load(name, file)
         return unless name
         return unless ismatch?(name)
+
         File.write(file, "#{name}\n", mode: 'a')
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Zfs
@@ -17,6 +19,7 @@ module Getch
 
         def systemd_boot
           return unless Helpers.efi?
+
           esp = '/efi'
           dir = "#{@root_dir}/#{esp}/loader/entries/"
           datas_gentoo = [
@@ -31,6 +34,7 @@ module Getch
         # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
         def grub
           return if Helpers.efi?
+
           file = "#{@root_dir}/etc/default/grub"
           cmdline = [ 
             "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs\""

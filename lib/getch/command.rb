@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 
 module Getch
@@ -16,10 +18,7 @@ module Getch
         code = wait_thr.value
 
         # only stderr
-        begin
-          @log.debug stderr.readline until stderr.eof.nil?
-        rescue EOFError
-        end
+        @log.debug stderr.readline until stderr.eof.nil?
 
         begin
           files = [stdout, stderr]

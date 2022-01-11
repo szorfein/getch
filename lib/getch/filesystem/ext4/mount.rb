@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Ext4
@@ -10,6 +12,7 @@ module Getch
 
         def run
           return if STATES[:mount]
+
           @mount.swap(@dev_swap)
           @mount.root(@dev_root)
           @mount.boot(@dev_boot)

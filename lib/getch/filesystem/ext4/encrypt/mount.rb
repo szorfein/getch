@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 
 module Getch
@@ -13,6 +15,7 @@ module Getch
 
           def run
             return if STATES[:mount]
+
             @mount.root(@luks_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)

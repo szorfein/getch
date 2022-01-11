@@ -11,8 +11,6 @@ module Getch
         when /^y|^Y/
           bloc=`blockdev --getbsz /dev/#{disk}`.chomp
           Helpers.sys("dd if=/dev/urandom of=/dev/#{disk} bs=#{bloc} status=progress")
-        else
-          return
         end
       end
 

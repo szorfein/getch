@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Zfs
@@ -13,6 +15,7 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+
           @clean.old_zpool
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
@@ -40,12 +43,12 @@ module Getch
         end
 
         def cache
-          if @cache_disk
-            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-            exec("sgdisk -n1:0:+#{mem} -t1:8200 /dev/#{@cache_disk}")
-            exec("sgdisk -n2:0:+4G -t2:BF07 /dev/#{@cache_disk}")
-            exec("sgdisk -n3:0:0 -t3:BF00 /dev/#{@cache_disk}")
-          end
+          return unless @cache_disk
+
+          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+          exec("sgdisk -n1:0:+#{mem} -t1:8200 /dev/#{@cache_disk}")
+          exec("sgdisk -n2:0:+4G -t2:BF07 /dev/#{@cache_disk}")
+          exec("sgdisk -n3:0:0 -t3:BF00 /dev/#{@cache_disk}")
         end
 
         # Partition_efi
