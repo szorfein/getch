@@ -26,7 +26,7 @@ module Getch
           private
 
           def partition
-            if Helpers::efi?
+            if Helpers.efi?
               @partition.efi(@dev_esp)
               @partition.boot(@dev_boot) if Getch::OPTIONS[:os] == 'void'
               @partition.swap(@dev_swap) if !@cache_disk
@@ -59,7 +59,7 @@ module Getch
 
           def exec(cmd)
             @log.info("===> #{cmd}")
-            Helpers::sys(cmd)
+            Helpers.sys(cmd)
           end
         end
       end

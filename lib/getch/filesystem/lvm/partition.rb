@@ -23,7 +23,7 @@ module Getch
         private
 
         def partition
-          if Helpers::efi?
+          if Helpers.efi?
             @partition.efi(@dev_esp)
             @partition.root(@dev_root, "8e00")
           else

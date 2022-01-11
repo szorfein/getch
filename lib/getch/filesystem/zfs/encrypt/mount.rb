@@ -27,18 +27,18 @@ module Getch
           private
 
           def mount_root
-            Helpers::mkdir(MOUNTPOINT)
+            Helpers.mkdir(MOUNTPOINT)
             exec("zfs mount #{@pool_name}/ROOT/#{@n}")
           end
 
           def mount_boot
-            return if ! @dev_boot
+            return unless @dev_boot
             exec("zfs mount #{@boot_pool_name}/BOOT/#{@n}")
           end
 
           def exec(cmd)
             @log.info("==> #{cmd}")
-            Helpers::sys(cmd)
+            Helpers.sys(cmd)
           end
         end
       end

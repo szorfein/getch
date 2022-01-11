@@ -26,7 +26,7 @@ module Getch
         private
 
         def mount_root
-          Helpers::mkdir(MOUNTPOINT)
+          Helpers.mkdir(MOUNTPOINT)
           exec("zfs mount #{@pool_name}/ROOT/#{@n}")
         end
 
@@ -37,7 +37,7 @@ module Getch
 
         def exec(cmd)
           @log.info("==> #{cmd}")
-          Helpers::sys(cmd)
+          Helpers.sys(cmd)
         end
       end
     end

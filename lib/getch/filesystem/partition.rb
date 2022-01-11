@@ -67,7 +67,7 @@ module Getch
       def exec(cmd)
         @log.debug "Partition disk with #{cmd}"
         if Getch::OPTIONS[:encrypt]
-          Helpers::sys(cmd)
+          Helpers.sys(cmd)
         else
           Getch::Command.new(cmd).run!
         end

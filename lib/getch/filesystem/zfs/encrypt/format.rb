@@ -9,7 +9,7 @@ module Getch
             @state = Getch::States.new()
             if ! @id
               @log.info "Research pool id for #{@dev_root}..."
-              @id = Helpers::pool_id(@dev_root)
+              @id = Helpers.pool_id(@dev_root)
               @boot_pool_name = "bpool-#{@id}"
               @pool_name = "rpool-#{@id}"
             end
@@ -39,7 +39,7 @@ module Getch
                 9
               end
 
-            Helpers::mkdir(MOUNTPOINT)
+            Helpers.mkdir(MOUNTPOINT)
 
             @log.debug("ashift found for #{bloc} - #{ashift}")
             if @dev_boot
@@ -95,7 +95,7 @@ module Getch
           end
 
           def exec(cmd)
-            Helpers::sys(cmd)
+            Helpers.sys(cmd)
           end
         end
       end

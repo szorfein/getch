@@ -163,7 +163,7 @@ module Getch
       file = "bask-#{@version}.tar.gz"
 
       Dir.chdir("#{MOUNTPOINT}/root")
-      Helpers::get_file_online(url, file)
+      Helpers.get_file_online(url, file)
       Getch::Command.new("tar xzf #{file}").run!
     end
   end

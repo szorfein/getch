@@ -3,7 +3,7 @@ module Getch
     module Ext4
       class Deps
         def initialize
-          if Helpers::efi?
+          if Helpers.efi?
             install_efi
           else
             install_bios

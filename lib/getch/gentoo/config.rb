@@ -11,7 +11,7 @@ module Getch
       end
 
       def portage
-        grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
+        grub_pc = Helpers.efi? ? '' : 'GRUB_PLATFORMS="pc"'
         nproc = `nproc`.chomp()
 
         # Add cpu name
@@ -86,13 +86,13 @@ module Getch
 
       def portage_fs
         portage = "#{MOUNTPOINT}/etc/portage"
-        Helpers::create_dir("#{portage}/package.use")
-        Helpers::create_dir("#{portage}/package.accept_keywords")
-        Helpers::create_dir("#{portage}/package.unmask")
+        Helpers.create_dir("#{portage}/package.use")
+        Helpers.create_dir("#{portage}/package.accept_keywords")
+        Helpers.create_dir("#{portage}/package.unmask")
 
-        Helpers::add_file("#{portage}/package.use/zzz_via_autounmask")
-        Helpers::add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
-        Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.use/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
       def portage_bashrc

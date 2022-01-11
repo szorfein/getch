@@ -52,7 +52,7 @@ module Getch
 
         puts "Adding support for cryptsetup."
         bask("-a cryptsetup")
-        Getch::Chroot.new("euse -E cryptsetup").run! unless Helpers::grep?(make_conf, /cryptsetup/)
+        Getch::Chroot.new("euse -E cryptsetup").run! unless Helpers.grep?(make_conf, /cryptsetup/)
         Getch::Emerge.new("sys-fs/cryptsetup").pkg!
       end
 

@@ -3,7 +3,7 @@ module Getch
     module Lvm
       class Deps
         def make
-          install_bios unless Helpers::efi?
+          install_bios unless Helpers.efi?
           install_deps
           options_make
           Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
@@ -11,7 +11,7 @@ module Getch
 
         private
         def options_make
-          grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+          grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
           datas = [
             '',
             grub,

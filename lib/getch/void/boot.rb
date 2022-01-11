@@ -7,7 +7,7 @@ module Getch
       include Helpers::Void
 
       def initialize
-        @efi = Helpers::efi?
+        @efi = Helpers.efi?
         @class_fs = Getch::select_fs
         @fs = @class_fs::Void.new
         @user = OPTIONS[:username]

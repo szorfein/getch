@@ -24,7 +24,7 @@ module Getch
         # Ensure than systemd is build with all our flags
         Getch::Emerge.new("@world").pkg!
 
-        if Helpers::efi?
+        if Helpers.efi?
           bootctl
         else
           grub
@@ -90,8 +90,8 @@ module Getch
       end
 
       def the_end
-        #Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
-        #Helpers::exec_or_die("umount -R #{MOUNTPOINT}")
+        # Helpers.exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
+        # Helpers.exec_or_die("umount -R #{MOUNTPOINT}")
         puts
         puts "getch has finish, before reboot, you can:"
         puts "  +  Chroot on your system with: chroot #{MOUNTPOINT} /bin/bash"

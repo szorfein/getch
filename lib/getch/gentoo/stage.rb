@@ -28,16 +28,16 @@ module Getch
         Dir.chdir(MOUNTPOINT)
         return if File.exist?(@stage_file)
         puts "Download the last #{@stage_file}, please wait..."
-        Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file, @stage_file)
+        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file, @stage_file)
       end
 
       def control_files
         puts "Download the DIGESTS"
-        Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS", "#{@stage_file}.DIGESTS")
+        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS", "#{@stage_file}.DIGESTS")
         puts "Download the DIGESTS.asc"
-        Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS.asc", "#{@stage_file}.DIGESTS.asc")
+        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".DIGESTS.asc", "#{@stage_file}.DIGESTS.asc")
         puts "Download the CONTENTS.gz"
-        Helpers::get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".CONTENTS.gz", "#{@stage_file}.CONTENTS.gz")
+        Helpers.get_file_online(@mirror + "/releases/amd64/autobuilds/" + file + ".CONTENTS.gz", "#{@stage_file}.CONTENTS.gz")
       end
 
       def checksum

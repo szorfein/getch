@@ -12,7 +12,7 @@ module Getch
           private
 
           def genkernel
-            grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+            grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [
               '',
               grub,

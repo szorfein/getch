@@ -29,7 +29,7 @@ module Getch
         list = []
 
         @flags.each { |f|
-          unless Helpers::grep?(@make, /#{f}/)
+          unless Helpers.grep?(@make, /#{f}/)
             list << f
           end
         }
