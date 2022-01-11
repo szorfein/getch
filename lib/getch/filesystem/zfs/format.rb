@@ -19,7 +19,8 @@ module Getch
 
         def format
           return if STATES[:format]
-          raise "Error, no id found for #{@dev_root}." if ! @id
+          raise "Error, no id found for #{@dev_root}." unless @id
+
           @log.info "Create #{@id} for #{@pool_name}"
           system("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
           zfs

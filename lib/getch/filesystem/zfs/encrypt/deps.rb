@@ -44,7 +44,7 @@ module Getch
 
           def zed_update_path
             Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
-              if !system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
+              unless system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
                 raise "System exec sed"
               end
             }

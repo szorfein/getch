@@ -63,8 +63,9 @@ module Getch
           def line_crypttab(mapname, dev, point, rest)
             conf = "#{MOUNTPOINT}/etc/crypttab"
             device = s_uuid(dev)
-            raise "No partuuid for #{dev} #{device}" if !device
+            raise "No partuuid for #{dev} #{device}" unless device
             raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
+
             add_line(conf, "#{mapname} PARTUUID=#{device} #{point} #{rest}")
           end
 
@@ -80,7 +81,7 @@ module Getch
 
           def zed_update_path
             Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
-              if !system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
+              unless system("sed", "-Ei", "s|#{MOUNTPOINT}/?|/|", f)
                 raise "System exec sed"
               end
             }

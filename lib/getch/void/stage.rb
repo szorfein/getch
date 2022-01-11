@@ -22,7 +22,8 @@ module Getch
       end
 
       def download
-        raise StandardError, "No file found, retry later." if !@xbps
+        raise StandardError, "No file found, retry later." unless @xbps
+
         return if File.exist? @xbps[1]
         puts "Downloading #{@xbps[1]}..."
         Helpers.get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])

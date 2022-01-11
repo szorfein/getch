@@ -40,6 +40,7 @@ module Helpers
 
   def self.cp(src, dest)
     raise "Src file #{src} no found" unless File.exist? src
+
     FileUtils.cp(src, dest)
   end
 
@@ -122,6 +123,7 @@ module Helpers
 
     def add_line(file, line)
       raise "No file #{file} found !" unless File.exist? file
+
       File.write(file, "#{line}\n", mode: 'a')
     end
 
@@ -170,6 +172,7 @@ module Helpers
   module Cryptsetup
     def encrypt(dev)
       raise "No device #{dev}" unless File.exist? dev
+
       puts " => Encrypting device #{dev}..."
       if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
         Helpers.sys("cryptsetup luksFormat --type luks #{dev}")
@@ -180,6 +183,7 @@ module Helpers
 
     def open_crypt(dev, map_name)
       raise "No device #{dev}" unless File.exist? dev
+
       puts " => Opening encrypted device #{dev}..."
       if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
         Helpers.sys("cryptsetup open --type luks #{dev} #{map_name}")

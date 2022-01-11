@@ -16,7 +16,8 @@ module Getch
 
         # Add cpu name
         cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
-        raise "Error, no cpu found" if ! cpu or cpu == ""
+        raise "Error, no cpu found" unless cpu or cpu == ""
+
         @log.debug "CPU found ==> #{cpu}"
 
         tmp = Tempfile.new('make.conf')
@@ -146,7 +147,7 @@ function pre_pkg_preinst() {
       end
 
       def search_zone(zone)
-        if !File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
+        unless File.exist? "#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}"
           raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
       end

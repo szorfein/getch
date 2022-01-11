@@ -2,8 +2,9 @@ module Getch
   module FileSystem
     module Clean
       def self.clean_hdd(disk)
-        return if ! disk
+        return unless disk
         raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+
         puts
         print "Cleaning data on #{disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? [y,N] "
         case gets.chomp
@@ -16,8 +17,9 @@ module Getch
       end
 
       def self.clean_struct(disk)
-        return if ! disk
-        raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+        return unless disk
+        raise ArgumentError, "Disk #{disk} is no found." unless File.exist? "/dev/#{disk}"
+
         Helpers.sys("sgdisk -Z /dev/#{disk}")
         Helpers.sys("wipefs -a /dev/#{disk}")
       end
