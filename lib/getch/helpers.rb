@@ -104,11 +104,9 @@ module Helpers
     def command_output(args)
       print " => Exec: #{args}..."
       cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
         puts
-        while line = stdout_err.gets
-          puts line
-        end
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?

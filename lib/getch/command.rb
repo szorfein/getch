@@ -113,10 +113,8 @@ module Getch
         && env-update \
         && cd /usr/src/linux \
         && #{@cmd}\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        while line = stdout_err.gets
-          puts line
-        end
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?
@@ -142,10 +140,8 @@ module Getch
         && env-update \
         && cd /root/bask-#{@version} \
         && ./bask.sh #{@cmd} -k /usr/src/linux\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        while line = stdout_err.gets
-          puts line
-        end
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?
