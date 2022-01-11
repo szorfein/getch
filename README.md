@@ -4,7 +4,7 @@
 <br/>
 
 [![Gem Version](https://badge.fury.io/rb/getch.svg)](https://badge.fury.io/rb/getch)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/szorfein/getch/Rubocop/main)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/szorfein/getch/Rubocop/develop)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 ![GitHub](https://img.shields.io/github/license/szorfein/ardecy)
 
@@ -51,7 +51,7 @@ With `gem` installed:
     $ gem cert --add <(curl -Ls https://raw.githubusercontent.com/szorfein/getch/master/certs/szorfein.pem)
     $ gem install getch -P HighSecurity
 
-If you want to try the master branch (can be unstable):
+If you want to try from the source:
 
     # git clone https://github.com/szorfein/getch
     # cd getch

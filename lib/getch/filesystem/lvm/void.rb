@@ -5,6 +5,7 @@ module Getch
     module Lvm
       class Void < Device
         include Helpers::Void
+
         attr_reader :boot_disk
 
         def fstab
