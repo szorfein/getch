@@ -15,7 +15,7 @@ module Getch
       def search_archive
         yurl = "#{@url}/#{@file}"
         puts "Open #{yurl}"
-        Helpers::get_file_online(yurl, @file)
+        Helpers.get_file_online(yurl, @file)
         File.open(@file).each { |l|
           @xbps = l.tr('()', '').split(" ") if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
         }
@@ -25,7 +25,7 @@ module Getch
         raise StandardError, "No file found, retry later." if !@xbps
         return if File.exist? @xbps[1]
         puts "Downloading #{@xbps[1]}..."
-        Helpers::get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])
+        Helpers.get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])
       end
 
       def checksum

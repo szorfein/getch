@@ -33,9 +33,9 @@ module Getch
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
           def zfs_mountpoint
-            Helpers::mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
-            Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
-            Helpers::touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
+            Helpers.mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
+            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
+            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
             exec("ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/")
             exec("systemctl start zfs-zed.service")
             exec("systemctl enable zfs-zed.service")
@@ -52,7 +52,7 @@ module Getch
 
           def auto_module_rebuild
             g_dir="#{MOUNTPOINT}/etc/portage/env/sys-kernel"
-            Helpers::mkdir(g_dir)
+            Helpers.mkdir(g_dir)
             # See https://wiki.gentoo.org/wiki/Kernel/Upgrade#Automated_build_and_installation
             content=<<EOF
 post_pkg_postinst() {
@@ -76,7 +76,7 @@ EOF
           end
 
           def options_make
-            bootloader = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+            bootloader = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [
               '',
               bootloader,

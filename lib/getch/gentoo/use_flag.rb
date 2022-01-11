@@ -3,7 +3,7 @@
 module Getch::Gentoo
   class UseFlag
     def initialize
-      @efi = Helpers::efi?
+      @efi = Helpers.efi?
     end
 
     def apply

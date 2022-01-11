@@ -11,7 +11,7 @@ module Getch
       end
 
       def portage
-        grub_pc = Helpers::efi? ? '' : 'GRUB_PLATFORMS="pc"'
+        grub_pc = Helpers.efi? ? '' : 'GRUB_PLATFORMS="pc"'
         nproc = `nproc`.chomp()
 
         # Add cpu name
@@ -29,7 +29,7 @@ module Getch
           end
         }
 
-        FileUtils.copy_file(tmp, @make, preserve = true)
+        FileUtils.copy_file(tmp, @make)
 
         # Add the rest
         data = [
@@ -61,13 +61,13 @@ module Getch
           line_count += 1
         }
 
-        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf", preserve = true)
+        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf")
       end
 
       def network
         src = '/etc/resolv.conf'
         dest = "#{MOUNTPOINT}/etc/resolv.conf"
-        FileUtils.copy_file(src, dest, preserve = true)
+        FileUtils.copy_file(src, dest)
       end
 
       def systemd
@@ -86,13 +86,13 @@ module Getch
 
       def portage_fs
         portage = "#{MOUNTPOINT}/etc/portage"
-        Helpers::create_dir("#{portage}/package.use")
-        Helpers::create_dir("#{portage}/package.accept_keywords")
-        Helpers::create_dir("#{portage}/package.unmask")
+        Helpers.create_dir("#{portage}/package.use")
+        Helpers.create_dir("#{portage}/package.accept_keywords")
+        Helpers.create_dir("#{portage}/package.unmask")
 
-        Helpers::add_file("#{portage}/package.use/zzz_via_autounmask")
-        Helpers::add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
-        Helpers::add_file("#{portage}/package.unmask/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.use/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
+        Helpers.add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
       def portage_bashrc

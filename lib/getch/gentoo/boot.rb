@@ -24,7 +24,7 @@ module Getch
         # Ensure than systemd is build with all our flags
         Getch::Emerge.new("@world").pkg!
 
-        if Helpers::efi?
+        if Helpers.efi?
           bootctl
         else
           grub
@@ -46,10 +46,10 @@ module Getch
         @config.systemd_boot
         File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
 
-        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz", preserve: true)
+        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz")
 
         initramfs = Dir.glob("#{MOUNTPOINT}/boot/initramfs-*.img")
-        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs", preserve: true) if initramfs != []
+        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs") if initramfs != []
 
         Getch::Chroot.new("bootctl --path #{esp} update").run!
       end
@@ -90,8 +90,8 @@ module Getch
       end
 
       def the_end
-        #Helpers::exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
-        #Helpers::exec_or_die("umount -R #{MOUNTPOINT}")
+        # Helpers.exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
+        # Helpers.exec_or_die("umount -R #{MOUNTPOINT}")
         puts
         puts "getch has finish, before reboot, you can:"
         puts "  +  Chroot on your system with: chroot #{MOUNTPOINT} /bin/bash"

@@ -11,7 +11,7 @@ module Getch
 
           private
           def options_make
-            grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+            grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [
               '',
               grub,

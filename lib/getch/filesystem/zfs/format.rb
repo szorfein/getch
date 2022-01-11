@@ -8,7 +8,7 @@ module Getch
           @state = Getch::States.new
           if ! @id
             @log.info "Research pool id for #{@dev_root}..."
-            @id = Helpers::pool_id(@dev_root)
+            @id = Helpers.pool_id(@dev_root)
             @boot_pool_name = "bpool-#{@id}"
             @pool_name = "rpool-#{@id}"
           end
@@ -30,7 +30,8 @@ module Getch
 
         def zfs
           bloc=`blockdev --getpbsz #{@dev_root}`
-          ashift = case bloc
+          ashift =
+            case bloc
             when /8096/
               13
             when /4096/
@@ -39,7 +40,7 @@ module Getch
               9
             end
 
-          Helpers::mkdir(MOUNTPOINT)
+          Helpers.mkdir(MOUNTPOINT)
           @log.debug("ashift found for #{bloc} - #{ashift}")
 
           if @dev_boot

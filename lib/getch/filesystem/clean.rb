@@ -9,7 +9,7 @@ module Getch
         case gets.chomp
         when /^y|^Y/
           bloc=`blockdev --getbsz /dev/#{disk}`.chomp
-          Helpers::sys("dd if=/dev/urandom of=/dev/#{disk} bs=#{bloc} status=progress")
+          Helpers.sys("dd if=/dev/urandom of=/dev/#{disk} bs=#{bloc} status=progress")
         else
           return
         end
@@ -18,8 +18,8 @@ module Getch
       def self.clean_struct(disk)
         return if ! disk
         raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
-        Helpers::sys("sgdisk -Z /dev/#{disk}")
-        Helpers::sys("wipefs -a /dev/#{disk}")
+        Helpers.sys("sgdisk -Z /dev/#{disk}")
+        Helpers.sys("wipefs -a /dev/#{disk}")
       end
 
       def self.hdd(*disks)
@@ -43,14 +43,14 @@ module Getch
 
       def self.old_vg(disk, vg)
         oldvg = `vgdisplay | grep #{vg}`.chomp
-        Helpers::sys("vgremove -f #{vg}") if oldvg != ''
-        Helpers::sys("pvremove -f #{disk}") if oldvg != '' and File.exist? disk
+        Helpers.sys("vgremove -f #{vg}") if oldvg != ''
+        Helpers.sys("pvremove -f #{disk}") if oldvg != '' and File.exist? disk
       end
 
       def self.old_zpool
         oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
         if oldzpool[0] != "" and $?.success?
-          oldzpool.each { |p| Helpers::sys("zpool destroy #{p}") if p }
+          oldzpool.each { |p| Helpers.sys("zpool destroy #{p}") if p }
         end
       end
     end

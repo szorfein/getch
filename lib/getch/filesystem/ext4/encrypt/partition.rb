@@ -20,7 +20,7 @@ module Getch
             return if STATES[:partition ]
             @clean.hdd(@disk)
             @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
-            if Helpers::efi?
+            if Helpers.efi?
               partition_efi
             else
               partition_bios
@@ -54,7 +54,7 @@ module Getch
             if @dev_home then
               create_secret_keys
               @log.info("Format home with #{@key_path}")
-              Helpers::sys("cryptsetup luksFormat #{@dev_home} #{@key_path}")
+              Helpers.sys("cryptsetup luksFormat #{@dev_home} #{@key_path}")
               @log.debug("Open home with key #{@key_path}")
               exec("cryptsetup open --type luks -d #{@key_path} #{@dev_home} crypthome")
             end

@@ -171,20 +171,20 @@ module Helpers
     def encrypt(dev)
       raise "No device #{dev}" unless File.exist? dev
       puts " => Encrypting device #{dev}..."
-      if Helpers::efi? && Getch::OPTIONS[:os] == 'gentoo'
-        Helpers::sys("cryptsetup luksFormat --type luks #{dev}")
+      if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
+        Helpers.sys("cryptsetup luksFormat --type luks #{dev}")
       else
-        Helpers::sys("cryptsetup luksFormat --type luks1 #{dev}")
+        Helpers.sys("cryptsetup luksFormat --type luks1 #{dev}")
       end
     end
 
     def open_crypt(dev, map_name)
       raise "No device #{dev}" unless File.exist? dev
       puts " => Opening encrypted device #{dev}..."
-      if Helpers::efi? && Getch::OPTIONS[:os] == 'gentoo'
-        Helpers::sys("cryptsetup open --type luks #{dev} #{map_name}")
+      if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
+        Helpers.sys("cryptsetup open --type luks #{dev} #{map_name}")
       else
-        Helpers::sys("cryptsetup open --type luks1 #{dev} #{map_name}")
+        Helpers.sys("cryptsetup open --type luks1 #{dev} #{map_name}")
       end
     end
   end

@@ -14,7 +14,7 @@ module Getch
           return if STATES[:partition ]
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
-          if Helpers::efi?
+          if Helpers.efi?
             partition_efi
           else
             partition_bios

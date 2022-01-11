@@ -52,7 +52,7 @@ module Getch
 
         puts "Adding support for cryptsetup."
         bask("-a cryptsetup")
-        Getch::Chroot.new("euse -E cryptsetup").run! unless Helpers::grep?(make_conf, /cryptsetup/)
+        Getch::Chroot.new("euse -E cryptsetup").run! unless Helpers.grep?(make_conf, /cryptsetup/)
         Getch::Emerge.new("sys-fs/cryptsetup").pkg!
       end
 
@@ -90,7 +90,7 @@ module Getch
 
       def wifi_drivers
         conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
-        File.delete(conf) if File.exists? conf
+        File.delete(conf) if File.exist? conf
 
         if ismatch?('ath9k')
           bask("-a ath9k-driver")
@@ -102,7 +102,7 @@ module Getch
 
       def flash_mod
         conf = "#{MOUNTPOINT}/etc/modules-load.d/usb.conf"
-        File.delete(conf) if File.exists? conf
+        File.delete(conf) if File.exist? conf
 
         module_load("ehci_pci", conf)
         module_load("rtsx_pci_sdmmc", conf)
