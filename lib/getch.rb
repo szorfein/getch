@@ -37,7 +37,7 @@ module Getch
     :gentoo_kernel => false
   }
 
-  MOUNTPOINT = "/mnt/gentoo"
+  MOUNTPOINT = '/mnt/gentoo'
 
   DEFAULT_FS = {
     true => {
@@ -67,7 +67,8 @@ module Getch
     end
 
     def resume
-      raise "No disk, use at least getch with -d DISK" if !OPTIONS[:disk]
+      raise 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
+
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
@@ -82,7 +83,7 @@ module Getch
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"
       puts "\tseparate-home disk: #{OPTIONS[:home_disk]}"
       puts
-      print "Continue? (y,N) "
+      print 'Continue? (y,N) '
       case gets.chomp
       when /^y|^Y/
         return
@@ -97,7 +98,7 @@ module Getch
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
       when /^y|^Y/
-        @log.info("Partition start")
+        @log.info('Partition start')
         @class_fs::Partition.new
       else
         exit

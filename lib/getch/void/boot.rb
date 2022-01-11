@@ -1,5 +1,4 @@
 require 'fileutils'
-require_relative '../helpers'
 
 module Getch
   module Void
@@ -15,11 +14,11 @@ module Getch
       end
 
       def new_user
-        puts " => Add a password for root."
-        chroot "passwd"
+        puts ' => Add a password for root.'
+        chroot 'passwd'
         puts
         return unless @user
-        print " => Creating a new user #{@user}..."
+        print ' => Creating a new user #{@user}...'
         puts "\s[OK]"
         command "useradd -m -G users,wheel,audio,video #{@user}"
         puts " => Add a password for #{@user}."
@@ -28,7 +27,7 @@ module Getch
       end
 
       def fstab
-        print " => Configuring fstab..."
+        print ' => Configuring fstab...'
         @fs.fstab
         puts "\s[OK]"
         @fs.crypttab if @class_fs::Void.method_defined? :crypttab
@@ -37,7 +36,7 @@ module Getch
       # Test dracut in chroot (version in /lib/modules/5.1.7-1):
       # dracut -H -f --kver 5.1.7-1
       def dracut
-        print " => Configuring Dracut..."
+        print ' => Configuring Dracut...'
         @fs.config_dracut
         @fs.kernel_cmdline_dracut
         puts "\s[OK]"
@@ -47,24 +46,24 @@ module Getch
         disk = OPTIONS[:boot_disk] ||= OPTIONS[:disk]
         print " => Installing Grub on #{disk}..."
         if @efi
-          command_output "xbps-install -y grub-x86_64-efi"
+          command_output 'xbps-install -y grub-x86_64-efi'
           @fs.config_grub if @class_fs::Void.method_defined? :config_grub
           command_output "grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Void\""
         else
-          command_output "xbps-install -y grub"
+          command_output 'xbps-install -y grub'
           @fs.config_grub if @class_fs::Void.method_defined? :config_grub
           command_output "grub-install /dev/#{disk}"
         end
       end
 
       def initramfs
-        puts " => Generating an initramfs..."
-        command_output "xbps-reconfigure -fa" # this command also start grub-mkconfig
+        puts ' => Generating an initramfs...'
+        command_output 'xbps-reconfigure -fa' # this command also start grub-mkconfig
       end
 
       def finish
         puts
-        puts "[*!*] Install finished [*!*]"
+        puts '[*!*] Install finished [*!*]'
         puts
         @fs.finish
         puts
@@ -73,7 +72,7 @@ module Getch
       private
 
       def chroot(cmd)
-        system("chroot", MOUNTPOINT, "/bin/bash", "-c", cmd)
+        system('chroot', MOUNTPOINT, '/bin/bash', '-c', cmd)
       end
     end
   end

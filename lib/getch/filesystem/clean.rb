@@ -2,8 +2,9 @@ module Getch
   module FileSystem
     module Clean
       def self.clean_hdd(disk)
-        return if ! disk
+        return unless disk
         raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+
         puts
         print "Cleaning data on #{disk}, can be long, avoid this on Flash Memory (SSD,USB,...) ? [y,N] "
         case gets.chomp
@@ -16,8 +17,9 @@ module Getch
       end
 
       def self.clean_struct(disk)
-        return if ! disk
-        raise ArgumentError, "Disk #{disk} is no found." if ! File.exist? "/dev/#{disk}"
+        return unless disk
+        raise ArgumentError, "Disk #{disk} is no found." unless File.exist? "/dev/#{disk}"
+
         Helpers.sys("sgdisk -Z /dev/#{disk}")
         Helpers.sys("wipefs -a /dev/#{disk}")
       end
@@ -34,11 +36,11 @@ module Getch
       end
 
       def self.external_disk(root_disk, *disks)
-        disks.each { |d|
-          unless d && d != "" && d != nil && d == root_disk
+        disks.each do |d|
+          unless d && d != '' && d != nil && d == root_disk
             hdd(d)
           end
-        }
+        end
       end
 
       def self.old_vg(disk, vg)
@@ -49,7 +51,7 @@ module Getch
 
       def self.old_zpool
         oldzpool = `zpool status | grep pool:`.gsub(/pool: /, '').delete(' ').split("\n")
-        if oldzpool[0] != "" and $?.success?
+        if oldzpool[0] != '' and $?.success?
           oldzpool.each { |p| Helpers.sys("zpool destroy #{p}") if p }
         end
       end

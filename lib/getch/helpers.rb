@@ -9,9 +9,7 @@ module Helpers
 
   def self.get_file_online(url, dest)
     URI.open(url) do |l|
-      File.open(dest, "wb") do |f|
-        f.write(l.read)
-      end
+      File.open(dest, "wb") { |f| f.write(l.read) }
     end
   end
 
@@ -23,42 +21,41 @@ module Helpers
   end
 
   def self.create_dir(path, perm = 0755)
-    FileUtils.mkdir_p path, mode: perm if ! Dir.exist?(path)
+    FileUtils.mkdir_p path, mode: perm unless Dir.exist? path
   end
 
   def self.add_file(path, content = '')
-    File.write path, content if ! File.exist? path
+    File.write path, content unless File.exist? path
   end
 
   def self.mkdir(dir)
-    FileUtils.mkdir_p dir if ! Dir.exist? dir
+    FileUtils.mkdir_p dir unless Dir.exist? dir
   end
 
   def self.touch(file)
-    File.write file, '' if ! File.exist? file
+    File.write file, '' unless File.exist? file
   end
 
   def self.cp(src, dest)
     raise "Src file #{src} no found" unless File.exist? src
+
     FileUtils.cp(src, dest)
   end
 
   def self.grep?(file, regex)
     is_found = false
-    return is_found if ! File.exist? file
+    return is_found unless File.exist? file
     File.open(file) do |f|
-      f.each do |line|
+      f.each { |line|
         is_found = true if line.match(regex)
-      end
+      }
     end
     is_found
   end
 
   def self.sys(cmd)
     system(cmd)
-    unless $?.success?
-      raise "Error with #{cmd}"
-    end
+    raise "Error with #{cmd}" unless $?.success?
   end
 
   def self.partuuid(dev)
@@ -66,20 +63,20 @@ module Helpers
   end
 
   def self.uuid(dev)
-    Dir.glob("/dev/disk/by-uuid/*").each { |f|
+    Dir.glob('/dev/disk/by-uuid/*').each do |f|
       if File.readlink(f).match(/#{dev}/)
-        return f.delete_prefix("/dev/disk/by-uuid/")
+        return f.delete_prefix('/dev/disk/by-uuid/')
       end
-    }
+    end
   end
 
   # Used with ZFS for the pool name
   def self.pool_id(dev)
     if dev.match(/[0-9]/)
       sleep 1
-      `lsblk -o PARTUUID #{dev}`.delete("\n").delete("PARTUUID").match(/[\w]{5}/)
+      `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/[\w]{5}/)
     else
-      puts "Please, enter a pool name"
+      puts 'Please, enter a pool name'
       while true
         print "\n> "
         value = gets
@@ -87,7 +84,7 @@ module Helpers
           return value
         end
         puts "Bad name, you enter: #{value}"
-        puts "Valid pool name use character only, between 4-20."
+        puts 'Valid pool name use character only, between 4-20.'
       end
     end
   end
@@ -122,6 +119,7 @@ module Helpers
 
     def add_line(file, line)
       raise "No file #{file} found !" unless File.exist? file
+
       File.write(file, "#{line}\n", mode: 'a')
     end
 
@@ -134,16 +132,16 @@ module Helpers
 
     # Used only when need password
     def chroot(cmd)
-      if !system("chroot", Getch::MOUNTPOINT, "/bin/bash", "-c", cmd)
+      unless system('chroot', Getch::MOUNTPOINT, '/bin/bash', '-c', cmd)
         raise "[-] Error with: #{cmd}"
       end
     end
 
     def s_uuid(dev)
-      device = dev.delete_prefix("/dev/")
-      Dir.glob("/dev/disk/by-partuuid/*").each { |f|
+      device = dev.delete_prefix('/dev/')
+      Dir.glob('/dev/disk/by-partuuid/*').each { |f|
         link = File.readlink(f)
-        return f.delete_prefix("/dev/disk/by-partuuid/") if link.match(/#{device}$/)
+        return f.delete_prefix('/dev/disk/by-partuuid/') if link.match(/#{device}$/)
       }
     end
 
@@ -152,16 +150,17 @@ module Helpers
       device = s_uuid(dev)
       raise "No partuuid for #{dev} #{device}" if !device
       raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
+
       add_line(conf, "PARTUUID=#{device} #{rest}")
     end
 
     def grub_cmdline(*args)
       conf = "#{Getch::MOUNTPOINT}/etc/default/grub"
-      list = args.join(" ")
+      list = args.join(' ')
       secs = "GRUB_CMDLINE_LINUX=\"#{list} init_on_alloc=1 init_on_free=1"
       secs += " slab_nomerge pti=on slub_debug=ZF vsyscall=none\""
-      raise "No default/grub found" unless File.exist? conf
-      unless search(conf, "GRUB_CMDLINE_LINUX=")
+      raise 'No default/grub found' unless File.exist? conf
+      unless search(conf, 'GRUB_CMDLINE_LINUX=')
         File.write(conf, "#{secs}\n", mode: 'a')
       end
     end
@@ -170,6 +169,7 @@ module Helpers
   module Cryptsetup
     def encrypt(dev)
       raise "No device #{dev}" unless File.exist? dev
+
       puts " => Encrypting device #{dev}..."
       if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
         Helpers.sys("cryptsetup luksFormat --type luks #{dev}")
@@ -180,6 +180,7 @@ module Helpers
 
     def open_crypt(dev, map_name)
       raise "No device #{dev}" unless File.exist? dev
+
       puts " => Opening encrypted device #{dev}..."
       if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
         Helpers.sys("cryptsetup open --type luks #{dev} #{map_name}")

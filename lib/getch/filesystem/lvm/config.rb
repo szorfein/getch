@@ -16,7 +16,8 @@ module Getch
         end
 
         def systemd_boot
-          return if !@efi
+          return unless @efi
+
           esp = '/efi'
           dir = "#{@root_dir}/#{esp}/loader/entries/"
           datas_gentoo = [
@@ -30,6 +31,7 @@ module Getch
 
         def grub
           return if @efi
+
           file = "#{@root_dir}/etc/default/grub"
           cmdline = [ 
             "GRUB_CMDLINE_LINUX=\"resume=#{@lv_swap} root=#{@lv_root} init=#{@init} dolvm rw\""

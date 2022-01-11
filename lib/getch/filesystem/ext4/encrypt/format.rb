@@ -11,6 +11,7 @@ module Getch
 
           def format
             return if STATES[:format]
+
             exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
             exec("mkfs.ext4 -F #{@luks_root}")
             exec("mkfs.ext4 -F #{@luks_home}") if @dev_home

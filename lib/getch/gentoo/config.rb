@@ -16,7 +16,8 @@ module Getch
 
         # Add cpu name
         cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
-        raise "Error, no cpu found" if ! cpu or cpu == ""
+        raise 'Error, no cpu found' unless cpu or cpu == ''
+
         @log.debug "CPU found ==> #{cpu}"
 
         tmp = Tempfile.new('make.conf')
@@ -40,7 +41,7 @@ module Getch
           'USE=\"${USE} verify-sig audit"',
           grub_pc
         ]
-        File.write(@make, data.join("\n"), mode: "a")
+        File.write(@make, data.join("\n"), mode: 'a')
       end
 
       # Write a repos.conf/gentoo.conf with the gpg verification
@@ -123,7 +124,7 @@ function pre_pkg_preinst() {
 }
         }
 
-        f = File.new(conf, "w")
+        f = File.new(conf, 'w')
         f.write("#{content}\n")
         f.chmod(0644)
         f.close
@@ -146,7 +147,7 @@ function pre_pkg_preinst() {
       end
 
       def search_zone(zone)
-        if !File.exist?("#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}")
+        unless File.exist? "#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}"
           raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
       end
@@ -157,7 +158,7 @@ function pre_pkg_preinst() {
           @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
           @lang = $~[0] if l.match(/^#{lang}[. ]+utf\-8/i)
         }
-        raise ArgumentError, "Lang #{lang} no found" if ! @utf8
+        raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end
     end
   end

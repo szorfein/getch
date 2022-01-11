@@ -6,7 +6,7 @@ module Getch
           install_bios unless Helpers.efi?
           install_deps
           options_make
-          Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+          Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
         end
 
         private
@@ -30,7 +30,7 @@ module Getch
         def install_deps
           Getch::Bask.new('-a lvm').run!
           Getch::Emerge.new('sys-fs/lvm2 genkernel').pkg!
-          exec("systemctl enable lvm2-monitor")
+          exec('systemctl enable lvm2-monitor')
         end
 
         def exec(cmd)

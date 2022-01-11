@@ -30,12 +30,12 @@ module Getch
               @partition.efi(@dev_esp)
               @partition.boot(@dev_boot) if Getch::OPTIONS[:os] == 'void'
               @partition.swap(@dev_swap) if !@cache_disk
-              @partition.root(@dev_root, "BF00") if @root_part != 1
+              @partition.root(@dev_root, 'BF00') if @root_part != 1
             else
               @partition.gpt(@dev_gpt)
               @partition.boot(@dev_boot)
               @partition.swap(@dev_swap) if !@cache_disk
-              @partition.root(@dev_root, "BF00") if @root_part != 1
+              @partition.root(@dev_root, 'BF00') if @root_part != 1
             end
           end
 

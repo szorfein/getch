@@ -25,11 +25,11 @@ module Getch
         def partition
           if Helpers.efi?
             @partition.efi(@dev_esp)
-            @partition.root(@dev_root, "8e00")
+            @partition.root(@dev_root, '8e00')
           else
             @partition.gpt(@dev_gpt)
             @partition.boot(@dev_boot)
-            @partition.root(@dev_root, "8e00")
+            @partition.root(@dev_root, '8e00')
           end
         end
 
@@ -47,7 +47,7 @@ module Getch
             exec("lvcreate -y -Wy -Zy -l 100%FREE -n root #{@vg}")
           end
 
-          exec("vgchange --available y")
+          exec('vgchange --available y')
         end
 
         # Follow https://wiki.archlinux.org/index.php/Partitioning

@@ -29,9 +29,7 @@ module Getch
         list = []
 
         @flags.each { |f|
-          unless Helpers.grep?(@make, /#{f}/)
-            list << f
-          end
+          list << f unless Helpers.grep?(@make, /#{f}/)
         }
 
         use = list.join(' ')

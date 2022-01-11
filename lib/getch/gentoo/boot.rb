@@ -22,7 +22,7 @@ module Getch
 
       def bootloader
         # Ensure than systemd is build with all our flags
-        Getch::Emerge.new("@world").pkg!
+        Getch::Emerge.new('@world').pkg!
 
         if Helpers.efi?
           bootctl
@@ -34,7 +34,7 @@ module Getch
       # bootctl is alrealy installed with the stage3-amd64-systemd
       def bootctl
         bootctl_dep
-        puts "Configuring systemd-boot."
+        puts 'Configuring systemd-boot.'
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
         esp = '/efi'
         Getch::Chroot.new("bootctl --path #{esp} install").run!
@@ -56,15 +56,15 @@ module Getch
 
       def bootctl_dep
         puts 'Installing systemd-boot...'
-        Getch::Emerge.new("efivar").pkg!
+        Getch::Emerge.new('efivar').pkg!
       end
 
       def grub
         puts 'Installing GRUB...'
-        Getch::Emerge.new("sys-boot/grub:2").pkg!
+        Getch::Emerge.new('sys-boot/grub:2').pkg!
         @config.grub
         Getch::Chroot.new("grub-install /dev/#{@disk}").run!
-        Getch::Chroot.new("grub-mkconfig -o /boot/grub/grub.cfg").run!
+        Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg').run!
       end
 
       def password
@@ -93,14 +93,14 @@ module Getch
         # Helpers.exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
         # Helpers.exec_or_die("umount -R #{MOUNTPOINT}")
         puts
-        puts "getch has finish, before reboot, you can:"
+        puts 'getch has finish, before reboot, you can:'
         puts "  +  Chroot on your system with: chroot #{MOUNTPOINT} /bin/bash"
-        puts "  +  Install more packages like networkmanager or emacs"
+        puts '  +  Install more packages like networkmanager or emacs'
         puts
-        puts "  +  Add more modules for your kernel (graphic, wifi card) and recompile it with:"
-        puts "  genkernel --kernel-config=/usr/src/linux/.config all  "
+        puts '  +  Add more modules for your kernel (graphic, wifi card) and recompile it with:'
+        puts '  genkernel --kernel-config=/usr/src/linux/.config all  '
         puts
-        puts "Reboot the system when you have done !"
+        puts 'Reboot the system when you have done !'
       end
 
       def exec_chroot(cmd)

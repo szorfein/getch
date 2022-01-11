@@ -1,5 +1,3 @@
-require_relative '../../helpers'
-
 module Getch
   module FileSystem
     module Ext4
@@ -10,10 +8,10 @@ module Getch
         def fstab
           conf = "#{MOUNTPOINT}/etc/fstab"
           File.write(conf, "\n", mode: 'w', chmod: 0644)
-          line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
-          line_fstab(@dev_swap, "swap swap rw,noatime,discard 0 0") if @dev_swap
-          line_fstab(@dev_root, "/ ext4 rw,relatime 0 1")
-          add_line(conf, "tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0")
+          line_fstab(@dev_esp, '/efi vfat noauto,rw,relatime 0 0') if @dev_esp
+          line_fstab(@dev_swap, 'swap swap rw,noatime,discard 0 0') if @dev_swap
+          line_fstab(@dev_root, '/ ext4 rw,relatime 0 1')
+          add_line(conf, 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0')
         end
 
         def config_dracut
@@ -34,8 +32,8 @@ module Getch
         end
 
         def finish
-          puts "+ Enter in your system: chroot /mnt /bin/bash"
-          puts "+ Reboot with: shutdown -r now"
+          puts '+ Enter in your system: chroot /mnt /bin/bash'
+          puts '+ Reboot with: shutdown -r now'
         end
       end
     end
