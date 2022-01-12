@@ -28,7 +28,7 @@ module Getch
               'title Gentoo Linux',
               'linux /vmlinuz',
               'initrd /initramfs',
-              "options root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}"
+              "options root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]} zfs.zfs_arc_max=536870912"
             ]
             File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
           end
@@ -46,7 +46,7 @@ module Getch
 
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [ 
-              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}\""
+              "GRUB_CMDLINE_LINUX=\"root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs keymap=#{Getch::OPTIONS[:keymap]}\" zfs.zfs_arc_max=536870912"
             ]
             File.write(file, cmdline.join("\n"), mode: 'a')
           end

@@ -45,7 +45,7 @@ module Getch
           end
 
           def config_grub
-            grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", 'zfs_force=1')
+            grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", 'zfs_force=1', 'zfs.zfs_arc_max=536870912')
           end
 
           def finish
