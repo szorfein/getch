@@ -78,8 +78,10 @@ module Getch
       def search_utf8(lang)
         @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/etc/default/libc-locales").each do |l|
-          @utf8 = $~[0] if l.match(/#{lang}.*UTF-8+/)
-          @lang = $~[0] if l.match(/#{lang}.*utf-8/i)
+          @utf8 = l.delete_prefix('#') if l.match(/#{lang}.UTF-8/)
+
+          found = l.split if l.match(/#{lang}.UTF-8/)
+          @lang = save[0].delete_prefix('#') if found
         end
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end

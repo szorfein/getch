@@ -55,7 +55,12 @@ module Getch
         else
           command_output 'xbps-install -y grub'
           @fs.config_grub if @class_fs::Void.method_defined? :config_grub
-          command_output "grub-install /dev/#{disk}"
+          if OPTIONS[:fs] == 'zfs'
+            # https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS
+            command_output "ZPOOL_VDEV_NAME_PATH=1 grub-install /dev/#{disk}"
+          else
+            command_output "grub-install /dev/#{disk}"
+          end
         end
       end
 

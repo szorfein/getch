@@ -124,21 +124,19 @@ The pool will be called `rpool-150ed`.
 You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
 By default, your /boot is empty because your boot pool is not imported...
 
-    # zpool import -N bpool150ed
-    # zfs mount bpool150ed/BOOT/void
+    # zpool import -f -d /dev/disk/by-id -N bpool-150ed
+    # zfs mount bpool-150ed/BOOT/void
     # ls /boot
 
 You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
 
     # xbps-reconfigure -fa
 
-Transform the boot pool in legacy mode and add this to the fstab:
+Make the `bpool` available at the boot:
 
-    # zfs set mountpoint=legacy bpool150ed/BOOT/void
-    # echo "bpool150ed/BOOT/void /boot zfs defaults 0 0" >> /etc/fstab
-    # mount /boot
+    # zfs set canmount=on bpool-150ed/BOOT/void
 
-The /boot should not be empty again and then, reboot. `fstab` should do this automatically now.   
+And reboot, the `/boot` partition should be mounted automatically after that.
 
 #### ZFS Encrypted with Void
 Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
