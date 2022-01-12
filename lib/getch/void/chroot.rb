@@ -6,7 +6,7 @@ module Getch
       include Helpers::Void
 
       def initialize
-        @state = Getch::States.new()
+        @state = Getch::States.new
         @pkgs = []
         mount
       end

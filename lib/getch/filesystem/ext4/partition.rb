@@ -6,7 +6,7 @@ module Getch
       class Partition < Getch::FileSystem::Ext4::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @state = Getch::States.new
           @clean = Getch::FileSystem::Clean
           @partition = Getch::FileSystem::Partition.new
           run_partition

@@ -7,7 +7,7 @@ module Getch
         class Format < Getch::FileSystem::Ext4::Encrypt::Device
           def initialize
             super
-            @state = Getch::States.new()
+            @state = Getch::States.new
             format
           end
 

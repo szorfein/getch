@@ -18,7 +18,7 @@ module Getch
 
         # Add cpu name
         cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
-        raise 'Error, no cpu found' unless cpu or cpu == ''
+        raise 'Error, no cpu found' unless cpu || cpu == ''
 
         @log.debug "CPU found ==> #{cpu}"
 
@@ -40,7 +40,7 @@ module Getch
           "MAKEOPTS=\"-j#{nproc}\"",
           'ACCEPT_KEYWORDS="amd64"',
           'INPUT_DEVICES="libinput"',
-          'USE=\"${USE} verify-sig audit"',
+          'USE="${USE} audit"',
           grub_pc
         ]
         File.write(@make, data.join("\n"), mode: 'a')

@@ -59,7 +59,7 @@ module Getch
       end
 
       def virtualbox_guest
-        systemd=`systemd-detect-virt`.chomp
+        systemd = `systemd-detect-virt`.chomp
         return unless ismatch?('vmwgfx') || systemd.match(/none/)
 
         bask('-a virtualbox-guest')

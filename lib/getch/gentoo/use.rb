@@ -29,11 +29,7 @@ module Getch
 
       def write_global
         list = []
-
-        @flags.each { |f|
-          list << f unless Helpers.grep?(@make, /#{f}/)
-        }
-
+        @flags.each { |f| list << f unless Helpers.grep?(@make, /#{f}/) }
         use = list.join(' ')
         line = "USE=\"${USE} #{use}\"\n"
         File.write(@make, line, mode: 'a')

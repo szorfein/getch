@@ -45,7 +45,7 @@ module Getch
           end
 
           def config_grub
-            grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", "zfs_force=1")
+            grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", 'zfs_force=1')
           end
 
           def finish
@@ -80,11 +80,11 @@ module Getch
           end
 
           def zed_update_path
-            Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
+            Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each do |f|
               unless system('sed', '-Ei', "s|#{MOUNTPOINT}/?|/|", f)
                 raise 'System exec sed'
               end
-            }
+            end
           end
 
           def hostid

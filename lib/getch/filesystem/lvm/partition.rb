@@ -6,7 +6,7 @@ module Getch
       class Partition < Getch::FileSystem::Lvm::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @state = Getch::States.new
           @partition = Getch::FileSystem::Partition.new
           @clean = Getch::FileSystem::Clean
           run_partition

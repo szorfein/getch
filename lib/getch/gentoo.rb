@@ -12,7 +12,7 @@ module Getch
   module Gentoo
     class Main
       def initialize
-        @state = Getch::States.new()
+        @state = Getch::States.new
       end
 
       def stage3

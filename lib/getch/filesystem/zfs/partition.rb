@@ -8,8 +8,8 @@ module Getch
           super
           @clean = Getch::FileSystem::Clean
           @partition = Getch::FileSystem::Partition.new
-          @state = Getch::States.new()
-          @log = Getch::Log.new()
+          @state = Getch::States.new
+          @log = Getch::Log.new
           run_partition
         end
 
@@ -45,7 +45,7 @@ module Getch
         def cache
           return unless @cache_disk
 
-          mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+          mem = `awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
           exec("sgdisk -n1:0:+#{mem} -t1:8200 /dev/#{@cache_disk}")
           exec("sgdisk -n2:0:+4G -t2:BF07 /dev/#{@cache_disk}")
           exec("sgdisk -n3:0:0 -t3:BF00 /dev/#{@cache_disk}")

@@ -7,8 +7,8 @@ module Getch
         class Format < Device
           def initialize
             super
-            @log = Getch::Log.new()
-            @state = Getch::States.new()
+            @log = Getch::Log.new
+            @state = Getch::States.new
             unless @id
               @log.info "Research pool id for #{@dev_root}..."
               @id = Helpers.pool_id(@dev_root)

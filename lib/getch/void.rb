@@ -10,7 +10,7 @@ module Getch
   module Void
     class Main
       def initialize
-        @state = Getch::States.new()
+        @state = Getch::States.new
       end
 
       def root_fs
