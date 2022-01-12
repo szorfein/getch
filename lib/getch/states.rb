@@ -50,7 +50,7 @@ module Getch
       File.open(@file, 'w') { |f| YAML.dump(STATES, f) }
     end
 
-    def load_state()
+    def load_state
       if File.exist? @file
         state_file = YAML.load_file(@file)
         STATES.merge!(state_file)

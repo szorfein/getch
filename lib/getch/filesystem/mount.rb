@@ -10,7 +10,7 @@ module Getch
         @boot_dir = "#{@root_dir}/boot"
         @boot_efi_dir = "#{@root_dir}/efi"
         @home_dir = "#{@root_dir}/home"
-        @state = Getch::States.new()
+        @state = Getch::States.new
         @log = Getch::Log.new
       end
 

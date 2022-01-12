@@ -6,7 +6,6 @@ require 'fileutils'
 
 module Getch
   module Helpers
-
     def self.efi?
       Dir.exist? '/sys/firmware/efi/efivars'
     end
@@ -50,9 +49,7 @@ module Getch
       is_found = false
       return is_found unless File.exist? file
       File.open(file) do |f|
-        f.each { |line|
-          is_found = true if line.match(regex)
-        }
+        f.each { |l| is_found = true if l.match(regex) }
       end
       is_found
     end
@@ -94,12 +91,11 @@ module Getch
     end
 
     module Void
-
       def command(args)
         print " => Exec: #{args}..."
         cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
         _, stderr, status = Open3.capture3(cmd)
-        if status.success? then
+        if status.success?
           puts "\s[OK]"
           return
         end
@@ -127,9 +123,9 @@ module Getch
       end
 
       def search(file, text)
-        File.open(file).each { |line|
+        File.open(file).each do |line|
           return true if line.match(/#{text}/)
-        }
+        end
         false
       end
 
@@ -142,10 +138,10 @@ module Getch
 
       def s_uuid(dev)
         device = dev.delete_prefix('/dev/')
-        Dir.glob('/dev/disk/by-partuuid/*').each { |f|
+        Dir.glob('/dev/disk/by-partuuid/*').each do |f|
           link = File.readlink(f)
           return f.delete_prefix('/dev/disk/by-partuuid/') if link.match(/#{device}$/)
-        }
+        end
       end
 
       def line_fstab(dev, rest)
@@ -161,8 +157,9 @@ module Getch
         conf = "#{Getch::MOUNTPOINT}/etc/default/grub"
         list = args.join(' ')
         secs = "GRUB_CMDLINE_LINUX=\"#{list} init_on_alloc=1 init_on_free=1"
-        secs += " slab_nomerge pti=on slub_debug=ZF vsyscall=none\""
+        secs += ' slab_nomerge pti=on slub_debug=ZF vsyscall=none"'
         raise 'No default/grub found' unless File.exist? conf
+
         unless search(conf, 'GRUB_CMDLINE_LINUX=')
           File.write(conf, "#{secs}\n", mode: 'a')
         end
@@ -170,7 +167,6 @@ module Getch
     end
 
     module Cryptsetup
-
       def encrypt(dev)
         raise "No device #{dev}" unless File.exist? dev
 

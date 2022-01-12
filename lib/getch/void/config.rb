@@ -34,7 +34,7 @@ module Getch
         print ' => Updating configs system...'
         control_options
         rc = "#{MOUNTPOINT}/etc/rc.conf"
-        add_line(rc, "HARDWARECLOCK=\"UTC\"") unless search(rc, /^HARDWARECLOCK/)
+        add_line(rc, 'HARDWARECLOCK="UTC"') unless search(rc, /^HARDWARECLOCK/)
         add_line(rc, "KEYMAP=\"#{OPTIONS[:keymap]}\"") unless search(rc, /^KEYMAP/)
         add_line(rc, "TIMEZONE=\"#{OPTIONS[:zoneinfo]}\"") unless search(rc, /^TIMEZONE/)
         add_line(rc, "HOSTNAME=\"#{@hostname}\"") unless search(rc, /^HOSTNAME/)
@@ -77,10 +77,10 @@ module Getch
 
       def search_utf8(lang)
         @utf8, @lang = nil, nil
-        File.open("#{MOUNTPOINT}/etc/default/libc-locales").each { |l|
-          @utf8 = $~[0] if l.match(/#{lang}[. ]+[utf-8 ]+/i)
-          @lang = $~[0] if l.match(/#{lang}[. ]+utf-8/i)
-        }
+        File.open("#{MOUNTPOINT}/etc/default/libc-locales").each do |l|
+          @utf8 = $~[0] if l.match(/#{lang}.*UTF-8+/)
+          @lang = $~[0] if l.match(/#{lang}.*utf-8/i)
+        end
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end
     end

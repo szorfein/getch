@@ -27,8 +27,8 @@ module Getch
           def fstab
             conf = "#{MOUNTPOINT}/etc/fstab"
             File.write(conf, "\n", mode: 'w', chmod: 0644)
-            line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
-            line_fstab(@dev_boot, "/boot ext4 noauto,rw,relatime 0 0") if @dev_boot
+            line_fstab(@dev_esp, '/efi vfat noauto,rw,relatime 0 0') if @dev_esp
+            line_fstab(@dev_boot, '/boot ext4 noauto,rw,relatime 0 0') if @dev_boot
             add_line(conf, "#{@luks_swap} none swap sw 0 0") if @dev_swap
             add_line(conf, "#{@luks_home} /home ext4 rw,discard 0 0") if @home_disk
             add_line(conf, "#{@luks_root} / ext4 rw,relatime 0 1")
@@ -54,10 +54,9 @@ module Getch
           def config_dracut
             conf = "#{MOUNTPOINT}/etc/dracut.conf.d/ext4.conf"
             content = [
-              "hostonly=\"yes\"",
-              "omit_dracutmodules+=\" btrfs lvm \"",
-              "install_items+=\" /boot/volume.key /etc/crypttab \"",
-              ""
+              'hostonly="yes"',
+              'omit_dracutmodules+=" btrfs lvm "',
+              'install_items+=" /boot/volume.key /etc/crypttab "',
             ]
             File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
             #add_line(conf, "install_items+=\" /boot/home.key \"") if @home_disk
@@ -80,10 +79,10 @@ module Getch
 
           def b_uuid(dev)
             device = dev.delete_prefix('/dev/')
-            Dir.glob('/dev/disk/by-uuid/*').each { |f|
+            Dir.glob('/dev/disk/by-uuid/*').each do |f|
               link = File.readlink(f)
               return f.delete_prefix('/dev/disk/by-uuid/') if link.match(/#{device}$/)
-            }
+            end
           end
 
           # line_crypttab("cryptswap", "sda2", "/dev/urandom", "luks")

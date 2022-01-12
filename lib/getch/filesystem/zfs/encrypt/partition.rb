@@ -7,15 +7,15 @@ module Getch
         class Partition < Device
           def initialize
             super
-            @state = Getch::States.new()
+            @state = Getch::States.new
             @clean = Getch::FileSystem::Clean
             @partition = Getch::FileSystem::Partition.new
-            @log = Getch::Log.new()
+            @log = Getch::Log.new
             run
           end
 
           def run
-            return if STATES[:partition ]
+            return if STATES[:partition]
 
             @clean.old_zpool
             @clean.hdd(@disk)
@@ -45,7 +45,7 @@ module Getch
           def cache
             return unless @cache_disk
 
-            mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
+            mem = `awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
             exec("sgdisk -n1:0:+#{mem} -t1:8200 /dev/#{@cache_disk}")
             exec("sgdisk -n2:0:+4G -t2:BF07 /dev/#{@cache_disk}")
             exec("sgdisk -n3:0:0 -t3:BF08 /dev/#{@cache_disk}")
