@@ -81,7 +81,7 @@ module Getch
           @utf8 = l.delete_prefix('#') if l.match(/#{lang}.UTF-8/)
 
           found = l.split if l.match(/#{lang}.UTF-8/)
-          @lang = save[0].delete_prefix('#') if found
+          @lang = found[0].delete_prefix('#') if found
         end
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end

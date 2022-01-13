@@ -47,20 +47,17 @@ module Getch
 
       def grub
         disk = OPTIONS[:boot_disk] ||= OPTIONS[:disk]
+        # https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS
+        prefix = OPTIONS[:fs] == 'zfs' ? 'ZPOOL_VDEV_NAME_PATH=1' : ''
         print " => Installing Grub on #{disk}..."
         if @efi
           command_output 'xbps-install -y grub-x86_64-efi'
           @fs.config_grub if @class_fs::Void.method_defined? :config_grub
-          command_output "grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Void\""
+          command_output "#{prefix} grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Void\""
         else
           command_output 'xbps-install -y grub'
           @fs.config_grub if @class_fs::Void.method_defined? :config_grub
-          if OPTIONS[:fs] == 'zfs'
-            # https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS
-            command_output "ZPOOL_VDEV_NAME_PATH=1 grub-install /dev/#{disk}"
-          else
-            command_output "grub-install /dev/#{disk}"
-          end
+          command_output "#{prefix} grub-install /dev/#{disk}"
         end
       end
 
