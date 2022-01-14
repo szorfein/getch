@@ -3,6 +3,7 @@
 require_relative 'gentoo/stage'
 require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'
+require_relative 'gentoo/bootloader'
 require_relative 'gentoo/sources'
 require_relative 'gentoo/boot'
 require_relative 'gentoo/use'
@@ -40,6 +41,8 @@ module Getch
       end
 
       def chroot
+        return if STATES[:gentoo_update]
+
         chroot = Getch::Gentoo::Chroot.new
         chroot.update
         chroot.cpuflags
@@ -49,22 +52,27 @@ module Getch
         flags.apply
 
         chroot.world
-        return if STATES[:gentoo_kernel]
-
-        chroot.kernel
-        chroot.kernel_deps
+        chroot.kernel_license
         chroot.install_pkgs
-        chroot.kernel_link
+        @state.update
+      end
+
+      def bootloader
+        return if STATES[:gentoo_bootloader]
+
+        bootloader = Getch::Gentoo::Bootloader.new
+        bootloader.start
+        @state.bootloader
       end
 
       def kernel
         return if STATES[:gentoo_kernel]
 
         source = Getch::Gentoo::Sources.new
-        source.build_kspp
-        source.build_others
-        source.firewall
+        source.bask
+        source.configs
         source.make
+        source.load_modules
         @state.kernel
       end
 

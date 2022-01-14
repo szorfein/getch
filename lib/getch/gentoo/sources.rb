@@ -9,18 +9,20 @@ module Getch
         @filesystem = @class_fs::Deps.new
       end
 
-      def build_others
-        cryptsetup
-        virtualbox_guest
-        qemu_guest
+      def configs
+      end
+
+      def load_modules
         install_wifi
-        install_audio
         flash_mod
       end
 
-      def build_kspp
-        puts 'Adding KSPP to the kernel source'
-        bask('-b -a systemd')
+      def bask
+        puts ' ==> Hardening kernel...'
+        Getch::Bask.new('10_kspp.config').cp
+        Getch::Bask.new('11-kspp-gcc.config').cp
+        Getch::Bask.new('12-kspp-x86_64.config').cp
+        Getch::Bask.new('20-blacklist.config').cp
       end
 
       def make
@@ -33,71 +35,30 @@ module Getch
         end
       end
 
-      def firewall
-        bask('-a iptables')
-        Getch::Emerge.new('net-firewall/iptables').pkg!
-      end
-
       private
 
       def make_kernel
         puts 'Compiling kernel sources'
-        cmd = 'make -j$(nproc) && make modules_install && make install'
-        Getch::Make.new(cmd).run!
+        Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
         is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
         raise 'No kernel installed, compiling source fail...' if is_kernel == []
-      end
-
-      def cryptsetup
-        return unless Getch::OPTIONS[:encrypt]
-
-        make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
-        puts 'Adding support for cryptsetup.'
-        bask('-a cryptsetup')
-        Getch::Chroot.new('euse -E cryptsetup').run! unless Helpers.grep?(make_conf, /cryptsetup/)
-        Getch::Emerge.new('sys-fs/cryptsetup').pkg!
-      end
-
-      def virtualbox_guest
-        systemd = `systemd-detect-virt`.chomp
-        return unless ismatch?('vmwgfx') || systemd.match(/none/)
-
-        bask('-a virtualbox-guest')
-        Getch::Emerge.new('app-emulation/virtualbox-guest-additions').pkg!
-      end
-
-      def qemu_guest
-        bask('-a kvm-host') if ismatch?('kvm')
-        bask('-a kvm-guest') if ismatch?('virtio')
       end
 
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
       end
 
-      def bask(cmd)
-        Getch::Bask.new(cmd).run!
-      end
-
       def install_wifi
         return unless ismatch?('cfg80211')
 
-        bask('-a wifi')
         wifi_drivers
-        Getch::Emerge.new('net-wireless/iw wpa_supplicant net-wireless/iwd').pkg!
-      end
-
-      def install_audio
-        return unless ismatch?('snd_pcm')
-
-        bask('-a sound')
+        Getch::Emerge.new('net-wireless/iwd').pkg!
       end
 
       def wifi_drivers
         conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
         File.delete(conf) if File.exist? conf
 
-        bask('-a ath9k-driver') if ismatch?('ath9k')
         module_load('iwlmvm', conf)
         module_load('ath9k', conf)
       end

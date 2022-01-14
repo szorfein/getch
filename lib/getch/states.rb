@@ -39,6 +39,11 @@ module Getch
       save
     end
 
+    def booloader
+      STATES[:gentoo_bootloader] = true
+      save
+    end
+
     def kernel
       STATES[:gentoo_kernel] = true
       save

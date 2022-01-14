@@ -39,6 +39,16 @@ module Getch
       File.write file, '' unless File.exist? file
     end
 
+    def self.echo(src, content = '')
+      File.write(src, "#{content}\n", mode: 'w')
+    end
+
+    def self.echo_a(src, content = '')
+      raise "No file #{src} found !" unless File.exist? src
+
+      File.write(src, "#{content}\n", mode: 'a') unless self.grep?(src, content)
+    end
+
     def self.cp(src, dest)
       raise "Src file #{src} no found" unless File.exist? src
 

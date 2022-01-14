@@ -36,6 +36,7 @@ module Getch
     :gentoo_base => false,
     :gentoo_config => false,
     :gentoo_update => false,
+    :gentoo_bootloader => false,
     :gentoo_kernel => false
   }
 

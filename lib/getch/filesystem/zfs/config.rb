@@ -17,29 +17,10 @@ module Getch
           File.write(file, datas.join("\n"))
         end
 
-        def systemd_boot
-          return unless Helpers.efi?
-
-          esp = '/efi'
-          dir = "#{@root_dir}/#{esp}/loader/entries/"
-          datas_gentoo = [
-            'title Gentoo Linux',
-            'linux /vmlinuz',
-            'initrd /initramfs',
-            "options resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs zfs.zfs_arc_max=536870912"
-          ]
-          File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
-        end
-
         # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
-        def grub
-          return if Helpers.efi?
-
-          file = "#{@root_dir}/etc/default/grub"
-          cmdline = [ 
-            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs zfs.zfs_arc_max=536870912\""
-          ]
-          File.write("#{file}", cmdline.join("\n"), mode: 'a')
+        def cmdline
+          line = "resume=UUID=#{@uuid_swap} root=ZFS:#{@pool_name}/ROOT/#{@n} init=#{@init} zfs.force=1 zfs.zfs_arc_max=536870912\""
+          Getch::Bask.new(line).cmdline
         end
 
         private

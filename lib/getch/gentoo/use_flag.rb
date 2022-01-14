@@ -10,6 +10,7 @@ module Getch
       def apply
         systemd
         pam
+        kernel
         kmod
         grub
         zfs
@@ -36,6 +37,11 @@ module Getch
         use.add(flags)
       end
 
+      def kernel
+        use = Getch::Gentoo::Use.new('sys-kernel/gentoo-kernel')
+        use.add('hardened')
+      end
+
       def kmod
         use = Getch::Gentoo::Use.new('sys-apps/kmod')
         use.add('zstd', 'lzma')
@@ -59,6 +65,10 @@ module Getch
         use.add('rootfs')
         use = Getch::Gentoo::Use.new('sys-fs/zfs')
         use.add('rootfs')
+
+        # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
+        use = Getch::Gentoo::Use.new
+        use.add_global('dist-kernel')
       end
 
       def lvm
