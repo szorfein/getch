@@ -6,16 +6,10 @@ module Getch
   module Gentoo
     class Boot
       def initialize
-        @disk = Getch::OPTIONS[:boot_disk] ?
-          Getch::OPTIONS[:boot_disk] :
-          Getch::OPTIONS[:disk]
         @user = Getch::OPTIONS[:username]
-        @class_fs = Getch::select_fs
-        @config = @class_fs::Config.new
       end
 
       def start
-        @config.fstab
         bootloader
         password
         permission
@@ -23,63 +17,33 @@ module Getch
       end
 
       def bootloader
-        # Ensure than systemd is build with all our flags
+        # Ensure all packages are build
         Getch::Emerge.new('@world').pkg!
-
-        if Helpers.efi?
-          bootctl
-        else
-          grub
-        end
+        Helpers.efi? ? bootctl : grub
       end
 
       # bootctl is alrealy installed with the stage3-amd64-systemd
       def bootctl
-        bootctl_dep
-        puts 'Configuring systemd-boot.'
         # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
         esp = '/efi'
-        Getch::Chroot.new("bootctl --path #{esp} install").run!
-        datas_loader = [
-          'default gentoo',
-          'timeout 3',
-          'editor 0'
-        ]
-        @config.systemd_boot
-        File.write("#{MOUNTPOINT}/#{esp}/loader/loader.conf", datas_loader.join("\n"))
-
-        FileUtils.cp("#{MOUNTPOINT}/usr/src/linux/arch/x86/boot/bzImage", "#{MOUNTPOINT}/#{esp}/vmlinuz")
-
-        initramfs = Dir.glob("#{MOUNTPOINT}/boot/initramfs-*.img")
-        FileUtils.cp("#{initramfs[0]}", "#{MOUNTPOINT}/#{esp}/initramfs") if initramfs != []
-
+        puts ' => Updating systemd-boot...'
         Getch::Chroot.new("bootctl --path #{esp} update").run!
       end
 
-      def bootctl_dep
-        puts 'Installing systemd-boot...'
-        Getch::Emerge.new('efivar').pkg!
-      end
-
       def grub
-        puts 'Installing GRUB...'
-        Getch::Emerge.new('sys-boot/grub:2').pkg!
-        @config.grub
-        Getch::Chroot.new("grub-install /dev/#{@disk}").run!
+        puts ' => Updating GRUB...'
         Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg').run!
       end
 
       def password
         puts 'Password for root'
-        cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd\""
-        system(cmd)
+        chroot "passwd"
         return unless @user
 
         puts "Creating user #{@user}"
         Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}").run!
         puts "Password for your user #{@user}"
-        cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile && passwd #{@user}\""
-        system(cmd)
+        chroot "passwd #{@user}"
       end
 
       private
@@ -92,8 +56,6 @@ module Getch
       end
 
       def the_end
-        # Helpers.exec_or_die("umount -l /mnt/gentoo/dev{/shm,/pts,}")
-        # Helpers.exec_or_die("umount -R #{MOUNTPOINT}")
         puts
         puts 'getch has finish, before reboot, you can:'
         puts "  +  Chroot on your system with: chroot #{MOUNTPOINT} /bin/bash"
@@ -105,12 +67,8 @@ module Getch
         puts 'Reboot the system when you have done !'
       end
 
-      def exec_chroot(cmd)
-        script = "chroot #{MOUNTPOINT} /bin/bash -c \"
-          source /etc/profile
-          #{cmd}
-        \""
-        Getch::Command.new(script).run!
+      def chroot(cmd)
+        system('chroot', MOUNTPOINT, '/bin/bash', '-c', cmd)
       end
     end
   end

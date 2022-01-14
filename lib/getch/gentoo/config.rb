@@ -50,7 +50,7 @@ module Getch
       def repo
         src = "#{MOUNTPOINT}/usr/share/portage/config/repos.conf"
         dest = "#{MOUNTPOINT}/etc/portage/repos.conf"
-        FileUtils.mkdir dest, mode: 0644 if ! Dir.exist?(dest)
+        FileUtils.mkdir dest, mode: 0644 unless Dir.exist?(dest)
         tmp = Tempfile.new('gentoo.conf')
         line_count = 0
 
@@ -89,9 +89,9 @@ module Getch
 
       def portage_fs
         portage = "#{MOUNTPOINT}/etc/portage"
-        Helpers.create_dir("#{portage}/package.use")
-        Helpers.create_dir("#{portage}/package.accept_keywords")
-        Helpers.create_dir("#{portage}/package.unmask")
+        Helpers.mkdir("#{portage}/package.use")
+        Helpers.mkdir("#{portage}/package.accept_keywords")
+        Helpers.mkdir("#{portage}/package.unmask")
 
         Helpers.add_file("#{portage}/package.use/zzz_via_autounmask")
         Helpers.add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
@@ -145,7 +145,7 @@ function pre_pkg_preinst() {
         Dir.glob("#{MOUNTPOINT}/usr/share/keymaps/**/#{keys}.map.gz") { |f|
           @keymap = f
         }
-        raise ArgumentError, "No keymap #{@keymap} found" if ! @keymap
+        raise ArgumentError, "No keymap #{@keymap} found" unless @keymap
       end
 
       def search_zone(zone)
@@ -157,8 +157,8 @@ function pre_pkg_preinst() {
       def search_utf8(lang)
         @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each { |l|
-          @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf\-8 ]+/i)
-          @lang = $~[0] if l.match(/^#{lang}[. ]+utf\-8/i)
+          @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf-8 ]+/i)
+          @lang = $~[0] if l.match(/^#{lang}[. ]+utf-8/i)
         }
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end

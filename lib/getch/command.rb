@@ -129,16 +129,16 @@ module Getch
 
   class Bask
     def initialize(cmd)
-      @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
       @version = '0.5'
+      @config = "#{MOUNTPOINT}/etc/kernel/config.d"
+      download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
     end
 
     def run!
-      download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
       @log.info "Running Bask: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
+      cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile \
         && env-update \
         && cd /root/bask-#{@version} \
         && ./bask.sh #{@cmd} -k /usr/src/linux\""
@@ -153,7 +153,28 @@ module Getch
       end
     end
 
-    private 
+    def cp
+      Helpers.mkdir @config
+      Helpers.cp(
+        "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
+        "#{@config}/#{@cmd}"
+      )
+    end
+
+    def add(content)
+      Helpers.add_file "#{@config}/#{@cmd}", content
+    end
+
+    def cmdline(line)
+      base = 'slab_nomerge slub_debug=FZ init_on_alloc=1 init_on_free=1'
+      base += ' page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off'
+      base += ' oops=panic module.sig_enforce=1 lockdown=confidentiality mce=0'
+      base += ' quiet ' + line
+      Helpers.echo "#{@config}/99-cmdline.config", 'CONFIG_CMDLINE_BOOL=y'
+      Helpers.echo_a "#{@config}/99-cmdline.config", "CONFIG_CMDLINE=\"#{base}\""
+    end
+
+    private
 
     def download_bask
       @log.info 'Installing Bask...'
