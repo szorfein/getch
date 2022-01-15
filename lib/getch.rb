@@ -137,6 +137,7 @@ module Getch
       gentoo.stage3
       gentoo.config
       gentoo.chroot
+      gentoo.bootloader
       gentoo.kernel
       gentoo.boot
     end

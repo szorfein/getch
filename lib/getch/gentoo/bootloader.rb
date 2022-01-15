@@ -7,6 +7,10 @@ module Getch
         @pkgs = []
         @class_fs = Getch.select_fs
         @config = @class_fs::Config.new
+        @disk = Getch::OPTIONS[:boot_disk] ?
+          Getch::OPTIONS[:boot_disk] :
+          Getch::OPTIONS[:disk]
+        @esp = '/efi'
       end
 
       def start
@@ -35,7 +39,26 @@ module Getch
 
       def install
         all_pkgs = @pkgs.join(' ')
-        Getch::Emerge.new(all_pkgs).run!
+        Getch::Emerge.new(all_pkgs).pkg!
+      end
+
+      def setup
+        if Helpers.efi?
+          Getch::Chroot.new("bootctl --path #{@esp} install").run!
+        else
+          Getch::Chroot.new("grub-install /dev/#{@disk}").run!
+        end
+      end
+
+      def update
+        Getch::Emerge.new('--config sys-kernel/gentoo-kernel').pkg!
+        if Helpers.efi?
+          puts ' => Updating systemd-boot...'
+          Getch::Chroot.new("bootctl --path #{@esp} update").run!
+        else
+          puts ' => Updating grub...'
+          Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg').run!
+        end
       end
 
       def config

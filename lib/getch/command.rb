@@ -165,15 +165,6 @@ module Getch
       Helpers.add_file "#{@config}/#{@cmd}", content
     end
 
-    def cmdline(line)
-      base = 'slab_nomerge slub_debug=FZ init_on_alloc=1 init_on_free=1'
-      base += ' page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off'
-      base += ' oops=panic module.sig_enforce=1 lockdown=confidentiality mce=0'
-      base += ' quiet ' + line
-      Helpers.echo "#{@config}/99-cmdline.config", 'CONFIG_CMDLINE_BOOL=y'
-      Helpers.echo_a "#{@config}/99-cmdline.config", "CONFIG_CMDLINE=\"#{base}\""
-    end
-
     private
 
     def download_bask

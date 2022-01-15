@@ -75,9 +75,9 @@ module Getch
 
       def systemd
         control_options
-        File.write("#{MOUNTPOINT}/etc/locale.gen", @utf8)
-        File.write("#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}\n")
-        File.write("#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C', mode: 'a')
+        Helpers.echo "#{MOUNTPOINT}/etc/locale.gen", @utf8
+        Helpers.echo "#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}"
+        Helpers.echo_a "#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C'
         File.write("#{MOUNTPOINT}/etc/timezone", "#{Getch::OPTIONS[:zoneinfo]}\n")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{Getch::OPTIONS[:keymap]}\n")
       end
@@ -98,10 +98,10 @@ module Getch
         Helpers.add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
+      # https://wiki.gentoo.org/wiki/Signed_kernel_module_support
       def portage_bashrc
         conf = "#{MOUNTPOINT}/etc/portage/bashrc"
         content = %q{
-# https://wiki.gentoo.org/wiki/Signed_kernel_module_support
 function pre_pkg_preinst() {
     # This hook signs any out-of-tree kernel modules.
     if [[ "$(type -t linux-mod_pkg_preinst)" != "function" ]]; then
@@ -128,7 +128,7 @@ function pre_pkg_preinst() {
 
         f = File.new(conf, 'w')
         f.write("#{content}\n")
-        f.chmod(0644)
+        f.chmod(0700)
         f.close
       end
 
@@ -156,10 +156,10 @@ function pre_pkg_preinst() {
 
       def search_utf8(lang)
         @utf8, @lang = nil, nil
-        File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each { |l|
-          @utf8 = $~[0] if l.match(/^#{lang}[. ]+[utf-8 ]+/i)
+        File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each do |l|
+          @utf8 = $~[0] if l.match(/^#{lang}[. ]+utf-8 /i)
           @lang = $~[0] if l.match(/^#{lang}[. ]+utf-8/i)
-        }
+        end
         raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end
     end

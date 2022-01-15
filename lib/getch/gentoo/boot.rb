@@ -19,20 +19,9 @@ module Getch
       def bootloader
         # Ensure all packages are build
         Getch::Emerge.new('@world').pkg!
-        Helpers.efi? ? bootctl : grub
-      end
-
-      # bootctl is alrealy installed with the stage3-amd64-systemd
-      def bootctl
-        # ref: https://forums.gentoo.org/viewtopic-p-8118822.html
-        esp = '/efi'
-        puts ' => Updating systemd-boot...'
-        Getch::Chroot.new("bootctl --path #{esp} update").run!
-      end
-
-      def grub
-        puts ' => Updating GRUB...'
-        Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg').run!
+        bootloader = Getch::Gentoo::Bootloader.new
+        bootloader.setup
+        bootloader.update
       end
 
       def password
