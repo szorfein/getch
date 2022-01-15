@@ -23,6 +23,8 @@ module Getch
         Getch::Bask.new('11-kspp-gcc.config').cp
         Getch::Bask.new('12-kspp-x86_64.config').cp
         Getch::Bask.new('20-blacklist.config').cp
+        Getch::Bask.new('21-blacklist-madaidans.config').cp
+        Getch::Bask.new('90-cmdline.config').cp
       end
 
       def make

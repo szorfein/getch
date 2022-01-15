@@ -27,7 +27,6 @@ module Getch
         def install_deps
           Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
           Getch::Emerge.new('sys-fs/zfs').pkg!
-          Getch::Emerge.new('@module-rebuild').pkg!
           Getch::Emerge.new('--config sys-kernel/gentoo-kernel').pkg!
         end
 
