@@ -27,7 +27,6 @@ module Getch
         def install_deps
           Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
           Getch::Emerge.new('sys-fs/zfs').pkg!
-          Getch::Emerge.new('--config sys-kernel/gentoo-kernel').pkg!
         end
 
         # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
@@ -55,11 +54,8 @@ module Getch
 
         def config_dracut
           conf = "#{MOUNTPOINT}/etc/dracut.conf.d/zfs.conf"
-          # dracut: value+= should be surrounding by white space
-          content = [
-            'hostonly="yes"',
-          ]
-          File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
+          content = 'hostonly="yes"'
+          Helpers.echo conf, content
         end
 
         def exec(cmd)

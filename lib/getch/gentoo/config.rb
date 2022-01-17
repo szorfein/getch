@@ -157,7 +157,7 @@ function pre_pkg_preinst() {
       def search_utf8(lang)
         @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each do |l|
-          @utf8 = $~[0] if l.match(/^#{lang}[. ]+utf-8 /i)
+          @utf8 = l if l.match(/^#{lang}[. ]+utf-8 /i)
           @lang = $~[0] if l.match(/^#{lang}[. ]+utf-8/i)
         end
         raise ArgumentError, "Lang #{lang} no found" unless @utf8

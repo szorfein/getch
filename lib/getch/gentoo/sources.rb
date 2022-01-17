@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cmdline'
+
 module Getch
   module Gentoo
     class Sources
@@ -9,22 +11,30 @@ module Getch
         @filesystem = @class_fs::Deps.new
       end
 
-      def configs
-      end
-
-      def load_modules
-        install_wifi
-        flash_mod
-      end
-
       def bask
         puts ' ==> Hardening kernel...'
         Getch::Bask.new('10_kspp.config').cp
         Getch::Bask.new('11-kspp-gcc.config').cp
         Getch::Bask.new('12-kspp-x86_64.config').cp
-        Getch::Bask.new('20-blacklist.config').cp
-        Getch::Bask.new('21-blacklist-madaidans.config').cp
-        Getch::Bask.new('90-cmdline.config').cp
+        Getch::Bask.new('20-clipos.config').cp
+        Getch::Bask.new('30-grsecurity.config').cp
+        Getch::Bask.new('40-kconfig-hardened.config').cp
+        Getch::Bask.new('50-blacklist.config').cp
+        Getch::Bask.new('51-blacklist-madaidans.config').cp
+      end
+
+      def configs
+        Helpers.efi? ? cmdline_efi : cmdline_grub
+      end
+
+      def cmdline_efi
+        cmdline = CmdLine::Kernel.new(workdir: "#{MOUNTPOINT}/etc/kernel/config.d")
+        cmdline.main
+      end
+
+      def cmdline_grub
+        cmdline = CmdLine::Grub.new(workdir: "#{MOUNTPOINT}/etc/grub.d")
+        cmdline.main
       end
 
       def make
@@ -35,6 +45,11 @@ module Getch
         else
           make_kernel
         end
+      end
+
+      def load_modules
+        install_wifi
+        flash_mod
       end
 
       private
