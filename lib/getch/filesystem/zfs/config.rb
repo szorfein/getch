@@ -20,7 +20,7 @@ module Getch
         # https://github.com/openzfs/zfs/blob/master/contrib/dracut/README.dracut.markdown
         def cmdline
           src = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-          line = "kernel_cmdline=\"resume=UUID=#{@uuid_swap} root=ZFS:#{@pool_name}/ROOT/#{@n} init=#{@init} zfs.force=1 zfs.zfs_arc_max=536870912\""
+          line = "kernel_cmdline=\"resume=UUID=#{@uuid_swap} root=zfs:#{@pool_name}/ROOT/#{@n} init=#{@init} zfs.force=1 zfs.zfs_arc_max=536870912\""
           Helpers.echo src, line
         end
 

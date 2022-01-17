@@ -33,9 +33,9 @@ module Getch
             conf = "#{MOUNTPOINT}/etc/dracut.conf.d/zfs.conf"
             # dracut: value+= should be surrounding by white space
             content = [
-              "hostonly=\"yes\"",
-              "omit_dracutmodules+=\" btrfs lvm \"",
-              "install_items+=\" /etc/crypttab \"",
+              'hostonly="yes"',
+              'omit_dracutmodules+=" btrfs lvm "',
+              'install_items+=" /etc/crypttab "',
             ]
             File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
           end
