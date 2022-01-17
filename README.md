@@ -102,24 +102,6 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
 To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
-#### ZFS for Gentoo
-When Gentoo boot the first time, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just `export` your pool from the genkernel shell:
-
-The zpool name should be visible (rpool-150ed here), so enter in the Genkernel shell:
-
-    > shell
-    zpool import -f -N -R /tmp rpool-150ed
-    zpool export -a
-
-Then, just reboot now, it's all.
-
-*INFO*: To create the zpool, getch use the 5 fist characters from the `partuuid`, just replace `sdX` by your real device:
-
-    # ls -l /dev/disk/by-partuuid/ | grep sdX4
-    -> 150ed969...
-
-The pool will be called `rpool-150ed`.
-
 #### ZFS for Void Linux - Enable the boot pool
 You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
 By default, your /boot is empty because your boot pool is not imported...

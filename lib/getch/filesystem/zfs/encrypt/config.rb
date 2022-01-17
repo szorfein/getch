@@ -20,7 +20,7 @@ module Getch
 
           def cmdline
             src = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-            line = "kernel_cmdline=\"root=ZFS:#{@pool_name}/ROOT/#{@n} init=#{@init} rd.vconsole.keymap=#{Getch::OPTIONS[:keymap]} zfs.force=1 zfs.zfs_arc_max=536870912\""
+            line = "kernel_cmdline=\"root=zfs:#{@pool_name}/ROOT/#{@n} init=#{@init} rd.vconsole.keymap=#{Getch::OPTIONS[:keymap]} zfs.force=1 zfs.zfs_arc_max=536870912\""
             Helpers.echo src, line
           end
 
