@@ -13,7 +13,7 @@ module Getch
         def fstab
           file = "#{MOUNTPOINT}/etc/fstab"
           datas = data_fstab
-          File.write(file, datas.join("\n"))
+          File.write file, datas.join("\n")
         end
 
         # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root

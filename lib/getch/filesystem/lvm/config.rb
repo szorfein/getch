@@ -7,38 +7,19 @@ module Getch
         def initialize
           super
           gen_uuid
-          @root_dir = MOUNTPOINT
           @init = '/usr/lib/systemd/systemd'
         end
 
         def fstab
-          file = "#{@root_dir}/etc/fstab"
+          file = "#{MOUNTPOINT}/etc/fstab"
           datas = data_fstab
           File.write(file, datas.join("\n"))
         end
 
-        def systemd_boot
-          return unless @efi
-
-          esp = '/efi'
-          dir = "#{@root_dir}/#{esp}/loader/entries/"
-          datas_gentoo = [
-            'title Gentoo Linux',
-            'linux /vmlinuz',
-            'initrd /initramfs',
-            "options resume=#{@lv_swap} root=#{@lv_root} init=#{@init} dolvm rw"
-          ]
-          File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
-        end
-
-        def grub
-          return if @efi
-
-          file = "#{@root_dir}/etc/default/grub"
-          cmdline = [ 
-            "GRUB_CMDLINE_LINUX=\"resume=#{@lv_swap} root=#{@lv_root} init=#{@init} dolvm rw\""
-          ]
-          File.write("#{file}", cmdline.join("\n"), mode: 'a')
+        def cmdline
+          conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
+          line = "resume=#{@lv_swap} rd.lvm.vg=#{@vg} init=#{@init}"
+          File.write conf, "kernel_cmdline=\"#{line}\"\n"
         end
 
         private
