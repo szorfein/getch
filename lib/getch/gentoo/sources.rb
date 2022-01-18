@@ -24,17 +24,25 @@ module Getch
       end
 
       def configs
-        Helpers.efi? ? cmdline_efi : cmdline_grub
+        gen_cmdline
+        grub_mkconfig unless Helpers.efi?
       end
 
-      def cmdline_efi
-        cmdline = CmdLine::Kernel.new(workdir: "#{MOUNTPOINT}/etc/kernel/config.d")
+      def gen_cmdline
+        cmdline = CmdLine::Kernel.new(workdir: "#{MOUNTPOINT}/etc/kernel")
         cmdline.main
       end
 
-      def cmdline_grub
-        cmdline = CmdLine::Grub.new(workdir: "#{MOUNTPOINT}/etc/grub.d")
-        cmdline.main
+      def grub_mkconfig
+        file = "#{MOUNTPOINT}/etc/kernel/install.d/90-mkconfig.install"
+        content = <<~SHELL
+#!/usr/bin/env sh
+set -o errexit
+grub-mkconfig -o /boot/grub/grub.cfg
+exit 0
+SHELL
+        File.write file, content
+        File.chmod 0755, file
       end
 
       def make
