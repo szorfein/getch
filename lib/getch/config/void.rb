@@ -1,4 +1,4 @@
-require_relative '../helpers'
+# frozen_string_literal: true
 
 module Getch
   module Config
@@ -6,7 +6,7 @@ module Getch
       include Helpers::Void
 
       def initialize
-        @service_dir = "/etc/runit/runsvdir/default/"
+        @service_dir = '/etc/runit/runsvdir/default/'
       end
 
       # Enable dhcpcd service
@@ -19,10 +19,9 @@ module Getch
       def dns
         conf = "#{MOUNTPOINT}/etc/resolv.conf"
         content = [
-          "nameserver 9.9.9.9",
-          "nameserver 2620:fe::fe",
-          "options rotate",
-          "",
+          'nameserver 9.9.9.9',
+          'nameserver 2620:fe::fe',
+          'options rotate',
         ]
         File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
       end
@@ -31,9 +30,8 @@ module Getch
       def wifi
         conf = "#{MOUNTPOINT}/etc/iwd/main.conf"
         content = [
-          "[General]",
-          "UseDefaultInterface=true",
-          "",
+          '[General]',
+          'UseDefaultInterface=true',
         ]
         File.write(conf, content.join("\n"), mode: 'a', chmod: 0644)
         # Enabling dbus and iwd
@@ -42,7 +40,7 @@ module Getch
       end
 
       def shell
-        command "chsh -s /bin/bash"
+        command 'chsh -s /bin/bash'
       end
     end
   end

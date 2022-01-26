@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -6,21 +8,21 @@ module Getch
           def initialize
             super
             gen_uuid
-            @root_dir = MOUNTPOINT
             @init = '/usr/lib/systemd/systemd'
             crypttab
           end
 
           def fstab
-            file = "#{@root_dir}/etc/fstab"
+            file = "#{MOUNTPOINT}/etc/fstab"
             datas = data_fstab
-            File.write(file, datas.join("\n"))
+            File.write file, datas.join("\n")
           end
 
           def systemd_boot
-            return if ! Helpers::efi? 
+            return unless Helpers.efi?
+
             esp = '/efi'
-            dir = "#{@root_dir}/#{esp}/loader/entries/"
+            dir = "#{MOUNTPOINT}/#{esp}/loader/entries/"
             datas_gentoo = [
               'title Gentoo Linux',
               'linux /vmlinuz',
@@ -34,17 +36,18 @@ module Getch
             datas = [
               "cryptswap #{@lv_swap} /dev/urandom swap,cipher=aes-xts-plain64:sha256,size=512"
             ]
-            File.write("#{@root_dir}/etc/crypttab", datas.join("\n"))
+            File.write("#{MOUNTPOINT}/etc/crypttab", datas.join("\n"))
           end
 
           def grub
-            return if Helpers::efi?
-            file = "#{@root_dir}/etc/default/grub"
+            return if Helpers.efi?
+
+            file = "#{MOUNTPOINT}/etc/default/grub"
             cmdline = [ 
               "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root real_root=#{@lv_root} init=#{@init} dolvm rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{Getch::OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
-            File.write("#{file}", cmdline.join("\n"), mode: 'a')
+            File.write(file, cmdline.join("\n"), mode: 'a')
           end
 
           private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module Getch
@@ -33,21 +35,21 @@ module Getch
     private
 
     def check_file
-      puts "Creating log at #{@log_file}" if ! File.exist? @log_file
+      puts "Creating log at #{@log_file}" unless File.exist? @log_file
     end
 
     def init_log
-      @logger = Logger.new(STDOUT)
+      @logger = Logger.new($stdout)
       @logger.level = @verbose ? Logger::DEBUG : Logger::INFO
-      @logger.formatter = proc { |severity, datetime, progname, msg|
-        "#{severity}, #{msg}\n" 
+      @logger.formatter = proc { |severity, _, _, msg|
+        "#{severity}, #{msg}\n"
       }
     end
 
     def init_log_text
       @logger_text = Logger.new(@log_file, 1)
       @logger_text.level = Logger::DEBUG
-      @logger_text.formatter = proc { |severity, datetime, progname, msg|
+      @logger_text.formatter = proc { |severity, datetime, _, msg|
         "#{severity}, #{datetime}, #{msg}\n" 
       }
     end

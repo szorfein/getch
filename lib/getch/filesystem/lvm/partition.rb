@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
       class Partition < Getch::FileSystem::Lvm::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @state = Getch::States.new
           @partition = Getch::FileSystem::Partition.new
           @clean = Getch::FileSystem::Clean
           run_partition
@@ -12,6 +14,7 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+
           @clean.old_vg(@dev_root, @vg)
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
@@ -23,13 +26,13 @@ module Getch
         private
 
         def partition
-          if Helpers::efi?
+          if Helpers.efi?
             @partition.efi(@dev_esp)
-            @partition.root(@dev_root, "8e00")
+            @partition.root(@dev_root, '8e00')
           else
             @partition.gpt(@dev_gpt)
             @partition.boot(@dev_boot)
-            @partition.root(@dev_root, "8e00")
+            @partition.root(@dev_root, '8e00')
           end
         end
 
@@ -47,7 +50,7 @@ module Getch
             exec("lvcreate -y -Wy -Zy -l 100%FREE -n root #{@vg}")
           end
 
-          exec("vgchange --available y")
+          exec('vgchange --available y')
         end
 
         # Follow https://wiki.archlinux.org/index.php/Partitioning

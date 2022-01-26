@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'config/gentoo'
 require_relative 'config/void'
 
@@ -30,9 +32,9 @@ module Getch
         pwd = File.expand_path(File.dirname(__FILE__))
         dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
-        Helpers::mkdir dest
-        Helpers::cp("#{pwd}/../../assets/network-stack.conf", dest)
-        Helpers::cp("#{pwd}/../../assets/system.conf", dest)
+        Helpers.mkdir dest
+        Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
+        Helpers.cp("#{pwd}/../../assets/system.conf", dest)
       end
       
       def shell

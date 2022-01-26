@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     class Device
       def initialize
-        @efi = Helpers::efi?
+        @efi = Helpers.efi?
         @root_part = 1
         @user = Getch::OPTIONS[:username]
 

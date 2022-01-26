@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Ext4
@@ -6,13 +8,13 @@ module Getch
           def make
             install_deps
             genkernel
-            Getch::Make.new("genkernel --kernel-config=/usr/src/linux/.config all").run!
+            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
           end
 
           private
 
           def genkernel
-            grub = Helpers::efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
+            grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
             datas = [
               '',
               grub,

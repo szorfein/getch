@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'void/stage'
 require_relative 'void/config'
 require_relative 'void/chroot'
@@ -8,11 +10,12 @@ module Getch
   module Void
     class Main
       def initialize
-        @state = Getch::States.new()
+        @state = Getch::States.new
       end
 
       def root_fs
         return if STATES[:gentoo_base]
+
         xbps = Getch::Void::RootFS.new
         xbps.search_archive
         xbps.download
@@ -22,6 +25,7 @@ module Getch
 
       def config
         return if STATES[:gentoo_config]
+
         config = Getch::Void::Config.new
         config.host
         config.network
@@ -32,6 +36,7 @@ module Getch
 
       def chroot
         return if STATES[:gentoo_kernel]
+
         chroot = Getch::Void::Chroot.new
         chroot.update
         chroot.fs
@@ -41,6 +46,7 @@ module Getch
 
       def kernel
         return if STATES[:gentoo_kernel]
+
         Getch::Void::Sources.new
         @state.kernel
       end

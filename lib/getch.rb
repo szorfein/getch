@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
+require_relative 'getch/helpers'
 require_relative 'getch/options'
 require_relative 'getch/states'
 require_relative 'getch/gentoo'
 require_relative 'getch/void'
 require_relative 'getch/filesystem'
 require_relative 'getch/command'
-require_relative 'getch/helpers'
 require_relative 'getch/log'
 require_relative 'getch/config'
 require_relative 'getch/guard'
@@ -34,10 +36,11 @@ module Getch
     :gentoo_base => false,
     :gentoo_config => false,
     :gentoo_update => false,
+    :gentoo_bootloader => false,
     :gentoo_kernel => false
   }
 
-  MOUNTPOINT = "/mnt/gentoo"
+  MOUNTPOINT = '/mnt/gentoo'
 
   DEFAULT_FS = {
     true => {
@@ -67,7 +70,8 @@ module Getch
     end
 
     def resume
-      raise "No disk, use at least getch with -d DISK" if !OPTIONS[:disk]
+      raise 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
+
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
@@ -82,7 +86,7 @@ module Getch
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"
       puts "\tseparate-home disk: #{OPTIONS[:home_disk]}"
       puts
-      print "Continue? (y,N) "
+      print 'Continue? (y,N) '
       case gets.chomp
       when /^y|^Y/
         return
@@ -93,11 +97,12 @@ module Getch
 
     def partition
       return if STATES[:partition]
+
       puts
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
       when /^y|^Y/
-        @log.info("Partition start")
+        @log.info('Partition start')
         @class_fs::Partition.new
       else
         exit
@@ -106,11 +111,13 @@ module Getch
 
     def format
       return if STATES[:format]
+
       @class_fs::Format.new
     end
 
     def mount
       return if STATES[:mount]
+
       @class_fs::Mount.new.run
     end
 
@@ -130,6 +137,7 @@ module Getch
       gentoo.stage3
       gentoo.config
       gentoo.chroot
+      gentoo.bootloader
       gentoo.kernel
       gentoo.boot
     end

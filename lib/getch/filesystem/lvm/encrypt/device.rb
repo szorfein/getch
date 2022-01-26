@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -9,8 +11,8 @@ module Getch
             @lv_root = "/dev/#{@vg}/root"
             @lv_swap = "/dev/#{@vg}/swap"
             @lv_home = @home_disk ? "/dev/#{@vg}/home" : nil
-            @luks_root = "/dev/mapper/cryptroot"
-            @luks_home = @home_disk ? "/dev/mapper/crypthome" : nil
+            @luks_root = '/dev/mapper/cryptroot'
+            @luks_home = @home_disk ? '/dev/mapper/crypthome' : nil
           end
 
           private

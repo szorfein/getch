@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 
 module Getch
@@ -9,7 +11,7 @@ module Getch
     end
 
     def run!
-      @log.info "Running command: " + @cmd.gsub(/\"/, '')
+      @log.info 'Running command: ' + @cmd.gsub(/\"/, '')
 
       Open3.popen3(@cmd) do |stdin, stdout, stderr, wait_thr|
         stdin.close_write
@@ -18,7 +20,7 @@ module Getch
         # only stderr
         begin
           @log.debug stderr.readline until stderr.eof.nil?
-        rescue EOFError
+        rescue
         end
 
         begin
@@ -61,7 +63,7 @@ module Getch
           data = f.read_nonblock(@block_size)
           puts data if OPTIONS[:verbose]
         rescue EOFError
-          puts ""
+          puts
         rescue => e
           puts "Fatal - #{e}"
         end
@@ -79,13 +81,13 @@ module Getch
 
     def run!
       @log.info "Running emerge: #{@cmd}"
-      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && #{@cmd}")
+      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
       read_exit
     end
 
     def pkg!
       @log.info "Running emerge pkg: #{@cmd}"
-      system("chroot", @gentoo, "/bin/bash", "-c", "source /etc/profile && emerge --changed-use #{@cmd}")
+      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
       read_exit
     end
 
@@ -113,10 +115,8 @@ module Getch
         && env-update \
         && cd /usr/src/linux \
         && #{@cmd}\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        while line = stdout_err.gets
-          puts line
-        end
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?
@@ -129,23 +129,21 @@ module Getch
 
   class Bask
     def initialize(cmd)
-      @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
-      @version = "0.5"
+      @version = '0.6'
+      @config = "#{MOUNTPOINT}/etc/kernel/config.d"
+      download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
     end
 
     def run!
-      download_bask if ! Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
       @log.info "Running Bask: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
+      cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile \
         && env-update \
         && cd /root/bask-#{@version} \
         && ./bask.sh #{@cmd} -k /usr/src/linux\""
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        while line = stdout_err.gets
-          puts line
-        end
+      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
+        stdout_err.each { |l| puts l }
 
         exit_status = wait_thr.value
         unless exit_status.success?
@@ -155,15 +153,27 @@ module Getch
       end
     end
 
-    private 
+    def cp
+      Helpers.mkdir @config
+      Helpers.cp(
+        "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
+        "#{@config}/#{@cmd}"
+      )
+    end
+
+    def add(content)
+      Helpers.add_file "#{@config}/#{@cmd}", content
+    end
+
+    private
 
     def download_bask
-      @log.info "Installing Bask..."
-      url = "https://github.com/szorfein/bask/archive/v#{@version}.tar.gz"
+      @log.info 'Installing Bask...'
+      url = "https://github.com/szorfein/bask/archive/refs/tags/#{@version}.tar.gz"
       file = "bask-#{@version}.tar.gz"
 
       Dir.chdir("#{MOUNTPOINT}/root")
-      Helpers::get_file_online(url, file)
+      Helpers.get_file_online(url, file)
       Getch::Command.new("tar xzf #{file}").run!
     end
   end

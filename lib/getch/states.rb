@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 module Getch
@@ -37,6 +39,11 @@ module Getch
       save
     end
 
+    def bootloader
+      STATES[:gentoo_bootloader] = true
+      save
+    end
+
     def kernel
       STATES[:gentoo_kernel] = true
       save
@@ -45,16 +52,16 @@ module Getch
     private
 
     def save
-      File.open(@file, 'w') { |f| YAML::dump(STATES, f) }
+      File.open(@file, 'w') { |f| YAML.dump(STATES, f) }
     end
 
-    def load_state()
+    def load_state
       if File.exist? @file
         state_file = YAML.load_file(@file)
         STATES.merge!(state_file)
       else
         save
-        STDERR.puts "Initialize states"
+        warn 'Initialize states'
       end
     end
   end

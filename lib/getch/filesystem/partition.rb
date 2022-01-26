@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     class Partition
@@ -6,17 +8,19 @@ module Getch
       end
 
       def gpt(dev)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         exec("sgdisk -n#{part}:1MiB:+1MiB -t#{part}:EF02 #{disk}")
       end
 
       def boot(dev)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        if Getch::OPTIONS[:fs] == "zfs"
+        if Getch::OPTIONS[:fs] == 'zfs'
           exec("sgdisk -n#{part}:0:+2G -t#{part}:BE00 #{disk}")
         else
           exec("sgdisk -n#{part}:0:+128MiB -t#{part}:8300 #{disk}")
@@ -24,14 +28,16 @@ module Getch
       end
 
       def efi(dev)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         exec("sgdisk -n#{part}:1M:+260M -t#{part}:EF00 #{disk}")
       end
 
       def swap(dev)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         if Getch::OPTIONS[:cache_disk]
@@ -43,14 +49,16 @@ module Getch
       end
 
       def root(dev, code)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
       end
 
       def home(dev, code)
-        return if ! dev
+        return unless dev
+
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         if Getch::OPTIONS[:home_disk]
@@ -67,7 +75,7 @@ module Getch
       def exec(cmd)
         @log.debug "Partition disk with #{cmd}"
         if Getch::OPTIONS[:encrypt]
-          Helpers::sys(cmd)
+          Helpers.sys(cmd)
         else
           Getch::Command.new(cmd).run!
         end

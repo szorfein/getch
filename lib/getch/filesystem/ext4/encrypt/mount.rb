@@ -1,4 +1,4 @@
-require 'fileutils'
+# frozen_string_literal: true
 
 module Getch
   module FileSystem
@@ -8,11 +8,12 @@ module Getch
           def initialize
             super
             @mount = Getch::FileSystem::Mount.new
-            @state = Getch::States.new()
+            @state = Getch::States.new
           end
 
           def run
             return if STATES[:mount]
+
             @mount.root(@luks_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)

@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'securerandom'
-require_relative '../helpers'
 
 module Getch
   module Void
@@ -22,34 +23,34 @@ module Getch
       end
 
       def network
-        print " => Copying /etc/resolv.conf..."
+        print ' => Copying /etc/resolv.conf...'
         src = '/etc/resolv.conf'
         dest = "#{@network_dir}/resolv.conf"
-        FileUtils.copy_file(src, dest, preserve = true)
+        FileUtils.copy_file(src, dest)
         puts "\s[Ok]"
       end
 
       def system
-        print " => Updating configs system..."
+        print ' => Updating configs system...'
         control_options
         rc = "#{MOUNTPOINT}/etc/rc.conf"
-        add_line(rc, "HARDWARECLOCK=\"UTC\"") if !search(rc, /^HARDWARECLOCK/)
-        add_line(rc, "KEYMAP=\"#{OPTIONS[:keymap]}\"") if !search(rc, /^KEYMAP/)
-        add_line(rc, "TIMEZONE=\"#{OPTIONS[:zoneinfo]}\"") if !search(rc, /^TIMEZONE/)
-        add_line(rc, "HOSTNAME=\"#{@hostname}\"") if !search(rc, /^HOSTNAME/)
+        add_line(rc, 'HARDWARECLOCK="UTC"') unless search(rc, /^HARDWARECLOCK/)
+        add_line(rc, "KEYMAP=\"#{OPTIONS[:keymap]}\"") unless search(rc, /^KEYMAP/)
+        add_line(rc, "TIMEZONE=\"#{OPTIONS[:zoneinfo]}\"") unless search(rc, /^TIMEZONE/)
+        add_line(rc, "HOSTNAME=\"#{@hostname}\"") unless search(rc, /^HOSTNAME/)
         puts "\s[OK]"
       end
 
       def locale
-        print " => Updating locale system..."
+        print ' => Updating locale system...'
         control_options
         conf = "#{MOUNTPOINT}/etc/locale.conf"
         File.write(conf, "LANG=#{@lang}\n")
-        add_line(conf, "LC_COLLATE=C")
+        add_line(conf, 'LC_COLLATE=C')
         conf = "#{MOUNTPOINT}/etc/default/libc-locales"
         add_line(conf, @utf8)
         puts "\s[OK]"
-        command "xbps-reconfigure -f glibc-locales"
+        command 'xbps-reconfigure -f glibc-locales'
       end
 
       private
@@ -65,7 +66,7 @@ module Getch
         Dir.glob("#{MOUNTPOINT}/usr/share/kbd/keymaps/**/#{keys}.map.gz") { |f|
           @keymap = f
         }
-        raise ArgumentError, "No keymap #{@keymap} found" if ! @keymap
+        raise ArgumentError, "No keymap #{@keymap} found" unless @keymap
       end
 
       def search_zone(zone)
@@ -76,11 +77,13 @@ module Getch
 
       def search_utf8(lang)
         @utf8, @lang = nil, nil
-        File.open("#{MOUNTPOINT}/etc/default/libc-locales").each { |l|
-          @utf8 = $~[0] if l.match(/#{lang}[. ]+[utf\-8 ]+/i)
-          @lang = $~[0] if l.match(/#{lang}[. ]+utf\-8/i)
-        }
-        raise ArgumentError, "Lang #{lang} no found" if !@utf8
+        File.open("#{MOUNTPOINT}/etc/default/libc-locales").each do |l|
+          @utf8 = l.delete_prefix('#') if l.match(/#{lang}.UTF-8/)
+
+          found = l.split if l.match(/#{lang}.UTF-8/)
+          @lang = found[0].delete_prefix('#') if found
+        end
+        raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end
     end
   end

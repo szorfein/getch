@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module Gentoo
     class Use
@@ -27,13 +29,7 @@ module Getch
 
       def write_global
         list = []
-
-        @flags.each { |f|
-          unless Helpers::grep?(@make, /#{f}/)
-            list << f
-          end
-        }
-
+        @flags.each { |f| list << f unless Helpers.grep?(@make, /#{f}/) }
         use = list.join(' ')
         line = "USE=\"${USE} #{use}\"\n"
         File.write(@make, line, mode: 'a')

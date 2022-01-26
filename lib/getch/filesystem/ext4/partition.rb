@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Ext4
       class Partition < Getch::FileSystem::Ext4::Device
         def initialize
           super
-          @state = Getch::States.new()
+          @state = Getch::States.new
           @clean = Getch::FileSystem::Clean
           @partition = Getch::FileSystem::Partition.new
           run_partition
@@ -12,9 +14,10 @@ module Getch
 
         def run_partition
           return if STATES[:partition ]
+
           @clean.hdd(@disk)
           @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
-          if Helpers::efi?
+          if Helpers.efi?
             partition_efi
           else
             partition_bios
@@ -32,8 +35,8 @@ module Getch
           # /home  - Home
           @partition.efi(@dev_esp)
           @partition.swap(@dev_swap)
-          @partition.root(@dev_root, "8304")
-          @partition.home(@dev_home, "8302") if @dev_home
+          @partition.root(@dev_root, '8304')
+          @partition.home(@dev_home, '8302') if @dev_home
         end
 
         def partition_bios
@@ -43,8 +46,8 @@ module Getch
           # /home     - Home
           @partition.gpt(@dev_gpt)
           @partition.swap(@dev_swap)
-          @partition.root(@dev_root, "8304")
-          @partition.home(@dev_home, "8302") if @dev_home
+          @partition.root(@dev_root, '8304')
+          @partition.home(@dev_home, '8302') if @dev_home
         end
       end
     end

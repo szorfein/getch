@@ -1,4 +1,4 @@
-require_relative '../../../helpers'
+# frozen_string_literal: true
 
 module Getch
   module FileSystem
@@ -31,20 +31,20 @@ module Getch
           private
 
           def partition
-            if Helpers::efi?
+            if Helpers.efi?
               @partition.efi(@dev_esp)
-              @partition.root(@dev_root, "8e00")
+              @partition.root(@dev_root, '8e00')
             else
               @partition.gpt(@dev_gpt)
               @partition.boot(@dev_boot)
-              @partition.root(@dev_root, "8e00")
+              @partition.root(@dev_root, '8e00')
             end
           end
 
           def encrypting
-            @log.info("Cryptsetup")
+            @log.info('Cryptsetup')
             encrypt(@dev_root)
-            open_crypt(@dev_root, "cryptroot")
+            open_crypt(@dev_root, 'cryptroot')
           end
 
           def lvm
@@ -61,7 +61,7 @@ module Getch
               exec("lvcreate -y -Wy -Zy -l 100%FREE -n root #{@vg}")
             end
 
-            exec("vgchange --available y")
+            exec('vgchange --available y')
           end
 
           # Follow https://wiki.archlinux.org/index.php/Partitioning

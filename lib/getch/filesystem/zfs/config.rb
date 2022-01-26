@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Zfs
@@ -5,37 +7,21 @@ module Getch
         def initialize
           super
           gen_uuid
-          @root_dir = MOUNTPOINT
           @init = '/usr/lib/systemd/systemd'
         end
 
         def fstab
-          file = "#{@root_dir}/etc/fstab"
+          file = "#{MOUNTPOINT}/etc/fstab"
           datas = data_fstab
-          File.write(file, datas.join("\n"))
-        end
-
-        def systemd_boot
-          return if ! Helpers::efi? 
-          esp = '/efi'
-          dir = "#{@root_dir}/#{esp}/loader/entries/"
-          datas_gentoo = [
-            'title Gentoo Linux',
-            'linux /vmlinuz',
-            'initrd /initramfs',
-            "options resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs"
-          ]
-          File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
+          File.write file, datas.join("\n")
         end
 
         # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
-        def grub
-          return if Helpers::efi?
-          file = "#{@root_dir}/etc/default/grub"
-          cmdline = [ 
-            "GRUB_CMDLINE_LINUX=\"resume=UUID=#{@uuid_swap} root=ZFS=#{@pool_name}/ROOT/#{@n} init=#{@init} dozfs\""
-          ]
-          File.write("#{file}", cmdline.join("\n"), mode: 'a')
+        # https://github.com/openzfs/zfs/blob/master/contrib/dracut/README.dracut.markdown
+        def cmdline
+          src = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
+          line = "kernel_cmdline=\"resume=UUID=#{@uuid_swap} root=zfs:#{@pool_name}/ROOT/#{@n} init=#{@init} zfs.force=1 zfs.zfs_arc_max=536870912\""
+          Helpers.echo src, line
         end
 
         private

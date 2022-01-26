@@ -1,4 +1,15 @@
 # Getch
+
+<div align="center">
+<br/>
+
+[![Gem Version](https://badge.fury.io/rb/getch.svg)](https://badge.fury.io/rb/getch)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/szorfein/getch/Rubocop/develop)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
+![GitHub](https://img.shields.io/github/license/szorfein/ardecy)
+
+</div>
+
 A CLI tool to install Gentoo or Void Linux with default:
 + DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
 + Vim | Nano installed.
@@ -40,7 +51,7 @@ With `gem` installed:
     $ gem cert --add <(curl -Ls https://raw.githubusercontent.com/szorfein/getch/master/certs/szorfein.pem)
     $ gem install getch -P HighSecurity
 
-If you want to try the master branch (can be unstable):
+If you want to try from the source:
 
     # git clone https://github.com/szorfein/getch
     # cd getch
@@ -91,43 +102,23 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
 To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
 Also with GRUB, only a `us` keymap is working.
 
-#### ZFS for Gentoo
-When Gentoo boot the first time, the pool may fail to start, it's happen when the pool has not been `export` to the ISO. So just `export` your pool from the genkernel shell:
-
-The zpool name should be visible (rpool-150ed here), so enter in the Genkernel shell:
-
-    > shell
-    zpool import -f -N -R /tmp rpool-150ed
-    zpool export -a
-
-Then, just reboot now, it's all.
-
-*INFO*: To create the zpool, getch use the 5 fist characters from the `partuuid`, just replace `sdX` by your real device:
-
-    # ls -l /dev/disk/by-partuuid/ | grep sdX4
-    -> 150ed969...
-
-The pool will be called `rpool-150ed`.
-
 #### ZFS for Void Linux - Enable the boot pool
 You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
 By default, your /boot is empty because your boot pool is not imported...
 
-    # zpool import -N bpool150ed
-    # zfs mount bpool150ed/BOOT/void
+    # zpool import -f -d /dev/disk/by-id -N bpool-150ed
+    # zfs mount bpool-150ed/BOOT/void
     # ls /boot
 
 You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
 
     # xbps-reconfigure -fa
 
-Transform the boot pool in legacy mode and add this to the fstab:
+Make the `bpool` available at the boot:
 
-    # zfs set mountpoint=legacy bpool150ed/BOOT/void
-    # echo "bpool150ed/BOOT/void /boot zfs defaults 0 0" >> /etc/fstab
-    # mount /boot
+    # zfs set canmount=on bpool-150ed/BOOT/void
 
-The /boot should not be empty again and then, reboot. `fstab` should do this automatically now.   
+And reboot, the `/boot` partition should be mounted automatically after that.
 
 #### ZFS Encrypted with Void
 Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:

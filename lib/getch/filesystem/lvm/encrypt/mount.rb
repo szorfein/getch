@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Getch
   module FileSystem
     module Lvm
@@ -11,6 +13,7 @@ module Getch
 
           def run
             return if STATES[:mount]
+
             @mount.root(@lv_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)

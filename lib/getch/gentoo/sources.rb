@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require 'cmdline'
+
 module Getch
   module Gentoo
     class Sources
@@ -7,18 +11,38 @@ module Getch
         @filesystem = @class_fs::Deps.new
       end
 
-      def build_others
-        cryptsetup
-        virtualbox_guest
-        qemu_guest
-        install_wifi
-        install_audio
-        flash_mod
+      def bask
+        puts ' ==> Hardening kernel...'
+        #Getch::Bask.new('10_kspp.config').cp
+        Getch::Bask.new('11-kspp-gcc.config').cp
+        Getch::Bask.new('12-kspp-x86_64.config').cp
+        #Getch::Bask.new('20-clipos.config').cp
+        #Getch::Bask.new('30-grsecurity.config').cp
+        #Getch::Bask.new('40-kconfig-hardened.config').cp
+        Getch::Bask.new('50-blacklist.config').cp
+        Getch::Bask.new('51-blacklist-madaidans.config').cp
       end
 
-      def build_kspp
-        puts "Adding KSPP to the kernel source"
-        bask("-b -a systemd")
+      def configs
+        gen_cmdline
+        grub_mkconfig unless Helpers.efi?
+      end
+
+      def gen_cmdline
+        cmdline = CmdLine::Kernel.new(workdir: "#{MOUNTPOINT}/etc/kernel")
+        cmdline.main
+      end
+
+      def grub_mkconfig
+        file = "#{MOUNTPOINT}/etc/kernel/install.d/90-mkconfig.install"
+        content = <<~SHELL
+#!/usr/bin/env sh
+set -o errexit
+grub-mkconfig -o /boot/grub/grub.cfg
+exit 0
+SHELL
+        File.write file, content
+        File.chmod 0755, file
       end
 
       def make
@@ -31,90 +55,55 @@ module Getch
         end
       end
 
-      def firewall
-        bask("-a iptables")
-        Getch::Emerge.new("net-firewall/iptables").pkg!
+      def load_modules
+        install_wifi
+        flash_mod
       end
 
       private
 
       def make_kernel
-        puts "Compiling kernel sources"
-        cmd = "make -j$(nproc) && make modules_install && make install"
-        Getch::Make.new(cmd).run!
+        puts 'Compiling kernel sources'
+        Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
         is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
-        raise "No kernel installed, compiling source fail..." if is_kernel == []
-      end
-
-      def cryptsetup
-        return unless Getch::OPTIONS[:encrypt]
-        make_conf = "#{MOUNTPOINT}/etc/portage/make.conf"
-
-        puts "Adding support for cryptsetup."
-        bask("-a cryptsetup")
-        Getch::Chroot.new("euse -E cryptsetup").run! unless Helpers::grep?(make_conf, /cryptsetup/)
-        Getch::Emerge.new("sys-fs/cryptsetup").pkg!
-      end
-
-      def virtualbox_guest
-        systemd=`systemd-detect-virt`.chomp
-        return if ! ismatch?('vmwgfx') || systemd.match(/none/)
-        bask("-a virtualbox-guest")
-        Getch::Emerge.new("app-emulation/virtualbox-guest-additions").pkg!
-      end
-
-      def qemu_guest
-        bask("-a kvm-host") if ismatch?('kvm')
-        bask("-a kvm-guest") if ismatch?('virtio')
+        raise 'No kernel installed, compiling source fail...' if is_kernel == []
       end
 
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
       end
 
-      def bask(cmd)
-        Getch::Bask.new(cmd).run!
-      end
-
       def install_wifi
-        return if ! ismatch?('cfg80211')
-        bask("-a wifi")
-        wifi_drivers
-        Getch::Emerge.new("net-wireless/iw wpa_supplicant net-wireless/iwd").pkg!
-      end
+        return unless ismatch?('cfg80211')
 
-      def install_audio
-        return if ! ismatch?('snd_pcm')
-        bask("-a sound")
+        wifi_drivers
+        Getch::Emerge.new('net-wireless/iwd').pkg!
       end
 
       def wifi_drivers
         conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
-        File.delete(conf) if File.exists? conf
+        File.delete(conf) if File.exist? conf
 
-        if ismatch?('ath9k')
-          bask("-a ath9k-driver")
-        end
-
-        module_load("iwlmvm", conf)
-        module_load("ath9k", conf)
+        module_load('iwlmvm', conf)
+        module_load('ath9k', conf)
       end
 
       def flash_mod
         conf = "#{MOUNTPOINT}/etc/modules-load.d/usb.conf"
-        File.delete(conf) if File.exists? conf
+        File.delete(conf) if File.exist? conf
 
-        module_load("ehci_pci", conf)
-        module_load("rtsx_pci_sdmmc", conf)
-        module_load("sdhci_pci", conf)
-        module_load("uas", conf)
-        module_load("uhci_hcd", conf)
-        module_load("xhci_pci", conf)
+        module_load('ehci_pci', conf)
+        module_load('rtsx_pci_sdmmc', conf)
+        module_load('sdhci_pci', conf)
+        module_load('uas', conf)
+        module_load('uhci_hcd', conf)
+        module_load('xhci_pci', conf)
       end
 
       def module_load(name, file)
         return unless name
         return unless ismatch?(name)
+
         File.write(file, "#{name}\n", mode: 'a')
       end
     end
