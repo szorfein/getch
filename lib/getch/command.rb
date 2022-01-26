@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'nito'
 
 module Getch
   class Command
@@ -128,6 +129,8 @@ module Getch
   end
 
   class Bask
+    include NiTo
+
     def initialize(cmd)
       @cmd = cmd
       @log = Getch::Log.new
@@ -154,7 +157,7 @@ module Getch
     end
 
     def cp
-      Helpers.mkdir @config
+      mkdir @config
       Helpers.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"

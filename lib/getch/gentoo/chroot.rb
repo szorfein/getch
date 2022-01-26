@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Gentoo
     class Chroot
+      include NiTo
+
       def initialize
         @pkgs = []
         mount
@@ -18,7 +22,7 @@ module Getch
         return if STATES[:gentoo_update]
 
         puts 'Downloading the last ebuilds for Gentoo...'
-        Helpers.create_dir("#{MOUNTPOINT}/var/db/repos/gentoo")
+        mkdir  "#{MOUNTPOINT}/var/db/repos/gentoo"
         cmd = 'emaint sync --auto'
         exec_chroot(cmd)
       end

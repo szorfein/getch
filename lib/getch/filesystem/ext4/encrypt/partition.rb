@@ -1,8 +1,11 @@
+require 'nito'
+
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
         class Partition < Device
+          include NiTo
           include Helpers::Cryptsetup
 
           def initialize
@@ -66,7 +69,7 @@ module Getch
             keys_dir = '/root/secretkeys'
             key_name = 'crypto_keyfile.bin'
             @key_path = "#{keys_dir}/#{key_name}"
-            FileUtils.mkdir keys_dir, mode: 0700 unless Dir.exist? keys_dir
+            mkdir keys_dir, 0700
             exec("dd bs=512 count=4 if=/dev/urandom of=#{@key_path}")
           end
 

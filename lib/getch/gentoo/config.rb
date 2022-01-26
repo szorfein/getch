@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'nito'
 require 'fileutils'
 require 'tempfile'
 require 'securerandom'
@@ -7,6 +8,8 @@ require 'securerandom'
 module Getch
   module Gentoo
     class Config
+      include NiTo
+
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
         @log = Getch::Log.new
@@ -50,7 +53,7 @@ module Getch
       def repo
         src = "#{MOUNTPOINT}/usr/share/portage/config/repos.conf"
         dest = "#{MOUNTPOINT}/etc/portage/repos.conf"
-        FileUtils.mkdir dest, mode: 0644 unless Dir.exist?(dest)
+        mkdir dest, 0644
         tmp = Tempfile.new('gentoo.conf')
         line_count = 0
 
@@ -89,9 +92,9 @@ module Getch
 
       def portage_fs
         portage = "#{MOUNTPOINT}/etc/portage"
-        Helpers.mkdir("#{portage}/package.use")
-        Helpers.mkdir("#{portage}/package.accept_keywords")
-        Helpers.mkdir("#{portage}/package.unmask")
+        mkdir "#{portage}/package.use", 0744
+        mkdir "#{portage}/package.accept_keywords", 0744
+        mkdir "#{portage}/package.unmask", 0744
 
         Helpers.add_file("#{portage}/package.use/zzz_via_autounmask")
         Helpers.add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")

@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module FileSystem
     module Zfs
       class Void < Device
+        include NiTo
         include Helpers::Void
 
         attr_reader :boot_disk
@@ -57,7 +60,7 @@ module Getch
         def zfs_zed
           service_dir = '/etc/runit/runsvdir/default/'
 
-          Helpers.mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
+          mkdir "#{MOUNTPOINT}/etc/zfs/zfs-list.cache"
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           fork { command '/etc/sv/zed/run' }

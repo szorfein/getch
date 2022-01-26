@@ -4,6 +4,18 @@ require 'logger'
 
 module Getch
   class Log
+
+    WHITE   = "\033[37m"
+    CYAN    = "\033[36m"
+    MAGENTA = "\033[35m"
+    BLUE    = "\033[34m"
+    YELLOW  = "\033[33m"
+    GREEN   = "\033[32m"
+    RED     = "\033[31m"
+    BLACK   = "\033[30m"
+    BOLD    = "\033[1m"
+    CLEAR   = "\033[0m"
+
     def initialize(verbose = false)
       @log_file = '/tmp/log_install.txt'
       @verbose = verbose
@@ -13,7 +25,7 @@ module Getch
     end
 
     def info(msg)
-      @logger.info(msg)
+      log_info(msg)
       @logger_text.info(msg)
     end
 
@@ -30,6 +42,17 @@ module Getch
     def fatal(msg)
       @logger.fatal(msg)
       @logger_text.fatal(msg)
+    end
+
+    protected
+
+    def log_info(text)
+      logger = Logger.new $stdout, level: 'INFO'
+      logger.formatter = proc do | severity, _, _, msg |
+        "#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
+      end
+
+      logger.info "#{GREEN}#{BOLD} >>> #{CLEAR}#{WHITE}#{text}#{CLEAR}"
     end
 
     private

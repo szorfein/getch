@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'fileutils'
+require 'nito'
 
 module Getch
   module FileSystem
     class Mount
+      include NiTo
+
       def initialize
         @root_dir = MOUNTPOINT
         @boot_dir = "#{@root_dir}/boot"
@@ -27,28 +29,28 @@ module Getch
       def root(dev)
         return unless dev
 
-        Helpers.mkdir(@root_dir)
+        mkdir @root_dir
         exec("mount #{dev} #{@root_dir}")
       end
 
       def esp(dev)
         return unless dev
 
-        Helpers.mkdir(@boot_efi_dir)
+        mkdir @boot_efi_dir
         exec("mount #{dev} #{@boot_efi_dir}")
       end
 
       def boot(dev)
         return unless dev
 
-        Helpers.mkdir(@boot_dir)
+        mkdir @boot_dir
         exec("mount #{dev} #{@boot_dir}")
       end
 
       def home(dev)
         return unless dev
 
-        Helpers.mkdir(@home_dir)
+        mkdir @home_dir
         exec("mount #{dev} #{@home_dir}")
       end
 

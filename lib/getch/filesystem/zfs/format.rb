@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module FileSystem
     module Zfs
       class Format < Device
+        include NiTo
+
         def initialize
           super
           @log = Getch::Log.new
@@ -43,7 +47,7 @@ module Getch
               9
             end
 
-          Helpers.mkdir(MOUNTPOINT)
+          mkdir MOUNTPOINT
           @log.debug("ashift found for #{bloc} - #{ashift}")
 
           if @dev_boot

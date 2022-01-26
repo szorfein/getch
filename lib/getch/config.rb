@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'nito'
 require_relative 'config/gentoo'
 require_relative 'config/void'
 
@@ -11,6 +12,8 @@ CONFIG_LOAD = {
 module Getch
   module Config
     class Main
+      include NiTo
+
       def initialize
         os = OPTIONS[:os].to_sym
         @load = CONFIG_LOAD[os].new
@@ -32,7 +35,7 @@ module Getch
         pwd = File.expand_path(File.dirname(__FILE__))
         dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
-        Helpers.mkdir dest
+        mkdir dest
         Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
         Helpers.cp("#{pwd}/../../assets/system.conf", dest)
       end

@@ -23,16 +23,8 @@ module Getch
       end
     end
 
-    def self.create_dir(path, perm = 0755)
-      FileUtils.mkdir_p path, mode: perm unless Dir.exist? path
-    end
-
     def self.add_file(path, content = '')
       File.write path, content unless File.exist? path
-    end
-
-    def self.mkdir(dir)
-      FileUtils.mkdir_p dir unless Dir.exist? dir
     end
 
     def self.touch(file)
