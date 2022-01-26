@@ -131,7 +131,7 @@ module Getch
     def initialize(cmd)
       @cmd = cmd
       @log = Getch::Log.new
-      @version = '0.5'
+      @version = '0.6'
       @config = "#{MOUNTPOINT}/etc/kernel/config.d"
       download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
     end
@@ -169,7 +169,7 @@ module Getch
 
     def download_bask
       @log.info 'Installing Bask...'
-      url = "https://github.com/szorfein/bask/archive/v#{@version}.tar.gz"
+      url = "https://github.com/szorfein/bask/archive/refs/tags/#{@version}.tar.gz"
       file = "bask-#{@version}.tar.gz"
 
       Dir.chdir("#{MOUNTPOINT}/root")

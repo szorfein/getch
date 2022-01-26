@@ -13,12 +13,12 @@ module Getch
 
       def bask
         puts ' ==> Hardening kernel...'
-        Getch::Bask.new('10_kspp.config').cp
+        #Getch::Bask.new('10_kspp.config').cp
         Getch::Bask.new('11-kspp-gcc.config').cp
         Getch::Bask.new('12-kspp-x86_64.config').cp
-        Getch::Bask.new('20-clipos.config').cp
-        Getch::Bask.new('30-grsecurity.config').cp
-        Getch::Bask.new('40-kconfig-hardened.config').cp
+        #Getch::Bask.new('20-clipos.config').cp
+        #Getch::Bask.new('30-grsecurity.config').cp
+        #Getch::Bask.new('40-kconfig-hardened.config').cp
         Getch::Bask.new('50-blacklist.config').cp
         Getch::Bask.new('51-blacklist-madaidans.config').cp
       end
