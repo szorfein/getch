@@ -1,3 +1,12 @@
+## 0.1.9, release 2022-01-26
+* Gentoo use now the kernel `sys-kernel/gentoo-kernel` [project](https://wiki.gentoo.org/wiki/Project:Distribution_Kernel), updates are automatic.
+* Correct the download of the `rootfs tarball` for VoidLinux.
+* ZFS now import pool by ID.
+* ZFS use the cmdline `zfs_arc_max` to limit the max Memory used.
+* Gentoo and Void use `Dracut`, remove `Genkernel`.
+* Gentoo use PAM sha512 with `libpwquality` for the authentication.
+* Add the code linter Rubocop, correct around 1.5k lines of code.
+
 ## 0.1.6, release 2021-06-30
 + Getch can also install [Void Linux](https://voidlinux.org/).
 + New option `-o|--os NAME`, work only with NAME = gentoo | void.

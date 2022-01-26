@@ -16,7 +16,7 @@ namespace :gem do
   task :build do
     Dir['getch*.gem'].each {|f| File.unlink(f) }
     system('gem build getch.gemspec')
-    system("gem install getch-#{Getch::VERSION}.gem -P HighSecurity")
+    system("gem install --user-install getch-#{Getch::VERSION}.gem -P HighSecurity")
   end
 end
 
