@@ -9,9 +9,11 @@ module CmdLine
   class Kernel
     include CmdLine
 
+    # man kernel-install
+    # use /etc/kernel/cmdline by default
     def initialize(arg)
       @dir = arg[:workdir]
-      @file = "#{@dir}/90_cmdline.config"
+      @file = "#{@dir}/cmdline"
       @line = ''
     end
 
@@ -23,7 +25,7 @@ module CmdLine
       quiet
 
       puts " >> Writing cmdline to #{@file}..."
-      echo @file, "CONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"#{@line}\"\n", 0644
+      echo @file, "#{@line}\n", 0644
     end
 
     private

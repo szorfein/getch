@@ -54,10 +54,10 @@ module Getch
           def config_dracut
             conf = "#{MOUNTPOINT}/etc/dracut.conf.d/lvm.conf"
             content = [
-              "hostonly=\"yes\"",
-              "omit_dracutmodules+=\" btrfs \"",
-              "install_items+=\" /boot/volume.key /etc/crypttab \"",
-              ""
+              'hostonly="yes"',
+              'omit_dracutmodules+=" btrfs "',
+              'install_items+=" /boot/volume.key /etc/crypttab "',
+              ''
             ]
             File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
             #add_line(conf, "install_items+=\" /boot/home.key \"") if @home_disk
