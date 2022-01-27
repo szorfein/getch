@@ -47,7 +47,7 @@ module Getch
     end
 
     def fatal(msg)
-      @fatal.fatal(msg)
+      @fatal.fatal "#{BOLD} > #{CLEAR}#{WHITE}#{msg}#{CLEAR}\n"
       @save.fatal(msg)
       exit 1
     end
@@ -70,21 +70,21 @@ module Getch
     def init_debug
       @debug = Logger.new $stdout
       @debug.formatter = proc do | severity, _, _, msg |
-        "#{BLUE}#{BOLD}#{severity[0]}#{CLEAR} [#{Process.pid}]#{CLEAR}#{msg}"
+        "\n#{BLUE}#{BOLD}#{severity[0]}#{CLEAR} [#{Process.pid}]#{CLEAR}#{msg}"
       end
     end
 
     def init_error
       @error = Logger.new $stdout
       @error.formatter = proc do | severity, _, _, msg |
-        "\n#{RED}#{BOLD}#{severity[0]}#{CLEAR}#{msg}\t"
+        "#{RED}#{BOLD}#{severity[0]}#{CLEAR}#{msg}\t"
       end
     end
 
     def init_fatal
       @fatal = Logger.new $stdout
       @fatal.formatter = proc do | severity, _, _, msg |
-        "#{YELLOW}#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
+        "\n#{YELLOW}#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
       end
     end
 

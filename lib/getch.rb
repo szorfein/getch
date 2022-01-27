@@ -15,29 +15,29 @@ require_relative 'getch/version'
 module Getch
 
   OPTIONS = {
-    :language => 'en_US',
-    :zoneinfo => 'US/Eastern',
-    :keymap => 'us',
-    :disk => false,
-    :fs => 'ext4',
-    :username => false,
-    :os => 'gentoo',
-    :boot_disk => false,
-    :cache_disk => false,
-    :home_disk => false,
-    :encrypt => false,
-    :verbose => false,
+    language: 'en_US',
+    zoneinfo: 'US/Eastern',
+    keymap: 'us',
+    disk: false,
+    fs: 'ext4',
+    username: false,
+    os: 'gentoo',
+    boot_disk: false,
+    cache_disk: false,
+    home_disk: false,
+    encrypt: false,
+    verbose: false,
   }
 
   STATES = {
-    :partition => false,
-    :format => false,
-    :mount => false,
-    :gentoo_base => false,
-    :gentoo_config => false,
-    :gentoo_update => false,
-    :gentoo_bootloader => false,
-    :gentoo_kernel => false
+    partition: false,
+    format: false,
+    mount: false,
+    gentoo_base: false,
+    gentoo_config: false,
+    gentoo_update: false,
+    gentoo_bootloader: false,
+    gentoo_kernel: false
   }
 
   MOUNTPOINT = '/mnt/gentoo'
@@ -122,13 +122,13 @@ module Getch
     end
 
     def install
-      if OPTIONS[:os] == 'gentoo'
+      case OPTIONS[:os]
+      when 'gentoo'
         install_gentoo
-      elsif OPTIONS[:os] == 'void'
+      when 'void'
         install_void
       else
-        puts "Options #{OPTIONS[:os]} not supported...."
-        exit 1
+        raise "Options #{OPTIONS[:os]} not supported...."
       end
     end
 

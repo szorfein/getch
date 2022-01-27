@@ -19,9 +19,7 @@ module Getch
       def swap(dev)
         return unless dev
 
-        if Helpers.grep?('/proc/swaps', /^\/dev/)
-          exec("swapoff #{dev}")
-        end
+        return if Helpers.grep?('/proc/swaps', /^\/dev\/#{@dev}/)
 
         exec("swapon #{dev}")
       end
@@ -56,9 +54,8 @@ module Getch
 
       private
 
-      def exec(cmd)
-        @log.info("==> #{cmd}")
-        Helpers.sys(cmd)
+      def exec(*cmd)
+        Getch::Command.new(cmd).run!
       end
     end
   end

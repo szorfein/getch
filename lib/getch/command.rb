@@ -19,6 +19,14 @@ module Getch
         stdin.close_write
         code = wait_thr.value
 
+        unless code.success?
+          begin
+            @log.debug stderr.readline until stderr.eof.nil?
+          rescue EOFError => e
+            print
+          end
+        end
+
         begin
           files = [stdout, stderr]
 
@@ -36,7 +44,6 @@ module Getch
         end
 
         puts
-        @log.debug stderr.read
         @log.error "#{@cmd} - #{code}"
         @log.fatal "Running #{@cmd}"
       end
@@ -46,8 +53,8 @@ module Getch
 
     def add_tab
       case @cmd.length
-      when 32 then "\t\t"
-      when 19..23 then "\t\t\t"
+      when 27..32 then "\t\t"
+      when 16..23 then "\t\t\t"
       else "\t"
       end
     end

@@ -10,7 +10,7 @@ getch = Getch::Main.new(
 
 getch.partition
 getch.format
-#getch.mount
+getch.mount
 
 #getch.install
 
