@@ -28,7 +28,8 @@ module Getch
     home_disk: false,
     encrypt: false,
     verbose: false,
-    mountpoint: '/mnt/getch'
+    mountpoint: '/mnt/getch',
+    musl: true
   }
 
   STATES = {

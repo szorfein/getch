@@ -52,7 +52,7 @@ module Getch
         @pkgs << 'app-admin/sudo'
         @pkgs << 'app-editors/vim'
         @pkgs << 'net-firewall/iptables'
-        @pkgs << 'sys-fs/dosftools' if Helpers.efi?
+        @pkgs << 'sys-fs/dosfstools' if Helpers.efi?
         all_pkgs = @pkgs.join(' ')
         puts "Installing #{all_pkgs}..."
         Getch::Emerge.new(all_pkgs).pkg!

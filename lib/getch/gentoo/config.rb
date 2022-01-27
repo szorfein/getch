@@ -16,7 +16,7 @@ module Getch
       end
 
       def portage
-        grub_pc = Helpers.efi? ? '' : 'GRUB_PLATFORMS="pc"'
+        grub_pc = Helpers.efi? ? 'GRUB_PLATFORMS="efi-64"' : 'GRUB_PLATFORMS="pc"'
         nproc = `nproc`.chomp()
 
         # Add cpu name
@@ -78,11 +78,13 @@ module Getch
 
       def systemd
         control_options
+        File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
+        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
+        OPTIONS[:musl] && return
+
         Helpers.echo "#{MOUNTPOINT}/etc/locale.gen", @utf8
         Helpers.echo "#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}"
         Helpers.echo_a "#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C'
-        File.write("#{MOUNTPOINT}/etc/timezone", "#{Getch::OPTIONS[:zoneinfo]}\n")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{Getch::OPTIONS[:keymap]}\n")
       end
 
       def hostname
@@ -138,6 +140,8 @@ function pre_pkg_preinst() {
       private
 
       def control_options
+        OPTIONS[:musl] && return
+
         search_zone(Getch::OPTIONS[:zoneinfo])
         search_utf8(Getch::OPTIONS[:language])
         search_key(Getch::OPTIONS[:keymap])

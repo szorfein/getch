@@ -47,6 +47,8 @@ module Getch
         conf = "#{MOUNTPOINT}/etc/locale.conf"
         File.write(conf, "LANG=#{@lang}\n")
         add_line(conf, 'LC_COLLATE=C')
+        OPTIONS[:musl] && return
+
         conf = "#{MOUNTPOINT}/etc/default/libc-locales"
         add_line(conf, @utf8)
         puts "\s[OK]"
@@ -79,11 +81,12 @@ module Getch
         @utf8, @lang = nil, nil
         File.open("#{MOUNTPOINT}/etc/default/libc-locales").each do |l|
           @utf8 = l.delete_prefix('#') if l.match(/#{lang}.UTF-8/)
-
           found = l.split if l.match(/#{lang}.UTF-8/)
           @lang = found[0].delete_prefix('#') if found
         end
-        raise ArgumentError, "Lang #{lang} no found" unless @utf8
+        @utf8 || @log.fatal("Lang #{lang} no found")
+      rescue Errno::ENOENT => e
+        OPTIONS[:musl] || @log.fatal(e)
       end
     end
   end

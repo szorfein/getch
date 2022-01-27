@@ -6,7 +6,7 @@
 [![Gem Version](https://badge.fury.io/rb/getch.svg)](https://badge.fury.io/rb/getch)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/szorfein/getch/Rubocop/develop)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
-![GitHub](https://img.shields.io/github/license/szorfein/ardecy)
+![GitHub](https://img.shields.io/github/license/szorfein/getch)
 
 </div>
 
@@ -22,11 +22,12 @@ Hardened System:
 + sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
 + Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
 + Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
++ Musl optionnal
 
 ## Description
-Actually, Getch support only the `x86_64` architecture and only with the following archives:
-+ **Gentoo**: `stage3-amd64-systemd` [Gentoo](https://www.gentoo.org/downloads/).
-+ **Void**: `rootfs glibc` [Void](https://voidlinux.org/download/).
+Actually, Getch support only the `x86_64` architecture with the following archives:
++ **Gentoo**: `stage3-amd64-systemd` or `stage3-amd64-musl` [Gentoo](https://www.gentoo.org/downloads/).
++ **Void**: `rootfs tarball glibc` or `rootfs tarball musl` [Void](https://voidlinux.org/download/).
 
 Filesystem supported (with or without encryption)
 + Ext4
@@ -85,9 +86,9 @@ With ZFS, if used with `--encrypt`, it use the native ZFS encryption:
 
     # getch --format zfs
 
-With `Void Linux`:
+With `Void Linux` and `Musl` enable:
 
-    # getch --os void --encrypt -k fr
+    # getch --os void --encrypt -k fr --musl
 
 ## Troubleshooting
 

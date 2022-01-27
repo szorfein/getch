@@ -87,13 +87,13 @@ module Getch
     end
 
     def run!
-      @log.info "Running emerge: #{@cmd}"
+      @log.info "Running emerge: #{@cmd}\n"
       system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
       read_exit
     end
 
     def pkg!
-      @log.info "Running emerge pkg: #{@cmd}"
+      @log.info "Running emerge pkg: #{@cmd}\n"
       system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
       read_exit
     end
@@ -104,7 +104,7 @@ module Getch
       if $?.exitstatus > 0
         @log.fatal "Running #{@cmd}"
       else
-        @log.info "Done #{@cmd}"
+        @log.info "Done #{@cmd}\n"
       end
     end
   end
