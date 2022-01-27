@@ -14,6 +14,20 @@ module NiTo
     FileUtils.mkdir_p path, mode: perm
   end
 
+  def grep?(file, search)
+    is_found = false
+    return is_found unless File.exist? file
+
+    File.open(file).each do |l|
+      is_found = true if l =~ /#{search}/
+    end
+    is_found
+  end
+
+  def rm(file)
+    File.exist?(file) && File.delete(file)
+  end
+
   def sh(*args)
     log = Log.new
     Open3.popen3 args.join(' ') do |_, stdout, stderr, wait_thr|

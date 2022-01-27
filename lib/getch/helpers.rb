@@ -3,6 +3,7 @@
 require 'open-uri'
 require 'open3'
 require 'fileutils'
+require 'nito'
 
 module Getch
   module Helpers
@@ -19,7 +20,7 @@ module Getch
     def self.exec_or_die(cmd)
       _, stderr, status = Open3.capture3(cmd)
       unless status.success?
-        raise "Problem running #{cmd}, stderr was:\n#{stderr}"
+        abort "Problem running #{cmd}, stderr was:\n#{stderr}"
       end
     end
 
@@ -36,29 +37,20 @@ module Getch
     end
 
     def self.echo_a(src, content = '')
-      raise "No file #{src} found !" unless File.exist? src
+      abort "No file #{src} found !" unless File.exist? src
 
-      File.write(src, "#{content}\n", mode: 'a') unless self.grep?(src, content)
+      File.write(src, "#{content}\n", mode: 'a') unless NiTo.grep? src, content
     end
 
     def self.cp(src, dest)
-      raise "Src file #{src} no found" unless File.exist? src
+      abort "Src file #{src} no found" unless File.exist? src
 
       FileUtils.cp(src, dest)
     end
 
-    def self.grep?(file, regex)
-      is_found = false
-      return is_found unless File.exist? file
-      File.open(file) do |f|
-        f.each { |l| is_found = true if l.match(regex) }
-      end
-      is_found
-    end
-
     def self.sys(cmd)
       system(cmd)
-      raise "Error with #{cmd}" unless $?.success?
+      $?.success? || abort("Error with #{cmd}")
     end
 
     def self.partuuid(dev)
@@ -80,7 +72,7 @@ module Getch
         `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/\w{5}/)
       else
         puts 'Please, enter a pool name'
-        while true
+        loop do
           print "\n> "
           value = gets
           if value.match(/[a-z]{4,20}/)

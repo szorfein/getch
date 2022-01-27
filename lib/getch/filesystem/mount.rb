@@ -19,7 +19,7 @@ module Getch
       def swap(dev)
         return unless dev
 
-        return if Helpers.grep?('/proc/swaps', /^\/dev\/#{@dev}/)
+        return if grep? '/proc/swaps', "/dev/#{@dev}"
 
         exec("swapon #{dev}")
       end

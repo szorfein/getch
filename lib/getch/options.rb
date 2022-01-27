@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'nito'
 
 module Getch
   class Options
+    include NiTo
+
     def initialize(argv)
       parse(argv)
     end
@@ -12,7 +15,9 @@ module Getch
 
     def parse(argv)
       OptionParser.new do |opts|
-        opts.version = VERSION
+        opts.banner = 'Usage: getch [OPTION...] <action>'
+
+        opts.separator "\noptions:"
 
         opts.on('-l', '--language LANG', 'Default is en_US') do |lang|
           OPTIONS[:language] = lang
@@ -65,6 +70,13 @@ module Getch
         opts.on('-h', '--help', 'Display this') do
           puts opts
           exit
+        end
+
+        opts.separator "\n<action> is one of:"
+
+        opts.on('--restart', 'Restart the whole installation') do
+          rm '/tmp/install_gentoo.yaml'
+          rm '/tmp/log_install.txt'
         end
 
         begin
