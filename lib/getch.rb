@@ -26,7 +26,7 @@ module Getch
     :cache_disk => false,
     :home_disk => false,
     :encrypt => false,
-    :verbose => false
+    :verbose => false,
   }
 
   STATES = {
@@ -102,7 +102,7 @@ module Getch
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
       when /^y|^Y/
-        @log.info('Partition start')
+        @log.info "Partition start\n"
         @class_fs::Partition.new
       else
         exit

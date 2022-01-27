@@ -19,62 +19,93 @@ module Getch
     def initialize(verbose = false)
       @log_file = '/tmp/log_install.txt'
       @verbose = verbose
-      check_file
-      init_log
-      init_log_text
+      init
     end
 
     def info(msg)
-      log_info(msg)
-      @logger_text.info(msg)
+      @info.info "#{GREEN}#{BOLD} >>> #{CLEAR}#{WHITE}#{msg}#{CLEAR}"
+      @save.info(msg)
+    end
+
+    def result(msg)
+      case msg
+      when 'Ok'
+        @result.info "\t#{GREEN}[ #{WHITE}#{msg}#{GREEN} ]#{CLEAR}\n"
+      else
+        @result.info "\t#{RED}[#{WHITE}#{msg}#{RED}]#{CLEAR}\n"
+      end
     end
 
     def error(msg)
-      @logger.error(msg)
-      @logger_text.error(msg)
+      @error.error "#{BOLD} > #{CLEAR}#{WHITE}#{msg}#{CLEAR}"
+      @save.error(msg)
     end
 
     def debug(msg)
-      @logger.debug(msg)
-      @logger_text.debug(msg)
+      @debug.debug "#{BOLD} > #{CLEAR}#{WHITE}#{msg}#{CLEAR}\n"
+      @save.debug(msg)
     end
 
     def fatal(msg)
-      @logger.fatal(msg)
-      @logger_text.fatal(msg)
+      @fatal.fatal(msg)
+      @save.fatal(msg)
+      exit 1
     end
 
     protected
 
-    def log_info(text)
-      logger = Logger.new $stdout, level: 'INFO'
-      logger.formatter = proc do | severity, _, _, msg |
+    def init_log
+      @info = Logger.new $stdout
+      @info.level = @verbose ? Logger::DEBUG : Logger::INFO
+      @info.formatter = proc { |severity, _, _, msg|
         "#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
-      end
+      }
+    end
 
-      logger.info "#{GREEN}#{BOLD} >>> #{CLEAR}#{WHITE}#{text}#{CLEAR}"
+    def init_res
+      @result = Logger.new $stdout, level: 'INFO'
+      @result.formatter = proc do | _, _, _, msg | msg end
+    end
+
+    def init_debug
+      @debug = Logger.new $stdout
+      @debug.formatter = proc do | severity, _, _, msg |
+        "#{BLUE}#{BOLD}#{severity[0]}#{CLEAR} [#{Process.pid}]#{CLEAR}#{msg}"
+      end
+    end
+
+    def init_error
+      @error = Logger.new $stdout
+      @error.formatter = proc do | severity, _, _, msg |
+        "\n#{RED}#{BOLD}#{severity[0]}#{CLEAR}#{msg}\t"
+      end
+    end
+
+    def init_fatal
+      @fatal = Logger.new $stdout
+      @fatal.formatter = proc do | severity, _, _, msg |
+        "#{YELLOW}#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
+      end
+    end
+
+    def init_save
+      File.exist? @log_file || puts("Creating log at #{@log_file}")
+      @save = Logger.new(@log_file, 1)
+      @save.level = Logger::DEBUG
+      @save.formatter = proc { |severity, datetime, _, msg|
+        "#{severity}, #{datetime}, #{msg}\n"
+      }
     end
 
     private
 
-    def check_file
-      puts "Creating log at #{@log_file}" unless File.exist? @log_file
-    end
-
-    def init_log
-      @logger = Logger.new($stdout)
-      @logger.level = @verbose ? Logger::DEBUG : Logger::INFO
-      @logger.formatter = proc { |severity, _, _, msg|
-        "#{severity}, #{msg}\n"
-      }
-    end
-
-    def init_log_text
-      @logger_text = Logger.new(@log_file, 1)
-      @logger_text.level = Logger::DEBUG
-      @logger_text.formatter = proc { |severity, datetime, _, msg|
-        "#{severity}, #{datetime}, #{msg}\n" 
-      }
+    def init
+      init_log
+      init_res
+      init_error
+      init_debug
+      init_fatal
+      init_save
     end
   end
 end
