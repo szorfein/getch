@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'clean'
 require_relative 'getch/helpers'
 require_relative 'getch/options'
 require_relative 'getch/states'
@@ -27,6 +28,7 @@ module Getch
     home_disk: false,
     encrypt: false,
     verbose: false,
+    mountpoint: '/mnt/getch'
   }
 
   STATES = {
@@ -40,7 +42,7 @@ module Getch
     gentoo_kernel: false
   }
 
-  MOUNTPOINT = '/mnt/gentoo'
+  MOUNTPOINT = '/mnt/getch'
 
   DEFAULT_FS = {
     true => {
@@ -102,6 +104,7 @@ module Getch
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
       when /^y|^Y/
+        Clean.new(OPTIONS).x
         @log.info "Partition start\n"
         @class_fs::Partition.new
       else

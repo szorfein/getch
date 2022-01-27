@@ -53,7 +53,7 @@ module Getch
 
     def add_tab
       case @cmd.length
-      when 27..32 then "\t\t"
+      when 26..32 then "\t\t"
       when 16..23 then "\t\t\t"
       else "\t"
       end
@@ -135,8 +135,6 @@ module Getch
   end
 
   class Bask
-    include NiTo
-
     def initialize(cmd)
       @cmd = cmd
       @log = Getch::Log.new
@@ -157,13 +155,12 @@ module Getch
         exit_status = wait_thr.value
         unless exit_status.success?
           @log.fatal "Running #{cmd}"
-          exit 1
         end
       end
     end
 
     def cp
-      mkdir @config
+      NiTo.mkdir @config
       Helpers.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"

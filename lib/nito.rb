@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'open3'
 require_relative 'getch/log'
+require_relative 'getch/command'
 
 # uNix Tools like mkdir, mount in Ruby code
 module NiTo
@@ -26,6 +27,20 @@ module NiTo
 
   def rm(file)
     File.exist?(file) && File.delete(file)
+  end
+
+  def umount(dir)
+    return unless mount? dir
+
+    Getch::Command.new('umount', dir).run!
+  end
+
+  def mount?(dir)
+    res = false
+    File.open('/proc/mounts').each do |l|
+      res = true if l =~ /#{dir}/
+    end
+    res
   end
 
   def sh(*args)
