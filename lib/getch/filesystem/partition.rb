@@ -12,7 +12,7 @@ module Getch
 
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        exec("sgdisk -n#{part}:1MiB:+1MiB -t#{part}:EF02 #{disk}")
+        exec 'sgdisk', "-n#{part}:1MiB:+1MiB", "-t#{part}:EF02", disk
       end
 
       def boot(dev)
@@ -21,9 +21,9 @@ module Getch
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         if Getch::OPTIONS[:fs] == 'zfs'
-          exec("sgdisk -n#{part}:0:+2G -t#{part}:BE00 #{disk}")
+          exec 'sgdisk', "-n#{part}:0:+2G", "-t#{part}:BE00", disk
         else
-          exec("sgdisk -n#{part}:0:+128MiB -t#{part}:8300 #{disk}")
+          exec 'sgdisk', "-n#{part}:0:+128MiB", "-t#{part}:8300", disk
         end
       end
 
@@ -32,7 +32,7 @@ module Getch
 
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        exec("sgdisk -n#{part}:1M:+260M -t#{part}:EF00 #{disk}")
+        exec 'sgdisk', "-n#{part}:1M:+260M", "-t#{part}:EF00", disk
       end
 
       def swap(dev)
@@ -41,10 +41,10 @@ module Getch
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         if Getch::OPTIONS[:cache_disk]
-          exec("sgdisk -n#{part}:0:0 -t#{part}:8200 #{disk}")
+          exec 'sgdisk', "-n#{part}:0:0", "-t#{part}:8200", disk
         else
           mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`.chomp + 'K'
-          exec("sgdisk -n#{part}:0:+#{mem} -t#{part}:8200 #{disk}")
+          exec 'sgdisk', "-n#{part}:0:+#{mem}", "-t#{part}:8200", disk
         end
       end
 
@@ -53,7 +53,7 @@ module Getch
 
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
-        exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
+        exec 'sgdisk', "-n#{part}:0:0", "-t#{part}:#{code}", disk
       end
 
       def home(dev, code)
@@ -62,7 +62,7 @@ module Getch
         disk = disk_name(dev)
         part = dev.match(/[0-9]/)
         if Getch::OPTIONS[:home_disk]
-          exec("sgdisk -n#{part}:0:0 -t#{part}:#{code} #{disk}")
+          exec 'sgdisk', "-n#{part}:0:0", "-t#{part}:#{code}", disk
         end
       end
 
@@ -72,8 +72,7 @@ module Getch
         dev.match(/[^0-9]+/)
       end
 
-      def exec(cmd)
-        @log.debug "Partition disk with #{cmd}"
+      def exec(*cmd)
         if Getch::OPTIONS[:encrypt]
           Helpers.sys(cmd)
         else

@@ -10,7 +10,13 @@ module Getch
         @url = 'https://alpha.de.repo.voidlinux.org/live/current'
         @file = 'sha256sum.txt'
         @xbps = false
-        Dir.chdir(MOUNTPOINT)
+        Dir.chdir OPTIONS[:mountpoint]
+      end
+
+      def tarball
+        OPTIONS[:musl] ?
+          /void-x86_64-musl-ROOTFS-[\d._]+.tar.xz/ :
+          /void-x86_64-ROOTFS-[\d._]+.tar.xz/
       end
 
       # Search only the glibc x86_64 for now
@@ -19,7 +25,7 @@ module Getch
         puts "Open #{yurl}"
         Helpers.get_file_online(yurl, @file)
         File.open(@file).each do |l|
-          @xbps = l.tr('()', '').split(' ') if l.match(/void-x86_64-ROOTFS-[\d._]+.tar.xz/)
+          @xbps = l.tr('()', '').split(' ') if l.match(tarball)
         end
       end
 

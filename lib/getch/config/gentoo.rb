@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Config
     class Gentoo
+      include NiTo
+
       def initialize
         @systemd_net_dir = "#{MOUNTPOINT}/etc/systemd"
       end
@@ -44,7 +48,7 @@ module Getch
           'DNS=9.9.9.9#dns.quad9.net',
           'DNSOverTLS=yes',
         ]
-        Helpers.create_dir("#{@systemd_net_dir}/resolved.conf.d")
+        mkdir "#{@systemd_net_dir}/resolved.conf.d"
         File.write(conf, datas.join("\n"), mode: 'w')
 
         Getch::Chroot.new('systemctl enable systemd-networkd').run!

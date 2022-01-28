@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Gentoo
     class Chroot
+      include NiTo
+
       def initialize
         @pkgs = []
         mount
@@ -15,16 +19,16 @@ module Getch
       end
 
       def update
-        return if STATES[:gentoo_update]
+        STATES[:gentoo_update] && return
 
         puts 'Downloading the last ebuilds for Gentoo...'
-        Helpers.create_dir("#{MOUNTPOINT}/var/db/repos/gentoo")
+        mkdir "#{MOUNTPOINT}/var/db/repos/gentoo"
         cmd = 'emaint sync --auto'
         exec_chroot(cmd)
       end
 
       def world
-        return if STATES[:gentoo_update]
+        STATES[:gentoo_update] && return
 
         puts 'Update Gentoo world'
         Getch::Emerge.new('emerge --update --deep --changed-use --newuse @world').run!
@@ -36,11 +40,13 @@ module Getch
         exec_chroot(cmd)
       end
 
+      # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
       def kernel_license
-        return if Dir.exist? "#{MOUNTPOINT}/usr/src/linux"
-
         license = "#{MOUNTPOINT}/etc/portage/package.license"
-        File.write(license, "sys-kernel/linux-firmware linux-fw-redistributable no-source-code\n")
+        mkdir license, 0744
+        conf = "#{license}/kernel"
+        Helpers.echo conf, 'sys-kernel/linux-firmware @BINARY-REDISTRIBUTABLE'
+        Helpers.echo_a conf, 'sys-firmware/intel-microcode intel-ucode'
       end
 
       def install_pkgs
@@ -48,27 +54,32 @@ module Getch
         @pkgs << 'app-admin/sudo'
         @pkgs << 'app-editors/vim'
         @pkgs << 'net-firewall/iptables'
-        @pkgs << 'sys-fs/dosftools' if Helpers.efi?
+        @pkgs << 'sys-firmware/intel-microcode' unless OPTIONS[:musl] # bug
+        @pkgs << 'sys-fs/dosfstools' if Helpers.efi?
         all_pkgs = @pkgs.join(' ')
-        puts "Installing #{all_pkgs}..."
         Getch::Emerge.new(all_pkgs).pkg!
       end
 
       private
 
       def mount
-        puts 'Populate /proc, /sys and /dev.'
-        Helpers.exec_or_die("mount --types proc /proc \"#{MOUNTPOINT}/proc\"")
-        Helpers.exec_or_die("mount --rbind /sys \"#{MOUNTPOINT}/sys\"")
-        Helpers.exec_or_die("mount --make-rslave \"#{MOUNTPOINT}/sys\"")
-        Helpers.exec_or_die("mount --rbind /dev \"#{MOUNTPOINT}/dev\"")
-        Helpers.exec_or_die("mount --make-rslave \"#{MOUNTPOINT}/dev\"")
+        exec 'mount', "--types proc /proc #{MOUNTPOINT}/proc"
+        exec 'mount', "--rbind /sys #{MOUNTPOINT}/sys"
+        exec 'mount', "--make-rslave #{MOUNTPOINT}/sys"
+        exec 'mount', "--rbind /dev #{MOUNTPOINT}/dev"
+        exec 'mount', "--make-rslave #{MOUNTPOINT}/dev"
+        exec 'mount', "--rbind /sys #{MOUNTPOINT}/run"
+        exec 'mount', "--make-rslave #{MOUNTPOINT}/run"
         # Maybe add /dev/shm like describe here:
         # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
       end
 
       def exec_chroot(cmd)
         Getch::Chroot.new(cmd).run!
+      end
+
+      def exec(*args)
+        Getch::Command.new(args).run!
       end
     end
   end

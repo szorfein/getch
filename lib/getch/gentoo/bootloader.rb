@@ -28,7 +28,7 @@ module Getch
       def dependencies
         @pkgs << 'app-shells/dash'
         @pkgs << 'sys-kernel/dracut'
-        if Helpers.efi?
+        if Helpers.efi? and not OPTIONS[:musl]
           @pkgs << 'efivar'
           @pkgs << 'sys-kernel/installkernel-systemd-boot'
         else
@@ -43,8 +43,10 @@ module Getch
       end
 
       def setup
-        if Helpers.efi?
+        if Helpers.efi? and not OPTIONS[:musl]
           Getch::Chroot.new("bootctl --path #{@esp} install").run!
+        elsif Helpers.efi? and OPTIONS[:musl]
+          Getch::Chroot.new("grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Gentoo\"").run!
         else
           Getch::Chroot.new("grub-install /dev/#{@disk}").run!
         end
@@ -52,7 +54,7 @@ module Getch
 
       def update
         Getch::Emerge.new('--config sys-kernel/gentoo-kernel').pkg!
-        if Helpers.efi?
+        if Helpers.efi? and not OPTIONS[:musl]
           puts ' => Updating systemd-boot...'
           Getch::Chroot.new("bootctl --path #{@esp} update").run!
         else

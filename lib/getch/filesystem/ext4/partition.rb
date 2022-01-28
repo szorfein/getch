@@ -7,7 +7,6 @@ module Getch
         def initialize
           super
           @state = Getch::States.new
-          @clean = Getch::FileSystem::Clean
           @partition = Getch::FileSystem::Partition.new
           run_partition
         end
@@ -15,8 +14,6 @@ module Getch
         def run_partition
           return if STATES[:partition ]
 
-          @clean.hdd(@disk)
-          @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
           if Helpers.efi?
             partition_efi
           else

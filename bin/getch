@@ -3,10 +3,10 @@
 require 'getch'
 
 getch = Getch::Main.new(
-  :cli => Getch::Options.new(ARGV)
+  cli: Getch::Options.new(ARGV)
 )
 
-getch.resume
+#getch.resume
 
 getch.partition
 getch.format
@@ -14,4 +14,4 @@ getch.mount
 
 getch.install
 
-getch.configure
+#getch.configure

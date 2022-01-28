@@ -8,16 +8,12 @@ module Getch
           super
           @state = Getch::States.new
           @partition = Getch::FileSystem::Partition.new
-          @clean = Getch::FileSystem::Clean
           run_partition
         end
 
         def run_partition
           return if STATES[:partition ]
 
-          @clean.old_vg(@dev_root, @vg)
-          @clean.hdd(@disk)
-          @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
           partition
           lvm
           @state.partition

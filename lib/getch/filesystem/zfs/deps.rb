@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module FileSystem
     module Zfs
       class Deps < Device
+        include NiTo
+
         def make
           unstable_zfs
           install_deps
@@ -31,7 +35,7 @@ module Getch
 
         # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
         def zfs_mountpoint
-          Helpers.mkdir("#{MOUNTPOINT}/etc/zfs/zfs-list.cache")
+          mkdir "#{MOUNTPOINT}/etc/zfs/zfs-list.cache"
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
           Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
           exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')

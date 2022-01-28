@@ -8,7 +8,6 @@ module Getch
           def initialize
             super
             @state = Getch::States.new
-            @clean = Getch::FileSystem::Clean
             @partition = Getch::FileSystem::Partition.new
             @log = Getch::Log.new
             run
@@ -16,10 +15,6 @@ module Getch
 
           def run
             return if STATES[:partition]
-
-            @clean.old_zpool
-            @clean.hdd(@disk)
-            @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
 
             partition
             cache

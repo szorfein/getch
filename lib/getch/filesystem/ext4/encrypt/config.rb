@@ -22,18 +22,10 @@ module Getch
             File.write(file, datas.join("\n"))
           end
 
-          def systemd_boot
-            return unless Helpers.efi?
-
-            esp = '/efi'
-            dir = "#{@root_dir}/#{esp}/loader/entries/"
-            datas_gentoo = [
-              'title Gentoo Linux',
-              'linux /vmlinuz',
-              'initrd /initramfs',
-              "options crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} keymap=#{Getch::OPTIONS[:keymap]} rw"
-            ]
-            File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
+          def cmdline
+            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
+            line = "rd.luks.uuid=#{@uuid_dev_root} rd.vconsole.keymap=#{Getch::OPTIONS[:keymap]} rw"
+            File.write conf, "kernel_cmdline=\"#{line}\"\n"
           end
 
           def crypttab
@@ -46,11 +38,10 @@ module Getch
           end
 
           def grub
-            return if Helpers.efi?
+            return if Helpers.efi? and not OPTIONS[:musl]
 
             file = "#{@root_dir}/etc/default/grub"
             cmdline = [
-              "GRUB_CMDLINE_LINUX=\"crypt_root=UUID=#{@uuid_dev_root} root=/dev/mapper/root init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force keymap=#{Getch::OPTIONS[:keymap]}\"",
               "GRUB_ENABLE_CRYPTODISK=y"
             ]
             File.write(file, cmdline.join("\n"), mode: 'a')

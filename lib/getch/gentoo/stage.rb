@@ -9,11 +9,15 @@ module Getch
       def initialize
         @mirror = 'https://mirrors.soeasyto.com/distfiles.gentoo.org'
         @release = release
-        @stage_file="stage3-amd64-systemd-#{@release}.tar.xz"
+        @stage_file = OPTIONS[:musl] ?
+          "stage3-amd64-musl-#{@release}.tar.xz" :
+          "stage3-amd64-systemd-#{@release}.tar.xz"
       end
 
       def stage3
-        @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt'
+        OPTIONS[:musl] ?
+          @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-musl.txt' :
+          @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt'
       end
 
       def release
@@ -27,8 +31,9 @@ module Getch
       end
 
       def get_stage3
-        Dir.chdir(MOUNTPOINT)
-        return if File.exist?(@stage_file)
+        Dir.chdir OPTIONS[:mountpoint]
+        return if File.exist? @stage_file
+
         puts "Download the last #{@stage_file}, please wait..."
         Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file, @stage_file)
       end
@@ -66,7 +71,7 @@ module Getch
       end
 
       def cleaning
-        Dir.glob('stage3-amd64-systemd*').each { |f| File.delete(f) }
+        Dir.glob('stage3-amd64-*').each { |f| File.delete(f) }
       end
     end
   end

@@ -1,26 +1,30 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'nito'
 
 module Getch
   class Command
-    def initialize(cmd)
-      @cmd = cmd
+    def initialize(*args)
+      @cmd = args.join(' ')
       @block_size = 1024
       @log = Getch::Log.new
     end
 
     def run!
-      @log.info 'Running command: ' + @cmd.gsub(/\"/, '')
+      tab = add_tab
+      @log.info 'Exec: ' + @cmd + " #{@cmd.length}" + tab
 
       Open3.popen3(@cmd) do |stdin, stdout, stderr, wait_thr|
         stdin.close_write
         code = wait_thr.value
 
-        # only stderr
-        begin
-          @log.debug stderr.readline until stderr.eof.nil?
-        rescue
+        unless code.success?
+          begin
+            @log.debug stderr.readline until stderr.eof.nil?
+          rescue EOFError => e
+            print
+          end
         end
 
         begin
@@ -28,29 +32,32 @@ module Getch
 
           until all_eof(files) do
             ready = IO.select(files)
-
-            if ready
-              readable = ready[0]
-              # writable = ready[1]
-              # exceptions = ready[2]
-
-              display_lines(readable)
-            end
+            ready && display_lines(ready[0])
           end
         rescue IOError => e
-          puts "IOError: #{e}"
+          @log.error e
         end
 
-        unless code.success?
-          @log.fatal "Running #{@cmd}"
-          exit 1
+        if code.success?
+          @log.result 'Ok'
+          return stdout.read
         end
 
-        @log.debug "Done - #{@cmd} - #{code}"
+        puts
+        @log.error "#{@cmd} - #{code}"
+        @log.fatal "Running #{@cmd}"
       end
     end
 
     private
+
+    def add_tab
+      case @cmd.length
+      when 26..32 then "\t\t"
+      when 16..23 then "\t\t\t"
+      else "\t"
+      end
+    end
 
     # Returns true if all files are EOF
     def all_eof(files)
@@ -63,9 +70,9 @@ module Getch
           data = f.read_nonblock(@block_size)
           puts data if OPTIONS[:verbose]
         rescue EOFError
-          puts
+          print
         rescue => e
-          puts "Fatal - #{e}"
+          @log.fatal e
         end
       end
     end
@@ -80,13 +87,13 @@ module Getch
     end
 
     def run!
-      @log.info "Running emerge: #{@cmd}"
+      @log.info "Running emerge: #{@cmd}\n"
       system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
       read_exit
     end
 
     def pkg!
-      @log.info "Running emerge pkg: #{@cmd}"
+      @log.info "Running emerge pkg: #{@cmd}\n"
       system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
       read_exit
     end
@@ -97,7 +104,7 @@ module Getch
       if $?.exitstatus > 0
         @log.fatal "Running #{@cmd}"
       else
-        @log.info "Done #{@cmd}"
+        @log.info "Done #{@cmd}\n"
       end
     end
   end
@@ -148,13 +155,12 @@ module Getch
         exit_status = wait_thr.value
         unless exit_status.success?
           @log.fatal "Running #{cmd}"
-          exit 1
         end
       end
     end
 
     def cp
-      Helpers.mkdir @config
+      NiTo.mkdir @config
       Helpers.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"

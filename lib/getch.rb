@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'clean'
 require_relative 'getch/helpers'
 require_relative 'getch/options'
 require_relative 'getch/states'
@@ -15,32 +16,34 @@ require_relative 'getch/version'
 module Getch
 
   OPTIONS = {
-    :language => 'en_US',
-    :zoneinfo => 'US/Eastern',
-    :keymap => 'us',
-    :disk => false,
-    :fs => 'ext4',
-    :username => false,
-    :os => 'gentoo',
-    :boot_disk => false,
-    :cache_disk => false,
-    :home_disk => false,
-    :encrypt => false,
-    :verbose => false
+    language: 'en_US',
+    zoneinfo: 'US/Eastern',
+    keymap: 'us',
+    disk: false,
+    fs: 'ext4',
+    username: false,
+    os: 'gentoo',
+    boot_disk: false,
+    cache_disk: false,
+    home_disk: false,
+    encrypt: false,
+    verbose: false,
+    mountpoint: '/mnt/getch',
+    musl: false
   }
 
   STATES = {
-    :partition => false,
-    :format => false,
-    :mount => false,
-    :gentoo_base => false,
-    :gentoo_config => false,
-    :gentoo_update => false,
-    :gentoo_bootloader => false,
-    :gentoo_kernel => false
+    partition: false,
+    format: false,
+    mount: false,
+    gentoo_base: false,
+    gentoo_config: false,
+    gentoo_update: false,
+    gentoo_bootloader: false,
+    gentoo_kernel: false
   }
 
-  MOUNTPOINT = '/mnt/gentoo'
+  MOUNTPOINT = '/mnt/getch'
 
   DEFAULT_FS = {
     true => {
@@ -102,7 +105,8 @@ module Getch
       print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
       case gets.chomp
       when /^y|^Y/
-        @log.info('Partition start')
+        Clean.new(OPTIONS).x
+        @log.info "Partition start\n"
         @class_fs::Partition.new
       else
         exit
@@ -122,13 +126,13 @@ module Getch
     end
 
     def install
-      if OPTIONS[:os] == 'gentoo'
+      case OPTIONS[:os]
+      when 'gentoo'
         install_gentoo
-      elsif OPTIONS[:os] == 'void'
+      when 'void'
         install_void
       else
-        puts "Options #{OPTIONS[:os]} not supported...."
-        exit 1
+        raise "Options #{OPTIONS[:os]} not supported...."
       end
     end
 
@@ -149,7 +153,7 @@ module Getch
       void.chroot
       void.boot
     end
-    
+
     def configure
       config = Getch::Config::Main.new
       config.ethernet

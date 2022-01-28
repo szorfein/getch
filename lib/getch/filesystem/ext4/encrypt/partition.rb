@@ -1,15 +1,17 @@
+require 'nito'
+
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
         class Partition < Device
+          include NiTo
           include Helpers::Cryptsetup
 
           def initialize
             super
             @state = Getch::States.new
             @partition = Getch::FileSystem::Partition.new
-            @clean = Getch::FileSystem::Clean
             @log = Log.new
             run_partition
           end
@@ -17,8 +19,6 @@ module Getch
           def run_partition
             return if STATES[:partition ]
 
-            @clean.hdd(@disk)
-            @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
             if Helpers.efi?
               partition_efi
             else
@@ -66,7 +66,7 @@ module Getch
             keys_dir = '/root/secretkeys'
             key_name = 'crypto_keyfile.bin'
             @key_path = "#{keys_dir}/#{key_name}"
-            FileUtils.mkdir keys_dir, mode: 0700 unless Dir.exist? keys_dir
+            mkdir keys_dir, 0700
             exec("dd bs=512 count=4 if=/dev/urandom of=#{@key_path}")
           end
 

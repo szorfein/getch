@@ -1,7 +1,13 @@
+# frozen_string_literal: true
+
+require 'nito'
+
 module Getch
   module FileSystem
     module Zfs
       class Mount < Device
+        include NiTo
+
         def initialize
           super
           @mount = Getch::FileSystem::Mount.new
@@ -27,7 +33,7 @@ module Getch
         private
 
         def mount_root
-          Helpers.mkdir(MOUNTPOINT)
+          mkdir MOUNTPOINT
           exec("zfs mount #{@pool_name}/ROOT/#{@n}")
         end
 
