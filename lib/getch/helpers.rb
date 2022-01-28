@@ -84,6 +84,16 @@ module Getch
       end
     end
 
+    # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
+    def self.mount_all
+      dest = OPTIONS[:mountpoint]
+      Command.new('mount', '--types proc /proc', "#{dest}/proc").run!
+      ['dev', 'sys', 'run'].each do |d|
+        Command.new('mount', '--rbind', "/#{d}", "#{dest}/#{d}").run!
+        Command.new('mount', '--make-rslave', "#{dest}/#{d}").run!
+      end
+    end
+
     module Void
       def command(args)
         print " => Exec: #{args}..."

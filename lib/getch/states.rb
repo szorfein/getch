@@ -24,8 +24,8 @@ module Getch
       save
     end
 
-    def stage3
-      STATES[:gentoo_base] = true
+    def tarball
+      STATES[:tarball] = true
       save
     end
 

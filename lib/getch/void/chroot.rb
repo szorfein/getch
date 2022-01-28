@@ -8,7 +8,6 @@ module Getch
       def initialize
         @state = Getch::States.new
         @pkgs = []
-        mount
       end
 
       # https://docs.voidlinux.org/installation/guides/chroot.html#install-base-system-rootfs-method-only
@@ -37,19 +36,6 @@ module Getch
       def install_pkgs
         all_pkgs = @pkgs.join(' ')
         command_output "/usr/bin/xbps-install -y #{all_pkgs}"
-      end
-
-      private
-
-      def mount
-        puts 'Populate /proc, /sys and /dev.'
-        Helpers.exec_or_die("mount --types proc /proc \"#{MOUNTPOINT}/proc\"")
-        Helpers.exec_or_die("mount --rbind /sys \"#{MOUNTPOINT}/sys\"")
-        Helpers.exec_or_die("mount --make-rslave \"#{MOUNTPOINT}/sys\"")
-        Helpers.exec_or_die("mount --rbind /dev \"#{MOUNTPOINT}/dev\"")
-        Helpers.exec_or_die("mount --make-rslave \"#{MOUNTPOINT}/dev\"")
-        # Maybe add /dev/shm like describe here:
-        # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
       end
     end
   end

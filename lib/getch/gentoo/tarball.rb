@@ -5,7 +5,7 @@ require 'open3'
 
 module Getch
   module Gentoo
-    class Stage
+    class Tarball
       def initialize
         @mirror = 'https://mirrors.soeasyto.com/distfiles.gentoo.org'
         @release = release
@@ -13,6 +13,15 @@ module Getch
           "stage3-amd64-musl-#{@release}.tar.xz" :
           "stage3-amd64-systemd-#{@release}.tar.xz"
       end
+
+      def x
+        get_stage3
+        control_files
+        checksum
+        install
+      end
+
+      protected
 
       def stage3
         OPTIONS[:musl] ?
@@ -53,12 +62,15 @@ module Getch
         _, stderr, status = Open3.capture3(command)
         if status.success? then
           puts 'Checksum is ok'
-          decompress
-          cleaning
         else
           cleaning
-          raise "Problem with the checksum, stderr\n#{stderr}"
+          abort "Problem with the checksum, stderr\n#{stderr}"
         end
+      end
+
+      def install
+        decompress
+        cleaning
       end
 
       private

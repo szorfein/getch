@@ -8,10 +8,10 @@ getch = Getch::Main.new(
 
 #getch.resume
 
-getch.partition
-getch.format
-getch.mount
+getch.prepare_disk
 
-getch.install
+getch.install_system
+
+#getch.install
 
 #getch.configure
