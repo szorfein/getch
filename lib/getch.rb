@@ -29,7 +29,7 @@ module Getch
     encrypt: false,
     verbose: false,
     mountpoint: '/mnt/getch',
-    musl: true
+    musl: false
   }
 
   STATES = {
@@ -153,7 +153,7 @@ module Getch
       void.chroot
       void.boot
     end
-    
+
     def configure
       config = Getch::Config::Main.new
       config.ethernet

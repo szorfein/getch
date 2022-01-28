@@ -32,7 +32,7 @@ module Getch
 
       def get_stage3
         Dir.chdir OPTIONS[:mountpoint]
-        File.exist?(@stage_file) || return
+        return if File.exist? @stage_file
 
         puts "Download the last #{@stage_file}, please wait..."
         Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file, @stage_file)

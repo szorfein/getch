@@ -7,35 +7,18 @@ module Getch
         def initialize
           super
           gen_uuid
-          @root_dir = MOUNTPOINT
-          @init = '/usr/lib/systemd/systemd'
         end
 
         def fstab
-          file = "#{@root_dir}/etc/fstab"
+          file = "#{MOUNTPOINT}/etc/fstab"
           datas = data_fstab
           File.write(file, datas.join("\n"))
         end
 
-        def systemd_boot
-          return unless Helpers.efi?
-
-          esp = '/efi'
-          dir = "#{@root_dir}/#{esp}/loader/entries/"
-          datas_gentoo = [
-            'title Gentoo Linux',
-            'linux /vmlinuz',
-            "options root=PARTUUID=#{@partuuid_root} init=#{@init} rw"
-          ]
-          File.write("#{dir}/gentoo.conf", datas_gentoo.join("\n"))
-        end
-
-        def grub
-          return if Helpers.efi?
-
-          file = "#{@root_dir}/etc/default/grub"
-          cmdline = "GRUB_CMDLINE_LINUX=\"resume=PARTUUID=#{@partuuid_swap} root=PARTUUID=#{@partuuid_root} init=#{@init} rw slub_debug=P page_poison=1 slab_nomerge pti=on vsyscall=none spectre_v2=on spec_store_bypass_disable=seccomp iommu=force\"\n"
-          File.write(file, cmdline, mode: 'a')
+        def cmdline
+          conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
+          line = "resume=PARTUUID=#{@partuuid_swap} root=PARTUUID=#{@partuuid_root}"
+          File.write conf, "kernel_cmdline=\"#{line}\"\n"
         end
 
         private

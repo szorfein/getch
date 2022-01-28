@@ -44,7 +44,8 @@ module Getch
           'ACCEPT_KEYWORDS="amd64"',
           'INPUT_DEVICES="libinput"',
           'USE="${USE} audit"',
-          grub_pc
+          grub_pc,
+          ''
         ]
         File.write(@make, data.join("\n"), mode: 'a')
       end
