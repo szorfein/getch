@@ -11,6 +11,10 @@ module Getch
       Dir.exist? '/sys/firmware/efi/efivars'
     end
 
+    def self.systemd?
+      Dir.exist? "#{OPTIONS[:mountpoint]}/etc/systemd"
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }

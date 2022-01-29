@@ -53,16 +53,9 @@ module Getch
       end
 
       def cpu_conf
-        tmp = Tempfile.new('make.conf')
         cpu = get_cpu
-        File.open("#{@dest}/make.conf").each do |l|
-          if l.match(/^COMMON_FLAGS/)
-            echo_a tmp, "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe -fomit-frame-pointer\""
-          else
-            File.write tmp, l, mode: 'a'
-          end
-        end
-        cp tmp, "#{@dest}/make.conf"
+        change = "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe -fomit-frame-pointer\""
+        sed "#{@dest}/make.conf", /^COMMON_FLAGS/, change
       end
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#MAKEOPTS

@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require 'nito'
 require 'fileutils'
 require 'tempfile'
 
 module Getch
   module Gentoo
     class Config
-      include NiTo
-
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
         @log = Getch::Log.new
@@ -19,12 +16,12 @@ module Getch
         Getch::Config::Portage.new
         Getch::Config::Locale.new
         Getch::Config::PreNetwork.new
+        Getch::Config::Keymap.new
       end
 
       def systemd
         control_options
         File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
-        File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support
@@ -65,15 +62,6 @@ function pre_pkg_preinst() {
 
       def control_options
         search_zone(Getch::OPTIONS[:zoneinfo])
-        search_key(Getch::OPTIONS[:keymap])
-      end
-
-      def search_key(keys)
-        @keymap = nil
-        Dir.glob("#{MOUNTPOINT}/usr/share/keymaps/**/#{keys}.map.gz") { |f|
-          @keymap = f
-        }
-        raise ArgumentError, "No keymap #{@keymap} found" unless @keymap
       end
 
       def search_zone(zone)
