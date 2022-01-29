@@ -7,12 +7,14 @@ module Getch
       include NiTo
 
       def initialize
+        @log = Log.new
         @dest = "#{OPTIONS[:mountpoint]}/etc/portage"
         @usr_s = "#{OPTIONS[:mountpoint]}/usr/share/portage"
         x
       end
 
       def x
+        @log.info "Configuring Portage...\n"
         portage_dir
         gentoo_repo
         cpu_conf

@@ -3,7 +3,6 @@
 require 'nito'
 require 'fileutils'
 require 'tempfile'
-require 'securerandom'
 
 module Getch
   module Gentoo
@@ -19,23 +18,13 @@ module Getch
       def x
         Getch::Config::Portage.new
         Getch::Config::Locale.new
-      end
-
-      def network
-        src = '/etc/resolv.conf'
-        dest = "#{MOUNTPOINT}/etc/resolv.conf"
-        FileUtils.copy_file(src, dest)
+        Getch::Config::PreNetwork.new
       end
 
       def systemd
         control_options
         File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
-      end
-
-      def hostname
-        id = SecureRandom.hex(2)
-        File.write("#{MOUNTPOINT}/etc/hostname", "gentoo-hatch-#{id}")
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support

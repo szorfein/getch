@@ -85,7 +85,7 @@ module Getch
 
       def locale_conf
         echo @locale_conf, "LANG=#{@lang}"
-        echo_a @locale_conf, 'LC_COLLATE=C'
+        echo_a @locale_conf, 'LC_COLLATE=C.UTF-8'
       end
     end
   end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require 'securerandom'
 
 module Getch
   module Void
@@ -11,28 +10,12 @@ module Getch
       def initialize
         @log = Getch::Log.new
         @network_dir = "#{MOUNTPOINT}/etc"
-        @id = SecureRandom.hex(2)
-        @hostname = "void-hatch-#{@id}"
         x
       end
 
       def x
         Getch::Config::Locale.new
-      end
-
-      def host
-        print " => Adding hostname #{@hostname}..."
-        conf = "#{@network_dir}/hostname"
-        File.write(conf, "#{@hostname}\n", mode: 'w', chmod: 0744)
-        puts "\s[OK]"
-      end
-
-      def network
-        print ' => Copying /etc/resolv.conf...'
-        src = '/etc/resolv.conf'
-        dest = "#{@network_dir}/resolv.conf"
-        FileUtils.copy_file(src, dest)
-        puts "\s[Ok]"
+        Getch::Config::PreNetwork.new
       end
 
       def system
@@ -42,7 +25,6 @@ module Getch
         add_line(rc, 'HARDWARECLOCK="UTC"') unless search(rc, /^HARDWARECLOCK/)
         add_line(rc, "KEYMAP=\"#{OPTIONS[:keymap]}\"") unless search(rc, /^KEYMAP/)
         add_line(rc, "TIMEZONE=\"#{OPTIONS[:zoneinfo]}\"") unless search(rc, /^TIMEZONE/)
-        add_line(rc, "HOSTNAME=\"#{@hostname}\"") unless search(rc, /^HOSTNAME/)
         puts "\s[OK]"
       end
 

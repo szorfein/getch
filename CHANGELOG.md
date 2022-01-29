@@ -1,3 +1,8 @@
+## Next release...
+* Use a generic hostname 'host' rather than 'void-hatch-{randomID}'
+* Musl intead of Glibc can be installed with the `--musl` option.
+* Use colors in the script, look better.
+
 ## 0.1.9, release 2022-01-26
 * Gentoo use now the kernel `sys-kernel/gentoo-kernel` [project](https://wiki.gentoo.org/wiki/Project:Distribution_Kernel), updates are automatic.
 * Correct the download of the `rootfs tarball` for VoidLinux.

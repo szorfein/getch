@@ -49,3 +49,4 @@ end
 
 require_relative 'config/portage'
 require_relative 'config/locale'
+require_relative 'config/pre_network'
