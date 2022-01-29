@@ -13,62 +13,11 @@ module Getch
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
         @log = Getch::Log.new
+        x
       end
 
-      def portage
-        grub_pc = Helpers.efi? ? 'GRUB_PLATFORMS="efi-64"' : 'GRUB_PLATFORMS="pc"'
-        nproc = `nproc`.chomp()
-
-        # Add cpu name
-        cpu=`chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
-        raise 'Error, no cpu found' unless cpu || cpu == ''
-
-        @log.debug "CPU found ==> #{cpu}"
-
-        tmp = Tempfile.new('make.conf')
-
-        File.open(@make).each { |l|
-          if l.match(/^COMMON_FLAGS/)
-            File.write(tmp, "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe -fomit-frame-pointer\"\n", mode: 'a')
-          else
-            File.write(tmp, l, mode: 'a')
-          end
-        }
-
-        FileUtils.copy_file(tmp, @make)
-
-        # Add the rest
-        data = [
-          '',
-          "MAKEOPTS=\"-j#{nproc}\"",
-          'ACCEPT_KEYWORDS="amd64"',
-          'INPUT_DEVICES="libinput"',
-          'USE="${USE} audit"',
-          grub_pc,
-          ''
-        ]
-        File.write(@make, data.join("\n"), mode: 'a')
-      end
-
-      # Write a repos.conf/gentoo.conf with the gpg verification
-      def repo
-        src = "#{MOUNTPOINT}/usr/share/portage/config/repos.conf"
-        dest = "#{MOUNTPOINT}/etc/portage/repos.conf"
-        mkdir dest, 0644
-        tmp = Tempfile.new('gentoo.conf')
-        line_count = 0
-
-        File.open(src).each { |l|
-          File.write(tmp, "sync-allow-hardlinks = yes\n", mode: 'a') if line_count == 2
-          if l.match(/^sync-type = rsync/)
-            File.write(tmp, "sync-type = webrsync\n", mode: 'a')
-          else
-            File.write(tmp, l, mode: 'a')
-          end
-          line_count += 1
-        }
-
-        FileUtils.copy_file(tmp, "#{dest}/gentoo.conf")
+      def x
+        Getch::Config::Portage.new
       end
 
       def network
@@ -91,17 +40,6 @@ module Getch
       def hostname
         id = SecureRandom.hex(2)
         File.write("#{MOUNTPOINT}/etc/hostname", "gentoo-hatch-#{id}")
-      end
-
-      def portage_fs
-        portage = "#{MOUNTPOINT}/etc/portage"
-        mkdir "#{portage}/package.use", 0744
-        mkdir "#{portage}/package.accept_keywords", 0744
-        mkdir "#{portage}/package.unmask", 0744
-
-        Helpers.add_file("#{portage}/package.use/zzz_via_autounmask")
-        Helpers.add_file("#{portage}/package.accept_keywords/zzz_via_autounmask")
-        Helpers.add_file("#{portage}/package.unmask/zzz_via_autounmask")
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support

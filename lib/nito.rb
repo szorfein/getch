@@ -43,6 +43,20 @@ module NiTo
     res
   end
 
+  # Like echo 'content' >> to_file
+  def echo_a(file, content)
+    File.write file, "#{content}\n", mode: 'a' unless grep? file, content
+  end
+
+  def cp(src, dest)
+    FileUtils.cp src, dest
+  end
+
+  # create a void file
+  def touch(file)
+    File.write file, '' unless File.exist? file
+  end
+
   def sh(*args)
     log = Log.new
     Open3.popen3 args.join(' ') do |_, stdout, stderr, wait_thr|
