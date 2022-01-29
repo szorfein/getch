@@ -48,3 +48,4 @@ module Getch
 end
 
 require_relative 'config/portage'
+require_relative 'config/locale'

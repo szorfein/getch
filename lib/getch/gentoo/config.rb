@@ -18,6 +18,7 @@ module Getch
 
       def x
         Getch::Config::Portage.new
+        Getch::Config::Locale.new
       end
 
       def network
@@ -30,11 +31,6 @@ module Getch
         control_options
         File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
         File.write("#{MOUNTPOINT}/etc/vconsole.conf", "KEYMAP=#{OPTIONS[:keymap]}\n")
-        OPTIONS[:musl] && return
-
-        Helpers.echo "#{MOUNTPOINT}/etc/locale.gen", @utf8
-        Helpers.echo "#{MOUNTPOINT}/etc/locale.conf", "LANG=#{@lang}"
-        Helpers.echo_a "#{MOUNTPOINT}/etc/locale.conf", 'LC_COLLATE=C'
       end
 
       def hostname
@@ -79,10 +75,7 @@ function pre_pkg_preinst() {
       private
 
       def control_options
-        OPTIONS[:musl] && return
-
         search_zone(Getch::OPTIONS[:zoneinfo])
-        search_utf8(Getch::OPTIONS[:language])
         search_key(Getch::OPTIONS[:keymap])
       end
 
@@ -98,15 +91,6 @@ function pre_pkg_preinst() {
         unless File.exist? "#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}"
           raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
         end
-      end
-
-      def search_utf8(lang)
-        @utf8, @lang = nil, nil
-        File.open("#{MOUNTPOINT}/usr/share/i18n/SUPPORTED").each do |l|
-          @utf8 = l if l.match(/^#{lang}[. ]+utf-8 /i)
-          @lang = $~[0] if l.match(/^#{lang}[. ]+utf-8/i)
-        end
-        raise ArgumentError, "Lang #{lang} no found" unless @utf8
       end
     end
   end

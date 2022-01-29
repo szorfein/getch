@@ -43,6 +43,11 @@ module NiTo
     res
   end
 
+  # Like echo 'content' > to_file
+  def echo(file, content)
+    File.write file, "#{content}\n", mode: 'w'
+  end
+
   # Like echo 'content' >> to_file
   def echo_a(file, content)
     File.write file, "#{content}\n", mode: 'a' unless grep? file, content
