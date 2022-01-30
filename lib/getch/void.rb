@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'void/stage'
 require_relative 'void/config'
 require_relative 'void/chroot'
 #require_relative 'void/sources'
@@ -11,16 +10,6 @@ module Getch
     class Main
       def initialize
         @state = Getch::States.new
-      end
-
-      def root_fs
-        return if STATES[:gentoo_base]
-
-        xbps = Getch::Void::RootFS.new
-        xbps.search_archive
-        xbps.download
-        xbps.checksum
-        @state.stage3
       end
 
       def config
@@ -63,3 +52,5 @@ module Getch
     end
   end
 end
+
+require_relative 'void/tarball'

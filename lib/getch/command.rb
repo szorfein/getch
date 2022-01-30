@@ -53,8 +53,8 @@ module Getch
 
     def add_tab
       case @cmd.length
-      when 26..32 then "\t\t"
-      when 16..23 then "\t\t\t"
+      when 25..32 then "\t\t"
+      when 16..24 then "\t\t\t"
       else "\t"
       end
     end

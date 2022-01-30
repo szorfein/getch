@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'gentoo/stage'
 require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'
 require_relative 'gentoo/bootloader'
@@ -14,16 +13,6 @@ module Getch
     class Main
       def initialize
         @state = Getch::States.new
-      end
-
-      def stage3
-        return if STATES[:gentoo_base]
-
-        stage = Getch::Gentoo::Stage.new
-        stage.get_stage3
-        stage.control_files
-        stage.checksum
-        @state.stage3
       end
 
       def config
@@ -83,3 +72,5 @@ module Getch
     end
   end
 end
+
+require_relative 'gentoo/tarball'

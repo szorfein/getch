@@ -11,6 +11,10 @@ module Getch
       Dir.exist? '/sys/firmware/efi/efivars'
     end
 
+    def self.systemd?
+      Dir.exist? "#{OPTIONS[:mountpoint]}/etc/systemd"
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }
@@ -81,6 +85,16 @@ module Getch
           puts "Bad name, you enter: #{value}"
           puts 'Valid pool name use character only, between 4-20.'
         end
+      end
+    end
+
+    # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
+    def self.mount_all
+      dest = OPTIONS[:mountpoint]
+      Command.new('mount', '--types proc /proc', "#{dest}/proc").run!
+      ['dev', 'sys', 'run'].each do |d|
+        Command.new('mount', '--rbind', "/#{d}", "#{dest}/#{d}").run!
+        Command.new('mount', '--make-rslave', "#{dest}/#{d}").run!
       end
     end
 

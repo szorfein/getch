@@ -39,10 +39,16 @@ module Getch
         Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
         Helpers.cp("#{pwd}/../../assets/system.conf", dest)
       end
-      
+
       def shell
         @load.shell
       end
     end
   end
 end
+
+require_relative 'config/portage'
+require_relative 'config/locale'
+require_relative 'config/pre_network'
+require_relative 'config/keymap'
+require_relative 'config/timezone'

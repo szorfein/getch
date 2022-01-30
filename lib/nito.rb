@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'open3'
+require 'tempfile'
 require_relative 'getch/log'
 require_relative 'getch/command'
 
@@ -41,6 +42,38 @@ module NiTo
       res = true if l =~ /#{dir}/
     end
     res
+  end
+
+  # Like echo 'content' > to_file
+  def echo(file, content)
+    File.write file, "#{content}\n", mode: 'w'
+  end
+
+  # Like echo 'content' >> to_file
+  def echo_a(file, content)
+    File.write file, "#{content}\n", mode: 'a' unless grep? file, content
+  end
+
+  def cp(src, dest)
+    FileUtils.cp src, dest
+  end
+
+  # create a void file
+  def touch(file)
+    File.write file, '' unless File.exist? file
+  end
+
+  # Like sed -i /old:new/ file
+  def sed(file, regex, change)
+    tmp_file = '/tmp/new.conf'
+    File.open(file).each do |l|
+      if l.match(regex)
+        echo_a tmp_file, change
+      else
+        File.write tmp_file, l, mode: 'a'
+      end
+    end
+    cp tmp_file, file
   end
 
   def sh(*args)

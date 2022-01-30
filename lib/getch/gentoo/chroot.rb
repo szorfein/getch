@@ -9,7 +9,6 @@ module Getch
 
       def initialize
         @pkgs = []
-        mount
       end
 
       def cpuflags
@@ -62,24 +61,8 @@ module Getch
 
       private
 
-      def mount
-        exec 'mount', "--types proc /proc #{MOUNTPOINT}/proc"
-        exec 'mount', "--rbind /sys #{MOUNTPOINT}/sys"
-        exec 'mount', "--make-rslave #{MOUNTPOINT}/sys"
-        exec 'mount', "--rbind /dev #{MOUNTPOINT}/dev"
-        exec 'mount', "--make-rslave #{MOUNTPOINT}/dev"
-        exec 'mount', "--rbind /sys #{MOUNTPOINT}/run"
-        exec 'mount', "--make-rslave #{MOUNTPOINT}/run"
-        # Maybe add /dev/shm like describe here:
-        # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
-      end
-
       def exec_chroot(cmd)
         Getch::Chroot.new(cmd).run!
-      end
-
-      def exec(*args)
-        Getch::Command.new(args).run!
       end
     end
   end

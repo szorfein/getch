@@ -5,13 +5,22 @@ require 'open3'
 
 module Getch
   module Void
-    class RootFS
+    class Tarball
       def initialize
         @url = 'https://alpha.de.repo.voidlinux.org/live/current'
         @file = 'sha256sum.txt'
         @xbps = false
         Dir.chdir OPTIONS[:mountpoint]
       end
+
+      def x
+        search_archive
+        download
+        checksum
+        install
+      end
+
+      protected
 
       def tarball
         OPTIONS[:musl] ?
@@ -44,12 +53,15 @@ module Getch
         _, stderr, status = Open3.capture3(command)
         if status.success? then
           puts "\t[OK]"
-          decompress
-          cleaning
           return
         end
         cleaning
-        raise "Problem with the checksum, stderr\n#{stderr}"
+        abort "Problem with the checksum, stderr\n#{stderr}"
+      end
+
+      def install
+        decompress
+        cleaning
       end
 
       private
