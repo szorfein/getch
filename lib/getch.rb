@@ -31,7 +31,7 @@ module Getch
     os: 'gentoo',
     username: false,
     verbose: false,
-    zoneinfo: 'US/Eastern',
+    timezone: 'UTC'
   }
 
   STATES = {

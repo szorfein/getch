@@ -1,4 +1,5 @@
 ## Next release...
+* Rename option `-z | --zoneinfo` for `-t | --timezone`. Default use `UTC`.
 * Use a generic hostname 'host' rather than 'void-hatch-{randomID}'
 * Musl intead of Glibc can be installed with the `--musl` option.
 * Use colors in the script, look better.

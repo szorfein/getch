@@ -1,27 +1,21 @@
 # frozen_string_literal: true
 
-require 'fileutils'
-require 'tempfile'
-
 module Getch
   module Gentoo
     class Config
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
-        @log = Getch::Log.new
         x
       end
+
+      protected
 
       def x
         Getch::Config::Portage.new
         Getch::Config::Locale.new
         Getch::Config::PreNetwork.new
         Getch::Config::Keymap.new
-      end
-
-      def systemd
-        control_options
-        File.write("#{MOUNTPOINT}/etc/timezone", "#{OPTIONS[:zoneinfo]}\n")
+        Getch::Config::TimeZone.new
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support
@@ -56,18 +50,6 @@ function pre_pkg_preinst() {
         f.write("#{content}\n")
         f.chmod(0700)
         f.close
-      end
-
-      private
-
-      def control_options
-        search_zone(Getch::OPTIONS[:zoneinfo])
-      end
-
-      def search_zone(zone)
-        unless File.exist? "#{MOUNTPOINT}/usr/share/zoneinfo/#{zone}"
-          raise ArgumentError, "Zoneinfo #{zone} doesn\'t exist."
-        end
       end
     end
   end

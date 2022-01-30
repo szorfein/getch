@@ -23,8 +23,8 @@ module Getch
           OPTIONS[:language] = lang
         end
 
-        opts.on('-z', '--zoneinfo ZONE', 'Default is US/Eastern') do |zone|
-          OPTIONS[:zoneinfo] = Getch::Guard.zone(zone)
+        opts.on('-t', '--timezone ZONE', 'Default is UTC') do |zone|
+          OPTIONS[:timezone] = Getch::Guard.zone(zone)
         end
 
         opts.on('-k', '--keymap KEY', 'Default is us') do |key|
