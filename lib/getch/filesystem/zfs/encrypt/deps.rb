@@ -64,7 +64,7 @@ module Getch
           end
 
           def exec(cmd)
-            Getch::Chroot.new(cmd).run!
+            Getch::Chroot.new(cmd)
           end
         end
       end

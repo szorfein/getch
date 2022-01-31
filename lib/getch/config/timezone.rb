@@ -45,7 +45,7 @@ module Getch
       def write_systemd
         return unless Helpers.systemd?
 
-        cmd = "ln -s #{@usr_share}/#{OPTIONS[:timezone]} #{@etc_localtime}"
+        cmd = "ln -sf #{@usr_share}/#{OPTIONS[:timezone]} #{@etc_localtime}"
         Getch::Chroot.new(cmd)
       end
     end

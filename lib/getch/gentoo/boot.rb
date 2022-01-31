@@ -30,7 +30,7 @@ module Getch
         return unless @user
 
         puts "Creating user #{@user}"
-        Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}").run!
+        Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}")
         puts "Password for your user #{@user}"
         chroot "passwd #{@user}"
       end
@@ -40,7 +40,7 @@ module Getch
       def permission
         FileUtils.chmod_R 0755, "#{MOUNTPOINT}/etc/portage"
         if @user
-          Getch::Chroot.new("chown -R #{@user}:#{@user} /home/#{@user}").run!
+          Getch::Chroot.new("chown -R #{@user}:#{@user} /home/#{@user}")
         end
       end
 

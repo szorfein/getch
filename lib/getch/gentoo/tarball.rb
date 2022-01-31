@@ -79,7 +79,7 @@ module Getch
       def decompress
         puts "Decompressing archive #{@stage_file}..."
         cmd = "tar xpf #{@stage_file} --xattrs-include=\'*.*\' --numeric-owner"
-        Getch::Command.new(cmd).run!
+        Getch::Command.new(cmd)
       end
 
       def cleaning

@@ -56,12 +56,6 @@ module Getch
       @log = Getch::Log.new
     end
 
-    def run!
-      @log.info "Running emerge: #{@cmd}\n"
-      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
-      read_exit
-    end
-
     def pkg!
       @log.info "Running emerge pkg: #{@cmd}\n"
       system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
@@ -79,31 +73,6 @@ module Getch
     end
   end
 
-  class Make
-    def initialize(cmd)
-      @gentoo = MOUNTPOINT
-      @cmd = cmd
-      @log = Getch::Log.new
-    end
-
-    def run!
-      @log.info "Running Make: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /usr/src/linux \
-        && #{@cmd}\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-          exit 1
-        end
-      end
-    end
-  end
-
   class Bask
     def initialize(cmd)
       @cmd = cmd
@@ -111,22 +80,6 @@ module Getch
       @version = '0.6'
       @config = "#{MOUNTPOINT}/etc/kernel/config.d"
       download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
-    end
-
-    def run!
-      @log.info "Running Bask: #{@cmd}"
-      cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /root/bask-#{@version} \
-        && ./bask.sh #{@cmd} -k /usr/src/linux\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-        end
-      end
     end
 
     def cp
@@ -195,6 +148,9 @@ module Getch
     end
   end
 
+  # Install
+  # use system() to install packages
+  # Usage: Install.new(pkg_name)
   class Install < ChrootOutput
     def msg
       @log.info "Installing #{@cmd}...\n"

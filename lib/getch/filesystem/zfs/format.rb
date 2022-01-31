@@ -113,7 +113,7 @@ module Getch
         end
 
         def exec(cmd)
-          Getch::Command.new(cmd).run!
+          Getch::Command.new(cmd)
         end
       end
     end

@@ -13,21 +13,20 @@ module Getch
       # https://docs.voidlinux.org/installation/guides/chroot.html#install-base-system-rootfs-method-only
       def x
         sync
-        #update
+        update
       end
 
       private
 
       def sync
-        @log.info 'Synchronize index...'
-        Command.Chroot.new('/usr/bin/xbps-install', '-Suy', 'xbps').run!
-        @log.result 'Ok'
+        @log.info "Synchronize index...\n"
+        Getch::Chroot.new '/usr/bin/xbps-install', '-Suy', 'xbps'
       end
 
       def update
-        command_output '/usr/bin/xbps-install -uy'
-        command_output '/usr/bin/xbps-install -y base-system'
-        command_output '/usr/bin/xbps-remove base-voidstrap'
+        Getch::Chroot.new '/usr/bin/xbps-install -uy'
+        Getch::Chroot.new '/usr/bin/xbps-install -y base-system'
+        Getch::Chroot.new '/usr/bin/xbps-remove base-voidstrap'
       end
     end
   end

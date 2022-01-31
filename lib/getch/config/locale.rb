@@ -86,6 +86,8 @@ module Getch
       end
 
       def locale_conf
+        return unless Helpers.systemd?
+
         echo @locale_conf, "LANG=#{@lang}"
         echo_a @locale_conf, 'LC_COLLATE=C.UTF-8'
       end

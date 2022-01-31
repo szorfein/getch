@@ -44,11 +44,11 @@ module Getch
 
       def setup
         if Helpers.efi? and not OPTIONS[:musl]
-          Getch::Chroot.new("bootctl --path #{@esp} install").run!
+          Getch::Chroot.new("bootctl --path #{@esp} install")
         elsif Helpers.efi? and OPTIONS[:musl]
-          Getch::Chroot.new("grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Gentoo\"").run!
+          Getch::Chroot.new("grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"Gentoo\"")
         else
-          Getch::Chroot.new("grub-install /dev/#{@disk}").run!
+          Getch::Chroot.new("grub-install /dev/#{@disk}")
         end
       end
 
@@ -56,10 +56,10 @@ module Getch
         Getch::Emerge.new('--config sys-kernel/gentoo-kernel').pkg!
         if Helpers.efi? and not OPTIONS[:musl]
           puts ' => Updating systemd-boot...'
-          Getch::Chroot.new("bootctl --path #{@esp} update").run!
+          Getch::Chroot.new("bootctl --path #{@esp} update")
         else
           puts ' => Updating grub...'
-          Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg').run!
+          Getch::Chroot.new('grub-mkconfig -o /boot/grub/grub.cfg')
         end
       end
 

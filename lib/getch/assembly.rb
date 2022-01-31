@@ -75,10 +75,10 @@ module Getch
     end
 
     def post_config
-      #return if STATES[:post_config]
+      return if STATES[:post_config]
 
       @os::PostConfig.new
-      #@state.post_config
+      @state.post_config
     end
   end
 end

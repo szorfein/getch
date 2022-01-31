@@ -13,19 +13,18 @@ module Getch
 
       def install_pkgs
         @pkgs << 'app-portage/gentoolkit'
-        @pkgs << 'app-admin/sudo'
-        @pkgs << 'app-editors/vim'
-        @pkgs << 'net-firewall/iptables'
-        @pkgs << 'sys-firmware/intel-microcode' unless OPTIONS[:musl] # bug
-        @pkgs << 'sys-fs/dosfstools' if Helpers.efi?
-        all_pkgs = @pkgs.join(' ')
-        Getch::Emerge.new(all_pkgs).pkg!
+        @pkgs << ' app-admin/sudo'
+        @pkgs << ' app-editors/vim'
+        @pkgs << ' net-firewall/iptables'
+        @pkgs << ' sys-firmware/intel-microcode' unless OPTIONS[:musl] # bug
+        @pkgs << ' sys-fs/dosfstools' if Helpers.efi?
+        Install.new(@pkgs)
       end
 
       private
 
       def exec_chroot(cmd)
-        Getch::Chroot.new(cmd).run!
+        Getch::Chroot.new(cmd)
       end
     end
   end

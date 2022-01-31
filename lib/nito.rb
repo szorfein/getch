@@ -33,7 +33,7 @@ module NiTo
   def umount(dir)
     return unless mount? dir
 
-    Getch::Command.new('umount', dir).run!
+    Getch::Command.new('umount', dir)
   end
 
   # Mount, accept *args, the last argument should be the destination
@@ -42,7 +42,7 @@ module NiTo
     return if mount? args.last
 
     mkdir args.last
-    Getch::Command.new('mount', args.join(' ')).run!
+    Getch::Command.new('mount', args.join(' '))
   end
 
   def mount?(dir)

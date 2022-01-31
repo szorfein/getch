@@ -15,6 +15,10 @@ module Getch
       Dir.exist? "#{OPTIONS[:mountpoint]}/etc/systemd"
     end
 
+    def self.openrc?
+      File.exist? "#{OPTIONS[:mountpoint]}/etc/conf.d/keymaps"
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }
@@ -26,30 +30,6 @@ module Getch
       unless status.success?
         abort "Problem running #{cmd}, stderr was:\n#{stderr}"
       end
-    end
-
-    def self.add_file(path, content = '')
-      File.write path, content unless File.exist? path
-    end
-
-    def self.touch(file)
-      File.write file, '' unless File.exist? file
-    end
-
-    def self.echo(src, content = '')
-      File.write(src, "#{content}\n", mode: 'w')
-    end
-
-    def self.echo_a(src, content = '')
-      abort "No file #{src} found !" unless File.exist? src
-
-      File.write(src, "#{content}\n", mode: 'a') unless NiTo.grep? src, content
-    end
-
-    def self.cp(src, dest)
-      abort "Src file #{src} no found" unless File.exist? src
-
-      FileUtils.cp(src, dest)
     end
 
     def self.sys(cmd)

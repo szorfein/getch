@@ -8,7 +8,7 @@ module Getch
           def make
             install_deps
             genkernel
-            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
+            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all')
           end
 
           private
@@ -32,11 +32,10 @@ module Getch
           end
 
           def install_deps
-            Getch::Emerge.new('genkernel').pkg!
           end
 
           def exec(cmd)
-            Getch::Chroot.new(cmd).run!
+            Getch::Chroot.new(cmd)
           end
         end
       end

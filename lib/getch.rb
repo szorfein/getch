@@ -108,7 +108,6 @@ module Getch
 
     def install_gentoo
       gentoo = Getch::Gentoo::Main.new
-      gentoo.chroot
       gentoo.bootloader
       gentoo.kernel
       gentoo.boot
@@ -116,7 +115,6 @@ module Getch
 
     def install_void
       void = Getch::Void::Main.new
-      void.chroot
       void.boot
     end
 
