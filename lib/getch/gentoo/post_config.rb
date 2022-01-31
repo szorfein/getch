@@ -2,7 +2,7 @@
 
 module Getch
   module Gentoo
-    class Config
+    class PostConfig
       def initialize
         @make = "#{MOUNTPOINT}/etc/portage/make.conf"
         x
@@ -11,11 +11,19 @@ module Getch
       protected
 
       def x
-        Getch::Config::Portage.new
         Getch::Config::Locale.new
-        Getch::Config::PreNetwork.new
         Getch::Config::Keymap.new
         Getch::Config::TimeZone.new
+        cpuflags
+      end
+
+      protected
+
+      def cpuflags
+        conf = "#{OPTIONS[:mountpoint]}/etc/portage/package.use/00cpuflags"
+        Install.new('app-portage/cpuid2cpuflags')
+        cpuflags = Getch::Chroot.new('cpuid2cpuflags').run!
+        File.write(conf, "*/* #{cpuflags}\n")
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support

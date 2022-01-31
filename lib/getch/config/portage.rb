@@ -20,6 +20,7 @@ module Getch
         cpu_conf
         make_conf
         https_mirror
+        license
       end
 
       protected
@@ -37,24 +38,15 @@ module Getch
 
       # Recreate a gentoo.conf from /usr/share/portage/config/repos.conf
       def gentoo_repo
-        tmp = Tempfile.new 'gentoo.conf'
-        line_n = 0
         mkdir "#{@dest}/repos.conf", 0644
-        File.open("#{@usr_s}/config/repos.conf").each do |l|
-          echo_a tmp, 'sync-allow-hardlinks = yes' if line_n == 2
-          if l.match(/^sync-type = rsync/)
-            echo_a tmp, 'sync-type = webrsync'
-          else
-            File.write tmp, l, mode: 'a'
-          end
-          line_n += 1
-        end
-        cp tmp, "#{@dest}/repos.conf/gentoo.conf"
+        cp "#{@usr_s}/config/repos.conf", "#{@dest}/repos.conf/gentoo.conf"
+        sed "#{@dest}/repos.conf/gentoo.conf", /^sync-type/, 'sync-type = webrsync'
       end
 
+      # -fomit-frame-pointer reduce code compiled
+      # but have repercussions on the debugging of applications
       def cpu_conf
-        cpu = get_cpu
-        change = "COMMON_FLAGS=\"-march=#{cpu} -O2 -pipe -fomit-frame-pointer\""
+        change = 'COMMON_FLAGS="-march=native -O2 -pipe -fomit-frame-pointer"'
         sed "#{@dest}/make.conf", /^COMMON_FLAGS/, change
       end
 
@@ -77,11 +69,13 @@ module Getch
         echo_a "#{@dest}/make.conf", "GENTOO_MIRRORS=\"#{list}\""
       end
 
-      private
-
-      def get_cpu
-        `chroot #{OPTIONS[:mountpoint]} /bin/bash -c \"source /etc/profile ; gcc -c -Q -march=native --help=target | grep march\" | awk '{print $2}' | head -1`.chomp
+      def license
+        conf = "#{@dest}/package.license/kernel"
+        echo conf, 'sys-kernel/linux-firmware @BINARY-REDISTRIBUTABLE'
+        echo_a conf, 'sys-firmware/intel-microcode intel-ucode'
       end
+
+      private
 
       def get_memory
         mem = '2048'

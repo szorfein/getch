@@ -36,6 +36,15 @@ module NiTo
     Getch::Command.new('umount', dir).run!
   end
 
+  # Mount, accept *args, the last argument should be the destination
+  # e.g: mount '--types proc', '/proc', '/mnt/getch/proc'
+  def mount(*args)
+    return if mount? args.last
+
+    mkdir args.last
+    Getch::Command.new('mount', args.join(' ')).run!
+  end
+
   def mount?(dir)
     res = false
     File.open('/proc/mounts').each do |l|
@@ -65,7 +74,7 @@ module NiTo
 
   # Like sed -i /old:new/ file
   def sed(file, regex, change)
-    tmp_file = '/tmp/new.conf'
+    tmp_file = Tempfile.new
     File.open(file).each do |l|
       if l.match(regex)
         echo_a tmp_file, change

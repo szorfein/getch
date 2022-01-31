@@ -91,10 +91,10 @@ module Getch
     # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
     def self.mount_all
       dest = OPTIONS[:mountpoint]
-      Command.new('mount', '--types proc /proc', "#{dest}/proc").run!
+      NiTo.mount '--types proc /proc', "#{dest}/proc"
       ['dev', 'sys', 'run'].each do |d|
-        Command.new('mount', '--rbind', "/#{d}", "#{dest}/#{d}").run!
-        Command.new('mount', '--make-rslave', "#{dest}/#{d}").run!
+        NiTo.mount '--rbind', "/#{d}", "#{dest}/#{d}"
+        NiTo.mount '--make-rslave', "#{dest}/#{d}"
       end
     end
 

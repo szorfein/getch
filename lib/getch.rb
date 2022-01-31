@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'clean'
 require_relative 'getch/helpers'
 require_relative 'getch/options'
 require_relative 'getch/states'
@@ -39,8 +38,9 @@ module Getch
     format: false,
     mount: false,
     tarball: false,
-    gentoo_config: false,
-    gentoo_update: false,
+    pre_config: false,
+    update: false,
+    post_config: false,
     gentoo_bootloader: false,
     gentoo_kernel: false
   }
@@ -90,7 +90,9 @@ module Getch
     def install_system
       assembly = Assembly.new
       assembly.tarball
-      assembly.config
+      assembly.pre_config
+      assembly.update
+      assembly.post_config
     end
 
     def install

@@ -21,13 +21,13 @@ module Getch
       private
 
       def hostname
-        @log.info "Writing /etc/hostname...\t\t\t"
+        @log.info 'Writing /etc/hostname...'
         echo "#{OPTIONS[:mountpoint]}/etc/hostname", 'host'
         @log.result 'Ok'
       end
 
       def copy_dns
-        @log.info "Copying DNS from current host...\t\t"
+        @log.info 'Copying DNS from current host...'
         cp '/etc/resolv.conf', "#{OPTIONS[:mountpoint]}/etc/resolv.conf"
         echo_a "#{OPTIONS[:mountpoint]}/etc/resolv.conf", 'nameserver 127.0.0.1'
         @log.result 'Ok'

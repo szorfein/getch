@@ -35,7 +35,7 @@ module Getch
       end
 
       def apply_conf
-        @log.info "Setting keymap to \"#{@keymap}\"...\t\t\t"
+        @log.info "Setting keymap to \"#{@keymap}\"..."
         writing_rc_conf
         writing_vconsole_conf
         writing_conf_d_keymaps

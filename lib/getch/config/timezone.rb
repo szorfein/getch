@@ -9,7 +9,9 @@ module Getch
 
       def initialize
         @log = Log.new
+        @usr_share = "#{OPTIONS[:mountpoint]}/usr/share/zoneinfo"
         @etc_timezone = "#{OPTIONS[:mountpoint]}/etc/timezone"
+        @etc_localtime = "#{OPTIONS[:mountpoint]}/etc/localtime"
         @rc_conf = "#{OPTIONS[:mountpoint]}/etc/rc.conf"
         @openrc = "#{OPTIONS[:mountpoint]}/etc/conf.d/keymaps"
         @timezone = OPTIONS[:timezone]
@@ -19,10 +21,10 @@ module Getch
       protected
 
       def x
-        @log.info "Configuring timezone to #{@timezone}..."
+        @log.info "Configuring timezone to #{@timezone}...\n"
         write_rc_conf
         write_etc_timezone
-        @log.result 'Ok'
+        write_systemd
       end
 
       private
@@ -37,6 +39,14 @@ module Getch
         return unless File.exist? @openrc
 
         echo_a @etc_timezone, OPTIONS[:timezone]
+        Getch::Chroot.new('emerge --config sys-libs/timezone-data')
+      end
+
+      def write_systemd
+        return unless Helpers.systemd?
+
+        cmd = "ln -s #{@usr_share}/#{OPTIONS[:timezone]} #{@etc_localtime}"
+        Getch::Chroot.new(cmd)
       end
     end
   end

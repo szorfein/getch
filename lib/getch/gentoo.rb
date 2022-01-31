@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'gentoo/config'
 require_relative 'gentoo/chroot'
 require_relative 'gentoo/bootloader'
 require_relative 'gentoo/sources'
@@ -19,13 +18,8 @@ module Getch
         return if STATES[:gentoo_config]
 
         config = Getch::Gentoo::Config.new
-        config.portage
-        config.portage_fs
         config.portage_bashrc
-        config.repo
-        config.network
         config.systemd
-        config.hostname
         @state.config
       end
 
@@ -74,3 +68,6 @@ module Getch
 end
 
 require_relative 'gentoo/tarball'
+require_relative 'gentoo/pre_config'
+require_relative 'gentoo/update'
+require_relative 'gentoo/post_config'

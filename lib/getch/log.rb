@@ -22,17 +22,20 @@ module Getch
       init
     end
 
+    # TODO remove length
     def info(msg)
-      @info.info "#{GREEN}#{BOLD} >>> #{CLEAR}#{WHITE}#{msg}#{CLEAR}"
+      tab = msg.match("\n") ? '' : add_tab(msg)
+      l = msg.length
+      @info.info "#{GREEN}#{BOLD} >>> #{CLEAR}#{l} #{WHITE}#{msg}#{CLEAR}" + tab
       @save.info(msg)
     end
 
     def result(msg)
       case msg
       when 'Ok'
-        @result.info "\t#{GREEN}[ #{WHITE}#{msg}#{GREEN} ]#{CLEAR}\n"
+        @result.info "#{GREEN}[ #{WHITE}#{msg}#{GREEN} ]#{CLEAR}\n"
       else
-        @result.info "\t#{RED}[#{WHITE}#{msg}#{RED}]#{CLEAR}\n"
+        @result.info "#{RED}[ #{WHITE}#{msg}#{RED} ]#{CLEAR}\n"
       end
     end
 
@@ -106,6 +109,15 @@ module Getch
       init_debug
       init_fatal
       init_save
+    end
+
+    def add_tab(text)
+      case text.length
+      when 39..46 then "\t\t"
+      when 31..35 then "\t\t\t"
+      when 16..30 then "\t\t\t\t"
+      else "\t"
+      end
     end
   end
 end

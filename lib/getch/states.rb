@@ -29,13 +29,18 @@ module Getch
       save
     end
 
-    def config
-      STATES[:gentoo_config] = true
+    def pre_config
+      STATES[:pre_config] = true
       save
     end
 
     def update
-      STATES[:gentoo_update] = true
+      STATES[:update] = true
+      save
+    end
+
+    def post_config
+      STATES[:post_config] = true
       save
     end
 
