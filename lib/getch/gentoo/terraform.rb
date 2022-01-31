@@ -4,11 +4,18 @@ require 'nito'
 
 module Getch
   module Gentoo
-    class Chroot
+    class Terraform
       include NiTo
 
       def initialize
         @pkgs = []
+        x
+      end
+
+      protected
+
+      def x
+        Gentoo::Sources.new
       end
 
       def install_pkgs

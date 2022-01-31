@@ -80,5 +80,16 @@ module Getch
       @os::PostConfig.new
       @state.post_config
     end
+
+    # terraform
+    # Install all the required packages
+    def terraform
+      return if STATES[:terraform]
+
+      #@fs::PreDeps.new
+      @os::Terraform.new
+      @fs::Deps.new
+      @state.terraform
+    end
   end
 end

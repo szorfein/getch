@@ -45,7 +45,7 @@ module Getch
     end
 
     def debug(msg)
-      @debug.debug "#{BOLD} > #{CLEAR}#{WHITE}#{msg}#{CLEAR}\n"
+      @debug.debug "#{BOLD} > #{CLEAR}#{WHITE}#{msg}#{CLEAR}"
       @save.debug(msg)
     end
 

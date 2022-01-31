@@ -12,6 +12,6 @@ getch.prepare_disk
 
 getch.install_system
 
-#getch.install
+getch.terraform
 
 #getch.configure

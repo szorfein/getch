@@ -5,11 +5,17 @@ require 'nito'
 
 module Getch
   class Command
+    attr_reader :res
+
     def initialize(*args)
       @cmd = args.join(' ')
       @block_size = 1024
       @log = Getch::Log.new
       x
+    end
+
+    def to_s
+      @res
     end
 
     protected
@@ -32,7 +38,8 @@ module Getch
 
         if code.success?
           @log.result 'Ok'
-          return stdout.read.chomp
+          @res = stdout.read.chomp
+          return
         end
 
         puts
@@ -84,7 +91,7 @@ module Getch
 
     def cp
       NiTo.mkdir @config
-      Helpers.cp(
+      NiTo.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"
       )

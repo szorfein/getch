@@ -7,6 +7,7 @@ module Getch
   module Gentoo
     class Tarball
       def initialize
+        @log = Log.new
         @mirror = 'https://mirrors.soeasyto.com/distfiles.gentoo.org'
         @release = release
         @stage_file = OPTIONS[:musl] ?
@@ -43,28 +44,27 @@ module Getch
         Dir.chdir OPTIONS[:mountpoint]
         return if File.exist? @stage_file
 
-        puts "Download the last #{@stage_file}, please wait..."
+        @log.info "wget #{@stage_file}, please wait...\n"
         Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file, @stage_file)
       end
 
       def control_files
-        puts 'Download the DIGESTS'
-        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.DIGESTS', "#{@stage_file}.DIGESTS")
-        puts 'Download the DIGESTS.asc'
-        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.DIGESTS.asc', "#{@stage_file}.DIGESTS.asc")
-        puts "Download the CONTENTS.gz"
-        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file + '.CONTENTS.gz', "#{@stage_file}.CONTENTS.gz")
+        @log.info "Download other files..."
+        ['DIGESTS', 'DIGESTS.asc', 'CONTENTS.gz'].each do |f|
+          Helpers.get_file_online("#{@mirror}/releases/amd64/autobuilds/#{file}.#{f}", "#{@stage_file}.#{f}")
+        end
+        @log.result 'Ok'
       end
 
       def checksum
-        puts 'Check the SHA512 checksum.'
+        @log.info 'Checking SHA512 checksum...'
         command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS.asc | sha512sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
-          puts 'Checksum is ok'
+          @log.result 'Ok'
         else
           cleaning
-          abort "Problem with the checksum, stderr\n#{stderr}"
+          @log.fatal "Problem with the checksum, stderr\n#{stderr}"
         end
       end
 
@@ -77,7 +77,6 @@ module Getch
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage
       def decompress
-        puts "Decompressing archive #{@stage_file}..."
         cmd = "tar xpf #{@stage_file} --xattrs-include=\'*.*\' --numeric-owner"
         Getch::Command.new(cmd)
       end

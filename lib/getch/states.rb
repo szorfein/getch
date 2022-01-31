@@ -44,13 +44,13 @@ module Getch
       save
     end
 
-    def bootloader
-      STATES[:gentoo_bootloader] = true
+    def terraform
+      STATES[:terraform] = true
       save
     end
 
-    def kernel
-      STATES[:gentoo_kernel] = true
+    def bootloader
+      STATES[:gentoo_bootloader] = true
       save
     end
 

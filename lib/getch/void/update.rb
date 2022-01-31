@@ -20,13 +20,13 @@ module Getch
 
       def sync
         @log.info "Synchronize index...\n"
-        Getch::Chroot.new '/usr/bin/xbps-install', '-Suy', 'xbps'
+        ChrootOutput.new '/usr/bin/xbps-install', '-Suy', 'xbps'
       end
 
       def update
-        Getch::Chroot.new '/usr/bin/xbps-install -uy'
-        Getch::Chroot.new '/usr/bin/xbps-install -y base-system'
-        Getch::Chroot.new '/usr/bin/xbps-remove base-voidstrap'
+        ChrootOutput.new '/usr/bin/xbps-install -uy'
+        ChrootOutput.new '/usr/bin/xbps-install -y base-system'
+        ChrootOutput.new '/usr/bin/xbps-remove base-voidstrap'
       end
     end
   end

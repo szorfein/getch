@@ -41,8 +41,8 @@ module Getch
     pre_config: false,
     update: false,
     post_config: false,
+    terraform: false,
     gentoo_bootloader: false,
-    gentoo_kernel: false
   }
 
   MOUNTPOINT = '/mnt/getch'
@@ -93,6 +93,11 @@ module Getch
       assembly.pre_config
       assembly.update
       assembly.post_config
+    end
+
+    def terraform
+      assembly = Assembly.new
+      assembly.terraform
     end
 
     def install

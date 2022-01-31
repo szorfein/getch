@@ -1,17 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'void/chroot'
-#require_relative 'void/sources'
 require_relative 'void/boot'
 
 module Getch
   module Void
     class Main
-      def config
-        config = Getch::Void::Config.new
-        config.system
-      end
-
       def chroot
         chroot = Getch::Void::Chroot.new
         chroot.update
@@ -41,3 +34,4 @@ require_relative 'void/tarball'
 require_relative 'void/pre_config'
 require_relative 'void/update'
 require_relative 'void/post_config'
+require_relative 'void/terraform'
