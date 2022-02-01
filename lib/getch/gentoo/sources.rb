@@ -1,31 +1,39 @@
 # frozen_string_literal: true
 
 require 'cmdline'
+require 'nito'
 
 module Getch
   module Gentoo
     class Sources
+      include NiTo
+
       def initialize
+        @log = Log.new
         @lsmod = `lsmod`.chomp
-        @class_fs = Getch::select_fs
-        @filesystem = @class_fs::Deps.new
+        x
+      end
+
+      protected
+
+      def x
+        bask
+        gen_cmdline
+        grub_mkconfig
+        use_flags
+        make
       end
 
       def bask
-        puts ' ==> Hardening kernel...'
+        @log.info "Kernel hardening...\n"
         #Getch::Bask.new('10_kspp.config').cp
         Getch::Bask.new('11-kspp-gcc.config').cp
         Getch::Bask.new('12-kspp-x86_64.config').cp
         #Getch::Bask.new('20-clipos.config').cp
-        #Getch::Bask.new('30-grsecurity.config').cp
+        Getch::Bask.new('30-grsecurity.config').cp
         #Getch::Bask.new('40-kconfig-hardened.config').cp
         Getch::Bask.new('50-blacklist.config').cp
         Getch::Bask.new('51-blacklist-madaidans.config').cp
-      end
-
-      def configs
-        gen_cmdline
-        grub_mkconfig unless Helpers.efi?
       end
 
       def gen_cmdline
@@ -34,53 +42,46 @@ module Getch
       end
 
       def grub_mkconfig
-        file = "#{MOUNTPOINT}/etc/kernel/install.d/90-mkconfig.install"
+        file = "#{OPTIONS[:mountpoint]}/etc/kernel/install.d/90-mkconfig.install"
         content = <<~SHELL
 #!/usr/bin/env sh
 set -o errexit
 grub-mkconfig -o /boot/grub/grub.cfg
 exit 0
 SHELL
+        mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/install.d"
         File.write file, content
         File.chmod 0755, file
       end
 
+      def use_flags
+        use = Getch::Gentoo::Use.new('sys-kernel/gentoo-kernel')
+        use.add('hardened')
+      end
+
+      # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel#Alternative:_Using_distribution_kernels
       def make
-        if Getch::OPTIONS[:fs] == 'lvm' ||
-            Getch::OPTIONS[:fs] == 'zfs' ||
-            Getch::OPTIONS[:encrypt]
-          @filesystem.make
-        else
-          make_kernel
-        end
+        Helpers.systemd? ?
+          Install.new('sys-kernel/installkernel-systemd-boot') :
+          Install.new('sys-kernel/installkernel-gentoo')
+
+        Install.new 'sys-kernel/gentoo-kernel'
       end
 
       def load_modules
-        install_wifi
+        wifi
         flash_mod
       end
 
       private
 
-      def make_kernel
-        puts 'Compiling kernel sources'
-        Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
-        is_kernel = Dir.glob("#{MOUNTPOINT}/boot/vmlinuz-*")
-        raise 'No kernel installed, compiling source fail...' if is_kernel == []
-      end
-
       def ismatch?(arg)
         @lsmod.match?(/#{arg}/)
       end
 
-      def install_wifi
+      def wifi
         return unless ismatch?('cfg80211')
 
-        wifi_drivers
-        Getch::Emerge.new('net-wireless/iwd').pkg!
-      end
-
-      def wifi_drivers
         conf = "#{MOUNTPOINT}/etc/modules-load.d/wifi.conf"
         File.delete(conf) if File.exist? conf
 
@@ -101,7 +102,6 @@ SHELL
       end
 
       def module_load(name, file)
-        return unless name
         return unless ismatch?(name)
 
         File.write(file, "#{name}\n", mode: 'a')

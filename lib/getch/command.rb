@@ -5,42 +5,41 @@ require 'nito'
 
 module Getch
   class Command
+    attr_reader :res
+
     def initialize(*args)
       @cmd = args.join(' ')
       @block_size = 1024
       @log = Getch::Log.new
+      x
     end
 
-    def run!
-      tab = add_tab
-      @log.info 'Exec: ' + @cmd + " #{@cmd.length}" + tab
+    def to_s
+      @res
+    end
 
-      Open3.popen3(@cmd) do |stdin, stdout, stderr, wait_thr|
+    protected
+
+    def x
+      @log.info 'Exec: ' + @cmd
+      cmd = build_cmd
+
+      Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         stdin.close_write
         code = wait_thr.value
 
         unless code.success?
           begin
             @log.debug stderr.readline until stderr.eof.nil?
-          rescue EOFError => e
+          rescue EOFError
             print
           end
         end
 
-        begin
-          files = [stdout, stderr]
-
-          until all_eof(files) do
-            ready = IO.select(files)
-            ready && display_lines(ready[0])
-          end
-        rescue IOError => e
-          @log.error e
-        end
-
         if code.success?
           @log.result 'Ok'
-          return stdout.read
+          @res = stdout.read.chomp
+          return
         end
 
         puts
@@ -51,30 +50,8 @@ module Getch
 
     private
 
-    def add_tab
-      case @cmd.length
-      when 25..32 then "\t\t"
-      when 16..24 then "\t\t\t"
-      else "\t"
-      end
-    end
-
-    # Returns true if all files are EOF
-    def all_eof(files)
-      files.find { |f| !f.eof }.nil?
-    end
-
-    def display_lines(block)
-      block.each do |f|
-        begin
-          data = f.read_nonblock(@block_size)
-          puts data if OPTIONS[:verbose]
-        rescue EOFError
-          print
-        rescue => e
-          @log.fatal e
-        end
-      end
+    def build_cmd
+      @cmd
     end
   end
 
@@ -84,12 +61,6 @@ module Getch
       @gentoo = MOUNTPOINT
       @cmd = cmd
       @log = Getch::Log.new
-    end
-
-    def run!
-      @log.info "Running emerge: #{@cmd}\n"
-      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
-      read_exit
     end
 
     def pkg!
@@ -109,31 +80,6 @@ module Getch
     end
   end
 
-  class Make
-    def initialize(cmd)
-      @gentoo = MOUNTPOINT
-      @cmd = cmd
-      @log = Getch::Log.new
-    end
-
-    def run!
-      @log.info "Running Make: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /usr/src/linux \
-        && #{@cmd}\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-          exit 1
-        end
-      end
-    end
-  end
-
   class Bask
     def initialize(cmd)
       @cmd = cmd
@@ -143,25 +89,9 @@ module Getch
       download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
     end
 
-    def run!
-      @log.info "Running Bask: #{@cmd}"
-      cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /root/bask-#{@version} \
-        && ./bask.sh #{@cmd} -k /usr/src/linux\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-        end
-      end
-    end
-
     def cp
       NiTo.mkdir @config
-      Helpers.cp(
+      NiTo.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"
       )
@@ -180,14 +110,64 @@ module Getch
 
       Dir.chdir("#{MOUNTPOINT}/root")
       Helpers.get_file_online(url, file)
-      Getch::Command.new("tar xzf #{file}").run!
+      Getch::Command.new("tar xzf #{file}")
     end
   end
 
   class Chroot < Command
-    def initialize(cmd)
-      super
-      @cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile; #{cmd}\""
+    def build_cmd
+      dest = OPTIONS[:mountpoint]
+      case OPTIONS[:os]
+      when 'gentoo'
+        "chroot #{dest} /bin/bash -c \"source /etc/profile; #{@cmd}\""
+      when 'void'
+        "chroot #{dest} /bin/bash -c \"#{@cmd}\""
+      end
+    end
+  end
+
+  class ChrootOutput
+    def initialize(*args)
+      @cmd = args.join(' ')
+      @log = Log.new
+      x
+    end
+
+    private
+
+    def x
+      msg
+      system('chroot', OPTIONS[:mountpoint], '/bin/bash', '-c', other_args)
+      $?.success? && return
+
+      @log.fatal "Running #{@cmd}"
+    end
+
+    def msg
+      @log.info "Exec: #{@cmd}...\n"
+    end
+
+    def other_args
+      case OPTIONS[:os]
+      when 'gentoo' then "source /etc/profile && #{@cmd}"
+      when 'void' then @cmd
+      end
+    end
+  end
+
+  # Install
+  # use system() to install packages
+  # Usage: Install.new(pkg_name)
+  class Install < ChrootOutput
+    def msg
+      @log.info "Installing #{@cmd}...\n"
+    end
+
+    def other_args
+      case OPTIONS[:os]
+      when 'gentoo' then "source /etc/profile && emerge --changed-use #{@cmd}"
+      when 'void' then "/usr/bin/xbps-install -y #{@cmd}"
+      end
     end
   end
 end

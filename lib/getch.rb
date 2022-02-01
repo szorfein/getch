@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'clean'
 require_relative 'getch/helpers'
 require_relative 'getch/options'
 require_relative 'getch/states'
@@ -39,10 +38,11 @@ module Getch
     format: false,
     mount: false,
     tarball: false,
-    gentoo_config: false,
-    gentoo_update: false,
-    gentoo_bootloader: false,
-    gentoo_kernel: false
+    pre_config: false,
+    update: false,
+    post_config: false,
+    terraform: false,
+    bootloader: false,
   }
 
   MOUNTPOINT = '/mnt/getch'
@@ -90,32 +90,17 @@ module Getch
     def install_system
       assembly = Assembly.new
       assembly.tarball
-      assembly.config
+      assembly.pre_config
+      assembly.update
+      assembly.post_config
     end
 
-    def install
-      case OPTIONS[:os]
-      when 'gentoo'
-        install_gentoo
-      when 'void'
-        install_void
-      else
-        raise "Options #{OPTIONS[:os]} not supported...."
-      end
+    def terraform
+      Assembly.new.terraform
     end
 
-    def install_gentoo
-      gentoo = Getch::Gentoo::Main.new
-      gentoo.chroot
-      gentoo.bootloader
-      gentoo.kernel
-      gentoo.boot
-    end
-
-    def install_void
-      void = Getch::Void::Main.new
-      void.chroot
-      void.boot
+    def bootloader
+      Assembly.new.bootloader
     end
 
     def configure

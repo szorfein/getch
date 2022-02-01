@@ -76,7 +76,7 @@ module Getch
         if Getch::OPTIONS[:encrypt]
           Helpers.sys(cmd)
         else
-          Getch::Command.new(cmd).run!
+          Getch::Command.new(cmd)
         end
       end
     end

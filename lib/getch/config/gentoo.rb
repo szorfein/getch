@@ -51,8 +51,8 @@ module Getch
         mkdir "#{@systemd_net_dir}/resolved.conf.d"
         File.write(conf, datas.join("\n"), mode: 'w')
 
-        Getch::Chroot.new('systemctl enable systemd-networkd').run!
-        Getch::Chroot.new('systemctl enable systemd-resolved').run!
+        Getch::Chroot.new('systemctl enable systemd-networkd')
+        Getch::Chroot.new('systemctl enable systemd-resolved')
       end
 
       def shell

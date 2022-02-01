@@ -48,6 +48,7 @@ module Getch
         @log.info "Using locale #{@i18n}...\n"
         echo "#{OPTIONS[:mountpoint]}/etc/locale.gen", @i18n
         locale_conf
+        Getch::Chroot.new('locale-gen')
       end
 
       def write_libc_locales
@@ -56,6 +57,7 @@ module Getch
         @log.info "Using locale #{@i18n}...\n"
         echo @libc_locales, @i18n
         locale_conf
+        Getch::Chroot.new('xbps-reconfigure -f glibc-locales')
       end
 
       private
@@ -84,6 +86,8 @@ module Getch
       end
 
       def locale_conf
+        return unless Helpers.systemd?
+
         echo @locale_conf, "LANG=#{@lang}"
         echo_a @locale_conf, 'LC_COLLATE=C.UTF-8'
       end

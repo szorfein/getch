@@ -50,6 +50,6 @@ class Clean
   end
 
   def cmd(*args)
-    Getch::Command.new(args).run!
+    Getch::Command.new(args)
   end
 end

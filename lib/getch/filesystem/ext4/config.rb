@@ -6,8 +6,18 @@ module Getch
       class Config < Getch::FileSystem::Ext4::Device
         def initialize
           super
-          gen_uuid
+          x
         end
+
+        protected
+
+        def x
+          gen_uuid
+          fstab
+          cmdline
+        end
+
+        private
 
         def fstab
           file = "#{MOUNTPOINT}/etc/fstab"
@@ -36,7 +46,6 @@ module Getch
           swap = @dev_swap ? "PARTUUID=#{@partuuid_swap} none swap discard 0 0" : ''
           root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
           home = @dev_home ? "UUID=#{@uuid_home} /home/#{@user} ext4 defaults 0 2" : ''
-
           [ esp, swap, root, home ]
         end
       end

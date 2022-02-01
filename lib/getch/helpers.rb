@@ -15,6 +15,10 @@ module Getch
       Dir.exist? "#{OPTIONS[:mountpoint]}/etc/systemd"
     end
 
+    def self.openrc?
+      File.exist? "#{OPTIONS[:mountpoint]}/etc/conf.d/keymaps"
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }
@@ -26,30 +30,6 @@ module Getch
       unless status.success?
         abort "Problem running #{cmd}, stderr was:\n#{stderr}"
       end
-    end
-
-    def self.add_file(path, content = '')
-      File.write path, content unless File.exist? path
-    end
-
-    def self.touch(file)
-      File.write file, '' unless File.exist? file
-    end
-
-    def self.echo(src, content = '')
-      File.write(src, "#{content}\n", mode: 'w')
-    end
-
-    def self.echo_a(src, content = '')
-      abort "No file #{src} found !" unless File.exist? src
-
-      File.write(src, "#{content}\n", mode: 'a') unless NiTo.grep? src, content
-    end
-
-    def self.cp(src, dest)
-      abort "Src file #{src} no found" unless File.exist? src
-
-      FileUtils.cp(src, dest)
     end
 
     def self.sys(cmd)
@@ -91,10 +71,10 @@ module Getch
     # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base
     def self.mount_all
       dest = OPTIONS[:mountpoint]
-      Command.new('mount', '--types proc /proc', "#{dest}/proc").run!
+      NiTo.mount '--types proc /proc', "#{dest}/proc"
       ['dev', 'sys', 'run'].each do |d|
-        Command.new('mount', '--rbind', "/#{d}", "#{dest}/#{d}").run!
-        Command.new('mount', '--make-rslave', "#{dest}/#{d}").run!
+        NiTo.mount '--rbind', "/#{d}", "#{dest}/#{d}"
+        NiTo.mount '--make-rslave', "#{dest}/#{d}"
       end
     end
 

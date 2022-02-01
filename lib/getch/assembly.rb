@@ -44,7 +44,6 @@ module Getch
       return if STATES[:mount]
 
       @fs::Mount.new.run
-      #Helpers.mount_all
       @state.mount
     end
 
@@ -55,11 +54,52 @@ module Getch
       @state.tarball
     end
 
-    def config
-      return if STATES[:config]
+    # pre_config
+    # Pre configuration before updates and install packages
+    # Can contain config for a repository, CPU compilation flags, etc...
+    def pre_config
+      return if STATES[:pre_config]
 
-      @os::Config.new
-      @state.config
+      @os::PreConfig.new
+      @state.pre_config
+    end
+
+    # update
+    # Synchronise and Update the new system
+    def update
+      return if STATES[:update]
+
+      Helpers.mount_all
+      @os::Update.new
+      @state.update
+    end
+
+    def post_config
+      return if STATES[:post_config]
+
+      @os::PostConfig.new
+      @state.post_config
+    end
+
+    # terraform
+    # Install all the required packages
+    def terraform
+      return if STATES[:terraform]
+
+      #@fs::PreDeps.new
+      @os::Terraform.new
+      @fs::Deps.new
+      @state.terraform
+    end
+
+    # bootloader
+    # Install and configure Grub2 or Systemd-boot with Dracut
+    def bootloader
+      return if STATES[:bootloader]
+
+      @fs::Config.new
+      @os::Bootloader.new
+      @state.bootloader
     end
   end
 end

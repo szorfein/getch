@@ -1,21 +1,40 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Gentoo
-    class Config
+    class PostConfig
+      include NiTo
+
       def initialize
-        @make = "#{MOUNTPOINT}/etc/portage/make.conf"
+        @make = "#{OPTIONS[:mountpoint]}/etc/portage/make.conf"
         x
       end
 
       protected
 
       def x
-        Getch::Config::Portage.new
         Getch::Config::Locale.new
-        Getch::Config::PreNetwork.new
         Getch::Config::Keymap.new
         Getch::Config::TimeZone.new
+        cpuflags
+        Gentoo::UseFlag.new
+        grub
+      end
+
+      protected
+
+      def cpuflags
+        conf = "#{OPTIONS[:mountpoint]}/etc/portage/package.use/00cpuflags"
+        Install.new('app-portage/cpuid2cpuflags')
+        cpuflags = Getch::Chroot.new('cpuid2cpuflags')
+        File.write(conf, "*/* #{cpuflags}\n")
+      end
+
+      def grub
+        grub_pc = Helpers.efi? ? 'GRUB_PLATFORMS="efi-64"' : 'GRUB_PLATFORMS="pc"'
+        echo_a "#{OPTIONS[:mountpoint]}/etc/portage/make.conf", grub_pc
       end
 
       # https://wiki.gentoo.org/wiki/Signed_kernel_module_support

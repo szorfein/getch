@@ -8,11 +8,10 @@ module Getch
       include NiTo
 
       def initialize
-        @root_dir = MOUNTPOINT
+        @root_dir = OPTIONS[:mountpoint]
         @boot_dir = "#{@root_dir}/boot"
         @boot_efi_dir = "#{@root_dir}/efi"
         @home_dir = "#{@root_dir}/home"
-        @state = Getch::States.new
         @log = Getch::Log.new
       end
 
@@ -55,7 +54,7 @@ module Getch
       private
 
       def exec(*cmd)
-        Getch::Command.new(cmd).run!
+        Getch::Command.new(cmd)
       end
     end
   end

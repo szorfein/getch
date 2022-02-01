@@ -29,23 +29,28 @@ module Getch
       save
     end
 
-    def config
-      STATES[:gentoo_config] = true
+    def pre_config
+      STATES[:pre_config] = true
       save
     end
 
     def update
-      STATES[:gentoo_update] = true
+      STATES[:update] = true
+      save
+    end
+
+    def post_config
+      STATES[:post_config] = true
+      save
+    end
+
+    def terraform
+      STATES[:terraform] = true
       save
     end
 
     def bootloader
-      STATES[:gentoo_bootloader] = true
-      save
-    end
-
-    def kernel
-      STATES[:gentoo_kernel] = true
+      STATES[:bootloader] = true
       save
     end
 
