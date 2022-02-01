@@ -91,5 +91,15 @@ module Getch
       @fs::Deps.new
       @state.terraform
     end
+
+    # bootloader
+    # Install and configure Grub2 or Systemd-boot with Dracut
+    def bootloader
+      return if STATES[:bootloader]
+
+      @fs::Config.new
+      @os::Bootloader.new
+      @state.bootloader
+    end
   end
 end

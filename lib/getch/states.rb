@@ -50,7 +50,7 @@ module Getch
     end
 
     def bootloader
-      STATES[:gentoo_bootloader] = true
+      STATES[:bootloader] = true
       save
     end
 

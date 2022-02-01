@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'void/boot'
-
 module Getch
   module Void
     class Main
@@ -11,10 +9,6 @@ module Getch
         chroot.fs
         chroot.extras
         chroot.install_pkgs
-      end
-
-      def kernel
-        Getch::Void::Sources.new
       end
 
       def boot
@@ -35,3 +29,5 @@ require_relative 'void/pre_config'
 require_relative 'void/update'
 require_relative 'void/post_config'
 require_relative 'void/terraform'
+require_relative 'void/bootloader'
+require_relative 'void/finalize'

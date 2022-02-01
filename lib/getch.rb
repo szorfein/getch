@@ -42,7 +42,7 @@ module Getch
     update: false,
     post_config: false,
     terraform: false,
-    gentoo_bootloader: false,
+    bootloader: false,
   }
 
   MOUNTPOINT = '/mnt/getch'
@@ -96,31 +96,11 @@ module Getch
     end
 
     def terraform
-      assembly = Assembly.new
-      assembly.terraform
+      Assembly.new.terraform
     end
 
-    def install
-      case OPTIONS[:os]
-      when 'gentoo'
-        install_gentoo
-      when 'void'
-        install_void
-      else
-        raise "Options #{OPTIONS[:os]} not supported...."
-      end
-    end
-
-    def install_gentoo
-      gentoo = Getch::Gentoo::Main.new
-      gentoo.bootloader
-      gentoo.kernel
-      gentoo.boot
-    end
-
-    def install_void
-      void = Getch::Void::Main.new
-      void.boot
+    def bootloader
+      Assembly.new.bootloader
     end
 
     def configure
