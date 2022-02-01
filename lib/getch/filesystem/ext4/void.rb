@@ -8,15 +8,6 @@ module Getch
 
         attr_reader :boot_disk
 
-        def fstab
-          conf = "#{MOUNTPOINT}/etc/fstab"
-          File.write(conf, "\n", mode: 'w', chmod: 0644)
-          line_fstab(@dev_esp, '/efi vfat noauto,rw,relatime 0 0') if @dev_esp
-          line_fstab(@dev_swap, 'swap swap rw,noatime,discard 0 0') if @dev_swap
-          line_fstab(@dev_root, '/ ext4 rw,relatime 0 1')
-          add_line(conf, 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0')
-        end
-
         def config_dracut
           conf = "#{MOUNTPOINT}/etc/dracut.conf.d/ext4.conf"
           # dracut: value+= should be surrounding by white space

@@ -15,8 +15,8 @@ module Getch
 
         def x
           fstab
-          #gen_uuid
-          #cmdline
+          gen_uuid
+          cmdline
         end
 
         private
@@ -25,7 +25,7 @@ module Getch
           devs = {
             esp: @dev_esp, swap: @dev_swap, root: @dev_root, home: @dev_home
           }
-          Fstab.new(devs, OPTIONS).generate
+          Fstab::Minimal.new(devs, OPTIONS).generate
         end
 
         def cmdline
