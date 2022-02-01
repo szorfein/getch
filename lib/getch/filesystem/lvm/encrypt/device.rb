@@ -7,7 +7,7 @@ module Getch
         class Device < Getch::FileSystem::Device
           def initialize
             super
-            @vg = 'vg0'
+            @vg = OPTIONS[:vg_name] ||= 'vg0'
             @lv_root = "/dev/#{@vg}/root"
             @lv_swap = "/dev/#{@vg}/swap"
             @lv_home = @home_disk ? "/dev/#{@vg}/home" : nil

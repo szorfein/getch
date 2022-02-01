@@ -6,7 +6,7 @@ module Getch
       class Device < Getch::FileSystem::Device
         def initialize
           super
-          @vg = 'vg0'
+          @vg = OPTIONS[:vg_name] ||= 'vg0'
           @lv_root = "/dev/#{@vg}/root"
           @lv_swap = "/dev/#{@vg}/swap"
           @lv_home = @home_disk ? "/dev/#{@vg}/home" : nil
@@ -35,7 +35,7 @@ module Getch
             end
           end
         end
-        
+
         # The swap is a part of the LVM volume, so we clean the func
         def search_swap
         end

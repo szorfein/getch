@@ -30,6 +30,7 @@ module Getch
     os: 'gentoo',
     username: false,
     verbose: false,
+    vg_name: 'vg4',
     timezone: 'UTC'
   }
 

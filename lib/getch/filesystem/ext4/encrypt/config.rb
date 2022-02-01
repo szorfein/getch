@@ -1,30 +1,32 @@
 # frozen_string_literal: true
 
 require 'fileutils'
+require 'nito'
+require 'fstab'
 
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
         class Config < Getch::FileSystem::Ext4::Encrypt::Device
+          include NiTo
+
           def initialize
             super
             gen_uuid
-            @root_dir = MOUNTPOINT
-            @init = '/usr/lib/systemd/systemd'
+            @root_dir = OPTIONS[:mountpoint]
             move_secret_keys
             crypttab
           end
 
           def fstab
-            file = "#{@root_dir}/etc/fstab"
-            datas = data_fstab
-            File.write(file, datas.join("\n"))
+            devs = { esp: @dev_esp, boot: @dev_boot, swap: @dev_swap, root: @dev_root, home: @dev_home }
+            Fstab::Encrypt.new(devs, OPTIONS).generate
           end
 
           def cmdline
             conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-            line = "rd.luks.uuid=#{@uuid_dev_root} rd.vconsole.keymap=#{Getch::OPTIONS[:keymap]} rw"
+            line = "rd.luks.uuid=#{@uuid_dev_root} rd.vconsole.keymap=#{OPTIONS[:keymap]} rw"
             File.write conf, "kernel_cmdline=\"#{line}\"\n"
           end
 
@@ -38,13 +40,10 @@ module Getch
           end
 
           def grub
-            return if Helpers.efi? and not OPTIONS[:musl]
+            return unless File.exist? "#{@root_dir}/etc/default/grub"
 
             file = "#{@root_dir}/etc/default/grub"
-            cmdline = [
-              "GRUB_ENABLE_CRYPTODISK=y"
-            ]
-            File.write(file, cmdline.join("\n"), mode: 'a')
+            echo_a file, 'GRUB_ENABLE_CRYPTODISK=y'
           end
 
           private
@@ -52,18 +51,7 @@ module Getch
           def gen_uuid
             @partuuid_swap = Helpers.partuuid(@dev_swap)
             @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_esp = Helpers.uuid(@dev_esp) if @dev_esp
-            @uuid_root = `lsblk -d -o "UUID" #{@luks_root} | tail -1`.chomp() if @dev_root
             @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @luks_home
-          end
-
-          def data_fstab
-            boot_efi = @dev_esp ? "UUID=#{@uuid_esp} /efi vfat noauto,noatime 1 2" : ''
-            swap = @dev_swap ? "#{@luks_swap} none swap discard 0 0 " : ''
-            root = @dev_root ? "UUID=#{@uuid_root} / ext4 defaults 0 1" : ''
-            home = @dev_home ? "#{@luks_home} /home/#{@user} ext4 defaults 0 2" : ''
-
-            [ boot_efi, swap, root, home ]
           end
 
           def move_secret_keys
