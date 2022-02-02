@@ -15,20 +15,10 @@ module Getch
           x
         end
 
-        protected
-
-        def x
-          fstab
-          cmdline
-        end
-
         private
 
-        def fstab
+        def x
           Fstab::Minimal.new(@devs, OPTIONS).generate
-        end
-
-        def cmdline
           Dracut::Minimal.new(@devs, OPTIONS).generate
         end
       end
