@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'nito'
 require 'fstab'
+require 'dracut'
 
 module Getch
   module FileSystem
@@ -13,21 +14,19 @@ module Getch
 
           def initialize
             super
-            gen_uuid
             @root_dir = OPTIONS[:mountpoint]
+            @devs = { esp: @dev_esp, boot: @dev_boot, swap: @dev_swap, root: @dev_root, home: @dev_home }
             move_secret_keys
             crypttab
+            x
           end
 
-          def fstab
-            devs = { esp: @dev_esp, boot: @dev_boot, swap: @dev_swap, root: @dev_root, home: @dev_home }
-            Fstab::Encrypt.new(devs, OPTIONS).generate
-          end
+          protected
 
-          def cmdline
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-            line = "rd.luks.uuid=#{@uuid_dev_root} rd.vconsole.keymap=#{OPTIONS[:keymap]} rw"
-            File.write conf, "kernel_cmdline=\"#{line}\"\n"
+          def x
+            Fstab::Encrypt.new(@devs, OPTIONS).generate
+            Dracut::Encrypt.new(@devs, OPTIONS).generate
+            grub
           end
 
           def crypttab
@@ -47,12 +46,6 @@ module Getch
           end
 
           private
-
-          def gen_uuid
-            @partuuid_swap = Helpers.partuuid(@dev_swap)
-            @uuid_dev_root = `lsblk -d -o "UUID" #{@dev_root} | tail -1`.chomp() if @dev_root
-            @uuid_home = `lsblk -d -o "UUID" #{@dev_home} | tail -1`.chomp() if @luks_home
-          end
 
           def move_secret_keys
             return unless @luks_home

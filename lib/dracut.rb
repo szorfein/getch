@@ -6,3 +6,4 @@ end
 require_relative 'dracut/root'
 require_relative 'dracut/minimal'
 require_relative 'dracut/lvm'
+require_relative 'dracut/encrypt'

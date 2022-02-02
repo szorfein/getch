@@ -32,25 +32,6 @@ module Getch
             line_crypttab('crypthome', @dev_home, '/boot/home.key', 'luks') if @home_disk
           end
 
-          def config_dracut
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/ext4.conf"
-            content = [
-              'hostonly="yes"',
-              'omit_dracutmodules+=" btrfs lvm "',
-              'install_items+=" /boot/volume.key /etc/crypttab "',
-            ]
-            File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
-            #add_line(conf, "install_items+=\" /boot/home.key \"") if @home_disk
-          end
-
-          def kernel_cmdline_dracut
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-            root_uuid = b_uuid(@dev_root)
-            args = "rd.luks.uuid=#{root_uuid} rootfstype=ext4 rootflags=rw,relatime"
-            line = "kernel_cmdline=\"#{args}\""
-            File.write(conf, "#{line}\n", mode: 'w', chmod: 0644)
-          end
-
           def finish
             puts '+ Enter in your system: chroot /mnt /bin/bash'
             puts '+ Reboot with: shutdown -r now'
