@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'fstab'
 require 'nito'
+require 'fstab'
+require 'dracut'
 
 module Getch
   module FileSystem
@@ -13,15 +14,17 @@ module Getch
           def initialize
             super
             gen_uuid
+            @devs = { esp: @dev_esp, boot: @dev_boot, root: @dev_root, home: @dev_home }
             crypttab
+            x
           end
 
-          def fstab
-            devs = { esp: @dev_esp, boot: @dev_boot, root: @dev_root, home: @dev_home }
-            Fstab::Hybrid.new(devs, OPTIONS).generate
-          end
+          protected
 
-          def systemd_boot
+          def x
+            Fstab::Hybrid.new(@devs, OPTIONS).generate
+            Dracut::Hybrid.new(@devs, OPTIONS).generate
+            grub
           end
 
           def crypttab

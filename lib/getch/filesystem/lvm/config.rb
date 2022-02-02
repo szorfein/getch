@@ -1,20 +1,25 @@
 # frozen_string_literal: true
 
 require 'fstab'
+require 'dracut'
 
 module Getch
   module FileSystem
     module Lvm
       class Config < Getch::FileSystem::Lvm::Device
-        def fstab
-          devs = { esp: @dev_esp }
-          Fstab::Lvm.new(devs, OPTIONS).generate
+        def initialize
+          super
+          @devs = {
+            esp: @dev_esp, root: @dev_root
+          }
+          x
         end
 
-        def cmdline
-          conf = "#{MOUNTPOINT}/etc/dracut.conf.d/cmdline.conf"
-          line = "resume=#{@lv_swap} rd.lvm.vg=#{@vg}"
-          File.write conf, "kernel_cmdline=\"#{line}\"\n"
+        private
+
+        def x
+          Fstab::Lvm.new(@devs, OPTIONS).generate
+          Dracut::Lvm.new(@devs, OPTIONS).generate
         end
       end
     end

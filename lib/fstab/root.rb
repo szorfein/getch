@@ -1,10 +1,10 @@
 # frozen_string_litteral: true
 
 require 'nito'
-require_relative 'getch/log'
+require_relative '../getch/log'
 
 module Fstab
-  class Root < Root
+  class Root
     include NiTo
 
     def initialize(devs, options)
