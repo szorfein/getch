@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Getch
   module Gentoo
     class Terraform
@@ -15,7 +13,7 @@ module Getch
       end
 
       def install_pkgs
-        @pkgs << 'app-portage/gentoolkit'
+        @pkgs = 'app-portage/gentoolkit'
         @pkgs << ' app-admin/sudo'
         @pkgs << ' app-editors/vim'
         @pkgs << ' net-firewall/iptables'
