@@ -23,6 +23,8 @@ module Getch
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }
       end
+    rescue Net::OpenTimeout => e
+      abort "DNS error #{e}"
     end
 
     def self.exec_or_die(cmd)
