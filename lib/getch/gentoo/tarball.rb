@@ -34,6 +34,8 @@ module Getch
         URI.open(stage3) do |file|
           file.read.match(/^[[:alnum:]]+/)
         end
+      rescue Net::OpenTimeout => e
+        @log.fatal "Problem with DNS? #{e}"
       end
 
       def file
