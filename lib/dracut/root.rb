@@ -8,7 +8,7 @@ module Dracut
     include NiTo
 
     def initialize(devs, options)
-      @log = Log.new
+      @log = Getch::Log.new
       @root = devs[:root] ||= nil
       @swap = devs[:swap] ||= nil
       @fs = options[:fs] ||= 'ext4'
@@ -30,7 +30,7 @@ module Dracut
 
     # man dracut.cmdline(7)
     def cmdline
-      file "#{@mountpoint}/etc/dracut.conf.d/cmdline.conf"
+      file = "#{@mountpoint}/etc/dracut.conf.d/cmdline.conf"
       line = get_line
       echo file, "kernel_cmdline=\"#{line}\""
     end

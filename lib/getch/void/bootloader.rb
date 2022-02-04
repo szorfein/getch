@@ -11,7 +11,7 @@ module Getch
 
       def x
         dependencies
-        setup
+        #setup
         initramfs
       end
 

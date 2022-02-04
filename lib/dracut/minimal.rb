@@ -1,7 +1,7 @@
 # frozen_string_litteral: true
 
 module Dracut
-  class Minimal
+  class Minimal < Root
     def get_line
       swap = get_uuid @swap
       root = get_uuid @root

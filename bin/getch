@@ -14,4 +14,8 @@ getch.install_system
 
 getch.terraform
 
+getch.bootloader
+
+getch.finalize
+
 #getch.configure

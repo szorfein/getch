@@ -94,12 +94,26 @@ module Getch
 
     # bootloader
     # Install and configure Grub2 or Systemd-boot with Dracut
+    # Adding keys for Luks
     def bootloader
       return if STATES[:bootloader]
 
       @fs::Config.new
       @os::Bootloader.new
       @state.bootloader
+    end
+
+    # finalize
+    # Password for root, etc
+    def finalize
+      return if STATES[:finalize]
+
+      @os::Finalize.new
+      puts
+      puts '[*!*] Installation finished [*!*]'
+      puts
+      @fs.end
+      @state.finalize
     end
   end
 end

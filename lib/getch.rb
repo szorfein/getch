@@ -44,6 +44,7 @@ module Getch
     post_config: false,
     terraform: false,
     bootloader: false,
+    finalize: false,
   }
 
   MOUNTPOINT = '/mnt/getch'
@@ -102,6 +103,10 @@ module Getch
 
     def bootloader
       Assembly.new.bootloader
+    end
+
+    def finalize
+      Assembly.new.finalize
     end
 
     def configure

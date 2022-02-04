@@ -3,6 +3,10 @@
 module Getch
   module FileSystem
     module Ext4
+      def self.end
+        puts '+ To enter in your system: chroot /mnt/getch /bin/bash'
+        puts '+ Reboot with: shutdown -r now'
+      end
     end
   end
 end

@@ -54,6 +54,11 @@ module Getch
       save
     end
 
+    def finalize
+      STATES[:finalize] = true
+      save
+    end
+
     private
 
     def save
