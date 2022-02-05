@@ -2,30 +2,21 @@
 
 module Getch
   module FileSystem
-    module Lvm
-      module Encrypt
-        class Partition < Device
+    module Ext4
+      module Hybrid
+        class Partition
           include Helpers::Cryptsetup
 
           def initialize
-            super
-            @state = Getch::States.new()
-            @clean = Getch::FileSystem::Clean
             @partition = Getch::FileSystem::Partition.new
             @log = Log.new
             run_partition
           end
 
           def run_partition
-            return if STATES[:partition ]
-            @clean.old_vg(@dev_root, @vg)
-            @clean.hdd(@disk)
-            @clean.external_disk(@disk, @boot_disk, @cache_disk, @home_disk)
-
             partition
             encrypting
             lvm
-            @state.partition
           end
 
           private

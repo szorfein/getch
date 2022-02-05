@@ -2,11 +2,10 @@
 
 module Getch
   module FileSystem
-    module Lvm
-      module Encrypt
-        class Format < Device
+    module Ext4
+      module Hybrid
+        class Format
           def initialize
-            super
             @fs = 'ext4'
             format
           end

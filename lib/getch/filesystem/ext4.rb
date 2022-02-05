@@ -11,10 +11,7 @@ module Getch
   end
 end
 
-require_relative 'ext4/device'
-require_relative 'ext4/partition'
-require_relative 'ext4/format'
-require_relative 'ext4/mount'
-require_relative 'ext4/config'
-require_relative 'ext4/deps'
+require_relative 'ext4/minimal'
 require_relative 'ext4/encrypt'
+require_relative 'ext4/lvm'
+require_relative 'ext4/hybrid'

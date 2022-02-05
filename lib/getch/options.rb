@@ -37,7 +37,7 @@ module Getch
         end
 
         opts.on('-f', '--format FS',
-                'Can be ext4, lvm or zfs. Default use ext4') do |fs|
+                'Can be ext4, zfs. Default use ext4') do |fs|
           OPTIONS[:fs] = Getch::Guard.format(fs)
         end
 
@@ -64,6 +64,11 @@ module Getch
         opts.on('--separate-home DISK',
                 'Use a different DISK for the /home partition.') do |home|
           OPTIONS[:home_disk] = Getch::Guard.disk(home)
+        end
+
+        opts.on('--lvm',
+                'System will use LVM, do not work with ZFS.') do
+          OPTIONS[:lvm] = true
         end
 
         opts.on('--encrypt',

@@ -2,11 +2,10 @@
 
 module Getch
   module FileSystem
-    module Lvm
-      module Encrypt
-        class Mount < Device
+    module Ext4
+      module Minimal
+        class Mount
           def initialize
-            super
             @mount = Getch::FileSystem::Mount.new
             @state = Getch::States.new
           end
@@ -14,10 +13,11 @@ module Getch
           def run
             return if STATES[:mount]
 
-            @mount.root(@lv_root)
+            @mount.swap(@dev_swap)
+            @mount.root(@dev_root)
             @mount.boot(@dev_boot)
             @mount.esp(@dev_esp)
-            @mount.home(@lv_home)
+            @mount.home(@dev_home)
             @state.mount
           end
         end

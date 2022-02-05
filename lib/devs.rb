@@ -160,9 +160,6 @@ module Devs
   class MatExt4 < Matrice
   end
 
-  class MatLvm < Matrice
-  end
-
   class MatZfs < Matrice
     def initialize(disk, args)
       @zfs_cache = args[:zfs_cache] ||= nil
@@ -197,7 +194,6 @@ module Devs
 
   TREE = {
     ext4: MatExt4,
-    lvm: MatLvm,
     zfs: MatZfs,
   }
 end

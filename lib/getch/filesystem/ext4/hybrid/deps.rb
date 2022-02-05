@@ -2,8 +2,8 @@
 
 module Getch
   module FileSystem
-    module Lvm
-      module Encrypt
+    module Ext4
+      module Hybrid
         class Deps
           def make
             install_deps

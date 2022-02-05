@@ -3,7 +3,9 @@
 module Getch
   module FileSystem
     module Ext4
-      class Deps
+      module Minimal
+        class Deps
+        end
       end
     end
   end

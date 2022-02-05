@@ -6,13 +6,12 @@ require 'dracut'
 
 module Getch
   module FileSystem
-    module Lvm
-      module Encrypt
-        class Config < Getch::FileSystem::Lvm::Encrypt::Device
+    module Ext4
+      module Hybrid
+        class Config
           include NiTo
 
           def initialize
-            super
             gen_uuid
             @devs = { esp: @dev_esp, boot: @dev_boot, root: @dev_root, home: @dev_home }
             crypttab
