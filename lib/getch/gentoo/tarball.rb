@@ -8,7 +8,7 @@ module Getch
     class Tarball
       def initialize
         @log = Log.new
-        @mirror = 'https://mirrors.soeasyto.com/distfiles.gentoo.org'
+        @mirror = 'https://mirror.rackspace.com/gentoo'
         @release = release
         @stage_file = OPTIONS[:musl] ?
           "stage3-amd64-musl-#{@release}.tar.xz" :

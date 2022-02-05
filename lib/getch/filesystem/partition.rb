@@ -15,6 +15,14 @@ module Getch
         exec 'sgdisk', "-n#{part}:1MiB:+1MiB", "-t#{part}:EF02", disk
       end
 
+      def efi(dev)
+        return unless dev
+
+        disk = disk_name(dev)
+        part = dev.match(/[0-9]/)
+        exec 'sgdisk', "-n#{part}:1M:+260M", "-t#{part}:EF00", disk
+      end
+
       def boot(dev)
         return unless dev
 
@@ -25,14 +33,6 @@ module Getch
         else
           exec 'sgdisk', "-n#{part}:0:+128MiB", "-t#{part}:8300", disk
         end
-      end
-
-      def efi(dev)
-        return unless dev
-
-        disk = disk_name(dev)
-        part = dev.match(/[0-9]/)
-        exec 'sgdisk', "-n#{part}:1M:+260M", "-t#{part}:EF00", disk
       end
 
       def swap(dev)

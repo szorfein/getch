@@ -11,6 +11,15 @@ module Getch
       @os = Tree::Os.new.select
       @fs = Tree::FS.new.select
       @state = Getch::States.new
+      Getch::Device.new
+      init_devs
+    end
+
+    def init_devs
+      DEVS[:root] && return
+
+      @fs::Device.new
+      DEVS[:root] || Log.new.fatal('No root, device prob !')
     end
 
     def clean

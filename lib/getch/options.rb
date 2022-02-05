@@ -89,6 +89,7 @@ module Getch
         opts.on('--restart', 'Restart the whole installation') do
           rm '/tmp/install_gentoo.yaml'
           rm '/tmp/log_install.txt'
+          rm '/tmp/getch_devs.yaml'
         end
 
         begin
