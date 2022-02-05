@@ -36,7 +36,7 @@ module Getch
           },
           false => { # - lvm
             ext4: FileSystem::Ext4::Minimal,
-            zfs: FileSystem::Zfs,
+            zfs: FileSystem::Zfs::Minimal,
           },
         }
       }.freeze
