@@ -112,4 +112,13 @@ module Sgdisk
       @home_code = '8e00'
     end
   end
+
+  class Encrypt < Root
+    def load_codes
+      super
+      @boot_code = '8309'
+      @root_code = '8309'
+      @home_code = '8309'
+    end
+  end
 end

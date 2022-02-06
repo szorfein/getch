@@ -85,6 +85,35 @@ module NiTo
     cp tmp_file, file
   end
 
+  def search_proc_swaps(path)
+    found = nil
+    File.open('/proc/swaps').each do |l|
+      if l =~ /#{path}/
+        found = l.split(' ')
+      end
+    end
+    found
+  end
+
+  def swapoff(dev)
+    return unless grep? '/proc/swaps', dev
+
+    found = search_proc_swaps(dev)
+    found ?
+      Getch::Command.new('swapoff', found[0]) :
+      return
+  end
+
+  def swapoff_dm(name)
+    dm = Getch::Helpers.get_dm name
+    dm || return
+
+    found = search_proc_swaps(dm)
+    found ?
+      Getch::Command.new('swapoff', found[0]) :
+      return
+  end
+
   def sh(*args)
     log = Log.new
     Open3.popen3 args.join(' ') do |_, stdout, stderr, wait_thr|

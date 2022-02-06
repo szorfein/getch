@@ -52,7 +52,7 @@ module Getch
     def mount
       return if STATES[:mount]
 
-      @fs::Mount.new.run
+      @fs::Mount.new
       @state.mount
     end
 

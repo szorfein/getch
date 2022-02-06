@@ -1,25 +1,20 @@
 # frozen_string_literal: true
 
+require 'mkfs'
+
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
-        class Format < Getch::FileSystem::Ext4::Encrypt::Device
+        class Format
           def initialize
-            super
-            format
-          end
-
-          def format
-            exec("mkfs.fat -F32 #{@dev_esp}") if @dev_esp
-            exec("mkfs.ext4 -F #{@luks_root}")
-            exec("mkfs.ext4 -F #{@luks_home}") if @dev_home
+            x
           end
 
           private
 
-          def exec(cmd)
-            Getch::Command.new(cmd)
+          def x
+            Mkfs::Encrypt.new(DEVS, OPTIONS)
           end
         end
       end

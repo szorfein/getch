@@ -20,9 +20,9 @@ module Luks
 
     Permission = Class.new(StandardError)
 
-    def initialize(options)
-      @disk = options[:disk]
-      @format = options[:format]
+    def initialize(disk, options)
+      @disk = disk
+      @format = options[:fs]
       @mountpoint = options[:mountpoint]
       @luks_type = nil
       @key = true
@@ -95,7 +95,7 @@ module Luks
     end
 
     def mount
-      mountpoint = @luks_name == 'root_crypt' ? @mountpoint : "#{@mountpoint}#{@mount}"
+      mountpoint = @luks_name =~ /^root/ ? @mountpoint : "#{@mountpoint}#{@mount}"
       NiTo.mount "/dev/mapper/#{@luks_name}", mountpoint
     end
 
@@ -114,30 +114,21 @@ module Luks
     def make_key
       @key_path = "#{@key_dir}/#{@key_name}"
       @full_key_path = "#{@mountpoint}#{@key_path}"
-      @log.info "Generating key..."
+      @log.info "Generating key...\n"
       mkdir "#{@mountpoint}#{@key_dir}"
       sh 'dd', 'bs=512', 'count=8', 'iflag=fullblock', 'if=/dev/urandom', "of=#{@full_key_path}"
-      @log.result 'Ok'
     end
 
     # https://wiki.archlinux.org/title/Advanced_Format#File_systems
     def format_ext4
-      @log.info "Formating disk with #{@format}..."
+      @log.info "Formating disk with #{@format}...\n"
       sh 'mkfs.ext4', '-F', '-b', @bs, "/dev/mapper/#{@luks_name}"
-      @log.result 'Ok'
     end
 
     # https://wiki.archlinux.org/title/Advanced_Format#File_systems
     def format_xfs
-      @log.info "Formating disk with #{@format}..."
+      @log.info "Formating disk with #{@format}...\n"
       sh 'mkfs.xfs', '-f', '-s', "size=#{@bs}", "/dev/mapper/#{@luks_name}"
-      @log.result 'Ok'
-    end
-
-    def format_fat
-      @log.info "Formating disk with #{@format}..."
-      sh 'mkfs.fat', '-F', '32', "/dev/mapper/#{@luks_name}"
-      @log.result 'Ok'
     end
 
     def config
@@ -220,25 +211,27 @@ module Luks
 
   # Boot can decrypt the root (/)
   class Boot < Main
-    def initialize(options)
+    def initialize(disk, options)
       super
       @luks_type = 'luks1'
       @key = false
       @bootloader = true
       @mount = '/boot'
-      @luks_name = 'boot_crypt'
+      @luks = options[:luks_name]
+      @luks_name = "boot-#{@luks}"
       @command_args = "--type #{@luks_type}"
     end
   end
 
   # Root can decrypt the /home or other devs
   class Root < Main
-    def initialize(options)
+    def initialize(disk, options)
       super
       @luks_type = 'luks2'
       @key_dir = '/boot'
       @key_name = 'root.key'
-      @luks_name = 'root_crypt'
+      @luks = options[:luks_name]
+      @luks_name = "root-#{@luks}"
       @mount = '/'
       @command_args = "--type #{@luks_type}"
       @bootloader = false
@@ -246,13 +239,15 @@ module Luks
   end
 
   class Home < Main
-    def initialize(options)
+    def initialize(disk, options)
       super
       @luks_type = 'luks2'
       @key_dir = '/root/keys'
       @key_name = 'home.key'
       @mount = '/home'
       @command_args = "--type #{@luks_type}"
+      @luks = options[:luks_name]
+      @luks_name = "home-#{@luks}"
       @bootloader = false
     end
   end

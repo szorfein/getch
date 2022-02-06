@@ -9,9 +9,6 @@ module Getch
         class Device
           def initialize
             @args = { start: true, boot: true, swap: true, root: true }
-            @luks_root = '/dev/mapper/cryptroot'
-            @luks_home = @home_disk ? '/dev/mapper/crypthome' : nil
-            @luks_swap = '/dev/mapper/cryptswap'
             x
           end
 

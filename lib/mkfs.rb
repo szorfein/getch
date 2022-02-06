@@ -101,4 +101,31 @@ module Mkfs
       mkfs "/dev/#{@vg}/home"
     end
   end
+
+  class Encrypt < Root
+    def initialize(devs, options)
+      @luks = options[:luks_name]
+      super
+    end
+
+    # Boot is alrealy formatted
+    def format_boot
+    end
+
+    # Swap will be encrypted after the reboot
+    def format_swap
+    end
+
+    def format_root
+      File.exist? "/dev/mapper/root-#{@luks}" || abort("No root-#{@luks} found")
+
+      mkfs "/dev/mapper/root-#{@luks}"
+    end
+
+    def format_home
+      @home || return
+
+      mkfs "/dev/mapper/home-#{@luks}"
+    end
+  end
 end

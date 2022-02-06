@@ -26,6 +26,7 @@ module Getch
     home_disk: false,
     keymap: 'us',
     language: 'en_US',
+    luks_name: 'luks',
     lvm: false,
     mountpoint: '/mnt/getch',
     musl: false,

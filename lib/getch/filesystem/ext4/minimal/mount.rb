@@ -1,24 +1,18 @@
 # frozen_string_literal: true
 
+require 'mountfs'
+
 module Getch
   module FileSystem
     module Ext4
       module Minimal
         class Mount
           def initialize
-            @mount = Getch::FileSystem::Mount.new
-            @state = Getch::States.new
+            x
           end
 
-          def run
-            return if STATES[:mount]
-
-            @mount.swap(@dev_swap)
-            @mount.root(@dev_root)
-            @mount.boot(@dev_boot)
-            @mount.esp(@dev_esp)
-            @mount.home(@dev_home)
-            @state.mount
+          def x
+            MountFs::Minimal.new(DEVS, OPTIONS)
           end
         end
       end

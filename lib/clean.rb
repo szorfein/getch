@@ -13,13 +13,16 @@ class Clean
     @home = args[:home_disk] ||= nil
     @cache = args[:cache_disk] ||= nil
     @vg = args[:vg_name] ||= nil
+    @luks = args[:luks_name] ||= nil
     @log = Getch::Log.new
     @mountpoint = args[:mountpoint] ||= '/mnt/getch'
   end
 
   def x
     umount_all
+    swap_off
     disable_lvs
+    cryptsetup_close
     old_lvm
     zap_all @root, @boot, @home, @cache
   end
@@ -36,14 +39,26 @@ class Clean
     umount '/tmp/boot'
   end
 
+  def swap_off
+    swapoff @root
+    swapoff_dm "#{@vg}-swap"
+  end
+
   def disable_lvs
     lvchange_n 'home'
     lvchange_n 'swap'
     lvchange_n 'root'
   end
 
+  def cryptsetup_close
+    close "boot-#{@luks}"
+    close "root-#{@luks}"
+    close "home-#{@luks}"
+  end
+
   def old_lvm
-    #return unless File.exist?("/dev/#{@vg}")
+    lvm = `lvs | grep #{@vg}`
+    lvm.match?(/#{@vg}/) || return
 
     vgremove
     pvremove @root, @home, @cache
@@ -71,6 +86,12 @@ class Clean
     return unless File.exist? "/dev/#{@vg}/#{name}"
 
     cmd 'lvchange', '-an', "/dev/#{@vg}/#{name}"
+  end
+
+  def close(name)
+    return unless File.exist? "/dev/mapper/#{name}"
+
+    cmd 'cryptsetup', 'close', name
   end
 
   def vgremove

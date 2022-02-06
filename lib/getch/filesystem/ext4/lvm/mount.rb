@@ -1,20 +1,18 @@
 # frozen_string_literal: true
 
+require 'mountfs'
+
 module Getch
   module FileSystem
     module Ext4
       module Lvm
         class Mount
           def initialize
-            @mount = Getch::FileSystem::Mount.new
+            x
           end
 
-          def run
-            @mount.swap(@lv_swap)
-            @mount.root(@lv_root)
-            @mount.boot(@dev_boot)
-            @mount.esp(@dev_esp)
-            @mount.home(@lv_home)
+          def x
+            MountFs::Lvm.new(DEVS, OPTIONS)
           end
         end
       end

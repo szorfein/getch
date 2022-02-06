@@ -51,6 +51,15 @@ module Getch
       end
     end
 
+    def self.get_dm(name)
+      Dir.glob('/dev/mapper/*').each do |f|
+        if f =~ /#{name}/ && f != '/dev/mapper/control'
+          return File.readlink(f).tr('../', '')
+        end
+      end
+      nil
+    end
+
     # Used with ZFS for the pool name
     def self.pool_id(dev)
       if dev.match(/[0-9]/)
