@@ -115,7 +115,8 @@ module Getch
       case text.length
       when 39..46 then "\t\t"
       when 31..38 then "\t\t\t"
-      when 16..30 then "\t\t\t\t"
+      when 22..30 then "\t\t\t\t"
+      when 16..21 then "\t\t\t\t\t"
       else "\t"
       end
     end

@@ -8,7 +8,7 @@ getch = Getch::Main.new(
 
 #getch.resume
 
-#getch.prepare_disk
+getch.prepare_disk
 
 #getch.install_system
 

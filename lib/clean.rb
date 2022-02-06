@@ -2,6 +2,7 @@
 
 require 'nito'
 require_relative 'getch/command'
+require_relative 'getch/log'
 
 class Clean
   include NiTo
@@ -11,11 +12,15 @@ class Clean
     @boot = args[:boot_disk] ||= nil
     @home = args[:home_disk] ||= nil
     @cache = args[:cache_disk] ||= nil
+    @vg = args[:vg_name] ||= nil
+    @log = Getch::Log.new
     @mountpoint = args[:mountpoint] ||= '/mnt/getch'
   end
 
   def x
     umount_all
+    disable_lvs
+    old_lvm
     zap_all @root, @boot, @home, @cache
   end
 
@@ -29,6 +34,19 @@ class Clean
     end
     paths.each { |p| umount_r p }
     umount '/tmp/boot'
+  end
+
+  def disable_lvs
+    lvchange_n 'home'
+    lvchange_n 'swap'
+    lvchange_n 'root'
+  end
+
+  def old_lvm
+    #return unless File.exist?("/dev/#{@vg}")
+
+    vgremove
+    pvremove @root, @home, @cache
   end
 
   def zap_all(*devs)
@@ -47,6 +65,29 @@ class Clean
     dev || return
 
     cmd 'sgdisk', '-Z', "/dev/#{dev}"
+  end
+
+  def lvchange_n(name)
+    return unless File.exist? "/dev/#{@vg}/#{name}"
+
+    cmd 'lvchange', '-an', "/dev/#{@vg}/#{name}"
+  end
+
+  def vgremove
+    cmd 'vgremove', '-y', @vg
+  end
+
+  def pvremove(*devs)
+    devs.each { |d| pvdel(d) }
+  end
+
+  def pvdel(dev)
+    dev || return
+
+    disk = dev[/[a-z]*/]
+    disk.match?(/[a-z]{3}/) || @log.fatal("pvdel - No disk #{dev} - #{disk}")
+
+    cmd 'pvremove', '-f', "/dev/#{disk}*"
   end
 
   def cmd(*args)

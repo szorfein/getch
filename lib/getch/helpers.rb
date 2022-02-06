@@ -80,6 +80,23 @@ module Getch
       end
     end
 
+    def self.get_memory
+      mem = nil
+      File.open('/proc/meminfo').each do |l|
+        t = l.split(' ') if l =~ /memtotal/i
+        t && mem = t[1]
+      end
+      mem || Log.new.fatal('get_memory - failed to get memory')
+
+      mem += 'K'
+    end
+
+    # get the sector size of a disk
+    def self.get_bs(path)
+      cmd = Getch::Command.new('blockdev', '--getpbsz', path)
+      cmd.res
+    end
+
     module Void
       def command(args)
         print " => Exec: #{args}..."

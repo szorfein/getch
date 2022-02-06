@@ -1,50 +1,25 @@
 # frozen_string_literal: true
 
+require 'sgdisk'
+
 module Getch
   module FileSystem
     module Ext4
       module Minimal
         class Partition
           def initialize
-            @state = Getch::States.new
-            @partition = Getch::FileSystem::Partition.new
-            run_partition
-          end
-
-          def run_partition
-            return if STATES[:partition ]
-
-            if Helpers.efi?
-              partition_efi
-            else
-              partition_bios
-            end
-            @state.partition
+            x
           end
 
           private
 
           # Follow https://wiki.archlinux.org/index.php/Partitioning
-          def partition_efi
-            # /efi   - EFI system partition - 260MB
-            # swap   - Linux Swap - size of the ram
-            # /      - Root
-            # /home  - Home
-            @partition.efi(@dev_esp)
-            @partition.swap(@dev_swap)
-            @partition.root(@dev_root, '8304')
-            @partition.home(@dev_home, '8302') if @dev_home
-          end
-
-          def partition_bios
-            # None      - Bios Boot Partition - 1MiB
-            # /         - Root
-            # swap      - Linux Swap - size of the ram
-            # /home     - Home
-            @partition.gpt(@dev_gpt)
-            @partition.swap(@dev_swap)
-            @partition.root(@dev_root, '8304')
-            @partition.home(@dev_home, '8302') if @dev_home
+          # 1 - /efi of GPT
+          # 2 - Swap
+          # 3 - /
+          # 4 - /home if --separate-home DISK is used
+          def x
+            Sgdisk::Ext4.new(DEVS)
           end
         end
       end
