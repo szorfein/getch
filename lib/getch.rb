@@ -5,6 +5,7 @@ require_relative 'getch/options'
 require_relative 'getch/states'
 require_relative 'getch/gentoo'
 require_relative 'getch/void'
+require_relative 'getch/device'
 require_relative 'getch/filesystem'
 require_relative 'getch/tree'
 require_relative 'getch/assembly'
@@ -25,6 +26,8 @@ module Getch
     home_disk: false,
     keymap: 'us',
     language: 'en_US',
+    luks_name: 'luks',
+    lvm: false,
     mountpoint: '/mnt/getch',
     musl: false,
     os: 'gentoo',
@@ -44,15 +47,17 @@ module Getch
     post_config: false,
     terraform: false,
     bootloader: false,
+    finalize: false,
   }
 
   MOUNTPOINT = '/mnt/getch'
+  DEVS = {}
 
   class Main
     def initialize(argv)
       argv[:cli]
       @log = Log.new
-      Getch::States.new # Update States
+      @assembly = Assembly.new
     end
 
     def resume
@@ -81,27 +86,29 @@ module Getch
     end
 
     def prepare_disk
-      assembly = Assembly.new
-      assembly.clean
-      assembly.partition
-      assembly.format
-      assembly.mount
+      @assembly.clean
+      @assembly.partition
+      @assembly.format
+      @assembly.mount
     end
 
     def install_system
-      assembly = Assembly.new
-      assembly.tarball
-      assembly.pre_config
-      assembly.update
-      assembly.post_config
+      @assembly.tarball
+      @assembly.pre_config
+      @assembly.update
+      @assembly.post_config
     end
 
     def terraform
-      Assembly.new.terraform
+      @assembly.terraform
     end
 
     def bootloader
-      Assembly.new.bootloader
+      @assembly.bootloader
+    end
+
+    def finalize
+      @assembly.finalize
     end
 
     def configure

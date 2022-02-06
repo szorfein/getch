@@ -72,11 +72,11 @@ For a french user:
 
 Install Gentoo on LVM and use a different root disk `/dev/sdc`
 
-    # getch --format lvm --disk sdc
+    # getch --format ext4 --lvm --disk sdc
 
 Encrypt your disk with LVM with a french keymap
 
-    # getch --format lvm --encrypt --keymap fr
+    # getch --format ext4 --lvm --encrypt --keymap fr
 
 Encrypt with ext4 and create a new user `ninja`:
 

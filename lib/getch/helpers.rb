@@ -51,6 +51,15 @@ module Getch
       end
     end
 
+    def self.get_dm(name)
+      Dir.glob('/dev/mapper/*').each do |f|
+        if f =~ /#{name}/ && f != '/dev/mapper/control'
+          return File.readlink(f).tr('../', '')
+        end
+      end
+      nil
+    end
+
     # Used with ZFS for the pool name
     def self.pool_id(dev)
       if dev.match(/[0-9]/)
@@ -78,6 +87,23 @@ module Getch
         NiTo.mount '--rbind', "/#{d}", "#{dest}/#{d}"
         NiTo.mount '--make-rslave', "#{dest}/#{d}"
       end
+    end
+
+    def self.get_memory
+      mem = nil
+      File.open('/proc/meminfo').each do |l|
+        t = l.split(' ') if l =~ /memtotal/i
+        t && mem = t[1]
+      end
+      mem || Log.new.fatal('get_memory - failed to get memory')
+
+      mem += 'K'
+    end
+
+    # get the sector size of a disk
+    def self.get_bs(path)
+      cmd = Getch::Command.new('blockdev', '--getpbsz', path)
+      cmd.res
     end
 
     module Void

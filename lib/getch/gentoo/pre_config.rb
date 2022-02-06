@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Gentoo
     class PreConfig
+      include NiTo
+
       def initialize
         x
       end
@@ -13,20 +17,14 @@ module Getch
         Getch::Config::Portage.new
         Getch::Config::Locale.new
         Getch::Config::PreNetwork.new
-        add_musl_repo if OPTIONS[:musl]
+        github
       end
 
-      def add_musl_repo
-        file = "#{OPTIONS[:mountpoint]}/etc/portage/repos.conf/musl.conf"
-        content = <<~CONF
-        [musl]
-        location = /var/db/repos/musl
-        sync-type = git
-        sync-uri = https://github.com/gentoo/musl.git
-        auto-sync = Yes
-        CONF
-        File.write file, "#{content}\n"
-        Install.new('dev-vcs/git')
+      # Trouble to find host github
+      def github
+        git = `ping -c1 github.com`.match(/\([0-9]*.[0-9]*.[0-9]*.[0-9]*\)/)
+        ip_only = git[0].tr('()','')
+        echo_a "#{OPTIONS[:mountpoint]}/etc/hosts", "#{ip_only} github.com"
       end
     end
   end

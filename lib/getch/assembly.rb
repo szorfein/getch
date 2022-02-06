@@ -11,6 +11,15 @@ module Getch
       @os = Tree::Os.new.select
       @fs = Tree::FS.new.select
       @state = Getch::States.new
+      Getch::Device.new
+      init_devs
+    end
+
+    def init_devs
+      DEVS[:root] && return
+
+      @fs::Device.new
+      DEVS[:root] || Log.new.fatal('No root, device prob !')
     end
 
     def clean
@@ -43,7 +52,7 @@ module Getch
     def mount
       return if STATES[:mount]
 
-      @fs::Mount.new.run
+      @fs::Mount.new
       @state.mount
     end
 
@@ -94,12 +103,26 @@ module Getch
 
     # bootloader
     # Install and configure Grub2 or Systemd-boot with Dracut
+    # Adding keys for Luks
     def bootloader
       return if STATES[:bootloader]
 
       @fs::Config.new
       @os::Bootloader.new
       @state.bootloader
+    end
+
+    # finalize
+    # Password for root, etc
+    def finalize
+      return if STATES[:finalize]
+
+      @os::Finalize.new
+      puts
+      puts '[*!*] Installation finished [*!*]'
+      puts
+      @fs.end
+      @state.finalize
     end
   end
 end

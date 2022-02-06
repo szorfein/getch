@@ -11,23 +11,14 @@ module Getch
 
       def x
         accounts
-        the_end
       end
 
       private
 
       def accounts
-        account = Account.new
+        account = Config::Account.new
         account.root
         account.new_user
-      end
-
-      def finish
-        puts
-        puts '[*!*] Install finished [*!*]'
-        puts
-        #@fs.finish
-        puts
       end
     end
   end

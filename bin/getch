@@ -10,8 +10,12 @@ getch = Getch::Main.new(
 
 getch.prepare_disk
 
-getch.install_system
+#getch.install_system
 
-getch.terraform
+#getch.terraform
+
+#getch.bootloader
+
+#getch.finalize
 
 #getch.configure

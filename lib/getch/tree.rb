@@ -21,26 +21,35 @@ module Getch
     class FS
 
       FS_TREE = {
-        true => {
-          ext4: FileSystem::Ext4::Encrypt,
-          lvm: FileSystem::Lvm::Encrypt,
-          zfs: FileSystem::Zfs::Encrypt
+        true => { # + encrypt
+          true => { # + lvm
+            ext4: FileSystem::Ext4::Hybrid,
+          },
+          false => { # - lvm
+            ext4: FileSystem::Ext4::Encrypt,
+            zfs: FileSystem::Zfs::Encrypt
+          },
         },
-        false => {
-          ext4: FileSystem::Ext4,
-          lvm: FileSystem::Lvm,
-          zfs: FileSystem::Zfs,
+        false => { # - encrypt
+          true => { # + lvm
+            ext4: FileSystem::Ext4::Lvm,
+          },
+          false => { # - lvm
+            ext4: FileSystem::Ext4::Minimal,
+            zfs: FileSystem::Zfs::Minimal,
+          },
         }
       }.freeze
 
       def initialize
         @encrypt = OPTIONS[:encrypt]
+        @lvm = OPTIONS[:lvm]
         @fs = OPTIONS[:fs]
         @log = Log.new
       end
 
       def select
-        FS_TREE[@encrypt][@fs.to_sym] || @log.fatal('Error in FS_TREE')
+        FS_TREE[@encrypt][@lvm][@fs.to_sym] || @log.fatal('Error in FS_TREE or no comptatible options')
       end
     end
   end
