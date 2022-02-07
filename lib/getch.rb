@@ -31,10 +31,11 @@ module Getch
     mountpoint: '/mnt/getch',
     musl: false,
     os: 'gentoo',
+    timezone: 'UTC',
     username: false,
     verbose: false,
     vg_name: 'vg4',
-    timezone: 'UTC'
+    zfs_name: 'pool'
   }
 
   STATES = {

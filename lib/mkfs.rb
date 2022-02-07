@@ -128,4 +128,13 @@ module Mkfs
       mkfs "/dev/mapper/home-#{@luks}"
     end
   end
+
+  class Hybrid < Lvm
+
+    # Boot is alrealy formatted
+    def format_boot
+    end
+  end
 end
+
+require_relative 'mkfs/zfs'

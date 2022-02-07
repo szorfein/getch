@@ -12,6 +12,7 @@ module Lvm2
     end
 
     def x
+      load_datas
       pv_create
       vg_create
       lv_setup
@@ -20,24 +21,30 @@ module Lvm2
 
     protected
 
+    def load_datas
+      @path_root = "/dev/#{@root}"
+      @path_cache = "/dev/#{@cache}"
+      @path_home = "/dev/#{@home}"
+    end
+
     def pv_create
-      devs = [ "/dev/#{@root}" ]
-      @cache && devs << "/dev/#{@cache}"
-      @home && devs << "/dev/#{@home}"
+      devs = [ @path_root ]
+      @cache && devs << @path_cache
+      @home && devs << @path_home
       devs.each { |d| d && add_pv(d) }
     end
 
     def vg_create
-      devs = [ "/dev/#{@root}" ]
-      @cache && devs << "/dev/#{@cache}"
-      @home && devs << "/dev/#{@home}"
+      devs = [ @path_root ]
+      @cache && devs << @path_cache
+      @home && devs << @path_home
       add_vg devs
     end
 
     def lv_setup
-      @cache ? add_swap("/dev/#{@cache}") : add_swap
+      @cache ? add_swap(@path_cache) : add_swap
       add_lv_root
-      @home ? add_home("/dev/#{@home}") : add_home
+      @home ? add_home(@path_home) : add_home
     end
 
     def enable_lvs
@@ -66,8 +73,8 @@ module Lvm2
     # if home is available, we use the whole space.
     def add_lv_root
       @home ?
-        @root.match?(/[0-9]/) ? add_root : add_root(nil, "/dev/#{@root}") :
-        @root.match?(/[0-9]/) ? add_root('16G') : add_root('16G', "/dev/#{@root}")
+        @root.match?(/[0-9]/) ? add_root : add_root(nil, @path_root) :
+        @root.match?(/[0-9]/) ? add_root('16G') : add_root('16G', @path_root)
     end
 
     def add_root(size = nil, dev = nil)
@@ -87,6 +94,19 @@ module Lvm2
       return if File.exist? "/dev/#{@vg}/#{name}"
 
       Getch::Command.new('lvchange', '-ay', "/dev/#{@vg}/#{name}")
+    end
+  end
+
+  class Hybrid < Root
+    def initialize(devs, options)
+      super
+      @luks = options[:luks_name]
+    end
+
+    def load_datas
+      @path_root = "/dev/mapper/root-#{@luks}"
+      @path_cache = "/dev/mapper/cache-#{@luks}"
+      @path_home = "/dev/mapper/home-#{@luks}"
     end
   end
 end

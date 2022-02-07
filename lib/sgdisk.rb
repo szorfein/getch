@@ -121,4 +121,40 @@ module Sgdisk
       @home_code = '8309'
     end
   end
+
+  class Zfs < Root
+    def load_codes
+      super
+      @boot_code = 'be00'
+      @root_code = 'bf00'
+      @home_code = 'bf05'
+      @zlog_code = 'bf07'
+      @zcache_code = 'bf08'
+    end
+
+    def make_boot
+      @boot || return
+
+      partition @boot, @boot_code, '0:+2G'
+    end
+
+    def make_swap
+      mem = Getch::Helpers.get_memory
+      partition @swap, @swap_code, "0:+#{mem}"
+      add_zlog
+      add_zcache
+    end
+
+    def add_zlog
+      @zlog || return
+
+      partition @zlog, @zlog_code, '0:+4G'
+    end
+
+    def add_zcache
+      @zcache || return
+
+      partition @zcache, @zcache_code, '0:0'
+    end
+  end
 end
