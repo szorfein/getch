@@ -110,4 +110,36 @@ module MountFs
       mount "/dev/mapper/home-#{@luks}", "#{@mountpoint}/home"
     end
   end
+
+  class Hybrid < Encrypt
+    def initialize(devs, options)
+      @vg = options[:vg_name]
+      super
+    end
+
+    def mount_root
+      umount "/dev/mapper/boot-#{@luks}"
+      mount "/dev/#{@vg}/root", @mountpoint
+    end
+
+    def mount_boot
+      mount "/dev/mapper/boot-#{@luks}", "#{@mountpoint}/boot"
+    end
+
+    def mount_home
+      mount "/dev/#{@vg}/home", "#{@mountpoint}/home"
+    end
+  end
+
+  class Zfs < Minimal
+
+    def mount_root
+    end
+
+    def mount_boot
+    end
+
+    def mount_home
+    end
+  end
 end

@@ -49,6 +49,7 @@ module Getch
           return f.delete_prefix('/dev/disk/by-uuid/')
         end
       end
+      Log.new.fatal("UUID on #{dev} is no found")
     end
 
     def self.get_dm(name)
@@ -60,23 +61,14 @@ module Getch
       nil
     end
 
-    # Used with ZFS for the pool name
-    def self.pool_id(dev)
-      if dev.match(/[0-9]/)
-        sleep 1
-        `lsblk -o PARTUUID #{dev}`.delete("\n").delete('PARTUUID').match(/\w{5}/)
-      else
-        puts 'Please, enter a pool name'
-        loop do
-          print "\n> "
-          value = gets
-          if value.match(/[a-z]{4,20}/)
-            return value
-          end
-          puts "Bad name, you enter: #{value}"
-          puts 'Valid pool name use character only, between 4-20.'
+    # Used by ZFS for the pool creation
+    def self.get_id(dev)
+      Dir.glob('/dev/disk/by-id/*').each do |f|
+        if File.readlink(f).match(/#{dev}/)
+          return f.delete_prefix('/dev/disk/by-id/')
         end
       end
+      Log.new.fatal("ID on #{dev} is no found")
     end
 
     # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base

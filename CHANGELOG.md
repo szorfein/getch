@@ -1,8 +1,9 @@
 ## Next release...
-* New options `--lvm` rather than `-f lvm`.
+* ZFS create pool with disk `/dev/disk/by-id`.
+* New option `--lvm` rather than `-f lvm`.
 * Rename option `-z | --zoneinfo` for `-t | --timezone`. Default use `UTC`.
-* Use a generic hostname 'host' rather than 'void-hatch-{randomID}'
-* Musl intead of Glibc can be installed with the `--musl` option.
+* Use a generic hostname 'host' rather than '{os}-hatch-{randomID}'
+* Musl can be installed with the `--musl` option.
 * Use colors in the script, look better.
 
 ## 0.1.9, release 2022-01-26
