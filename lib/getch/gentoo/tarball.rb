@@ -55,7 +55,7 @@ module Getch
         ['DIGESTS', 'DIGESTS.asc', 'CONTENTS.gz'].each do |f|
           Helpers.get_file_online("#{@mirror}/releases/amd64/autobuilds/#{file}.#{f}", "#{@stage_file}.#{f}")
         end
-        @log.result 'Ok'
+        @log.result_ok
       end
 
       def checksum
@@ -63,7 +63,7 @@ module Getch
         command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS.asc | sha512sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
-          @log.result 'Ok'
+          @log.result_ok
         else
           cleaning
           @log.fatal "Problem with the checksum, stderr\n#{stderr}"

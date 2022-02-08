@@ -4,6 +4,8 @@ module Getch
   module FileSystem
     module Ext4
       module Encrypt
+        def self.end
+        end
       end
     end
   end

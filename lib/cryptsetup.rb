@@ -18,6 +18,12 @@ class CryptSetup
     format_home
   end
 
+  def keys
+    add_boot_key
+    add_root_key
+    add_home_key
+  end
+
   protected
 
   def format_boot
@@ -41,6 +47,26 @@ class CryptSetup
     @home || return
 
     home_with_pass
+  end
+
+  def add_boot_key
+    luks = Luks::Boot.new(@boot, @options)
+    luks.external_key
+  end
+
+  # Alrealy used key if they have same disk
+  def add_root_key
+    return if @boot.split(/[0-9]/) == @root.split(/[0-9]/)
+
+    luks = Luks::Root.new(@root, @options)
+    luks.external_key
+  end
+
+  def add_home_key
+    @home || return
+
+    luks = Luks::Home.new(@home, @options)
+    luks.external_key
   end
 
   private

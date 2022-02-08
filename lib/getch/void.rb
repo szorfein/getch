@@ -2,25 +2,6 @@
 
 module Getch
   module Void
-    class Main
-      def chroot
-        chroot = Getch::Void::Chroot.new
-        chroot.update
-        chroot.fs
-        chroot.extras
-        chroot.install_pkgs
-      end
-
-      def boot
-        boot = Getch::Void::Boot.new
-        boot.new_user
-        boot.fstab
-        boot.dracut
-        boot.grub
-        boot.initramfs
-        boot.finish
-      end
-    end
   end
 end
 
@@ -29,5 +10,6 @@ require_relative 'void/pre_config'
 require_relative 'void/update'
 require_relative 'void/post_config'
 require_relative 'void/terraform'
+require_relative 'void/services'
 require_relative 'void/bootloader'
 require_relative 'void/finalize'

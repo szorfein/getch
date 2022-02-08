@@ -4,6 +4,8 @@ module Getch
   module FileSystem
     module Ext4
       module Hybrid
+        def self.end
+        end
       end
     end
   end

@@ -25,7 +25,6 @@ module Luks
       @format = options[:fs]
       @mountpoint = options[:mountpoint]
       @luks_type = nil
-      @key = true
       @key_dir = nil
       @key_name = nil
       @mount = nil
@@ -82,10 +81,8 @@ module Luks
     end
 
     def external_key
-      return unless @key
-
       make_key
-      @log.info "Adding key to #{@disk}...\n"
+      @log.info "Adding key for #{@luks_name}...\n"
       cmd_crypt 'cryptsetup', 'luksAddKey', "/dev/#{@disk}", @full_key_path
     end
 
@@ -155,7 +152,7 @@ module Luks
         @log.info 'Writing to /etc/default/grub...'
         line = 'GRUB_ENABLE_CRYPTODISK=y'
         echo_a "#{@mountpoint}/etc/default/grub", line
-        @log.result 'Ok'
+        @log.result_ok
       end
     end
 
@@ -167,7 +164,7 @@ module Luks
         @log.info "Writing to /etc/dracut.conf.d/#{@luks_name}.conf..."
         line = "install_items+=\" #{@key_path} /etc/crypttab \""
         File.write "#{@mountpoint}/etc/dracut.conf.d/#{@luks_name}.conf", "#{line}\n"
-        @log.result 'Ok'
+        @log.result_ok
       end
     end
 
@@ -178,7 +175,7 @@ module Luks
       File.chmod 0400, "#{@mountpoint}#{@key_dir}"
       File.chmod 0000, @full_key_path
       File.chown 0, 0, @full_key_path
-      @log.result 'Ok'
+      @log.result_ok
     end
 
     private
@@ -214,7 +211,8 @@ module Luks
     def initialize(disk, options)
       super
       @luks_type = 'luks1'
-      @key = false
+      @key_dir = '/boot'
+      @key_name = 'boot.key'
       @bootloader = true
       @mount = '/boot'
       @luks = options[:luks_name]

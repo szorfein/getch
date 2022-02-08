@@ -39,7 +39,7 @@ module Getch
         writing_rc_conf
         writing_vconsole_conf
         writing_conf_d_keymaps
-        @log.result 'Ok'
+        @log.result_ok
       end
 
       def writing_rc_conf

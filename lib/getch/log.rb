@@ -30,13 +30,8 @@ module Getch
       @save.info(msg)
     end
 
-    def result(msg)
-      case msg
-      when 'Ok'
-        @result.info "#{GREEN}[ #{WHITE}#{msg}#{GREEN} ]#{CLEAR}\n"
-      else
-        @result.info "#{RED}[ #{WHITE}#{msg}#{RED} ]#{CLEAR}\n"
-      end
+    def result_ok
+      @result.info "#{GREEN}[ #{WHITE}ok#{GREEN} ]#{CLEAR}\n"
     end
 
     def error(msg)

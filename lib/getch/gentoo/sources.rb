@@ -46,8 +46,11 @@ module Getch
         content = <<~SHELL
 #!/usr/bin/env sh
 set -o errexit
+
+if ! hash grub-mkconfig ; then
+ exit 0
+fi
 grub-mkconfig -o /boot/grub/grub.cfg
-exit 0
 SHELL
         mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/install.d"
         File.write file, content
@@ -65,7 +68,8 @@ SHELL
           Install.new('sys-kernel/installkernel-systemd-boot') :
           Install.new('sys-kernel/installkernel-gentoo')
 
-        Install.new 'sys-kernel/gentoo-kernel'
+        #Install.new 'sys-kernel/gentoo-kernel'
+        Install.new 'sys-kernel/gentoo-kernel-bin'
       end
 
       def load_modules

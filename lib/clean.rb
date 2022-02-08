@@ -41,7 +41,7 @@ class Clean
 
   def swap_off
     swapoff @root
-    swapoff_dm "#{@vg}-swap"
+    File.exist?("/dev/#{@vg}/swap") && swapoff_dm("#{@vg}-swap")
   end
 
   def disable_lvs

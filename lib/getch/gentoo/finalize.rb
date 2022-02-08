@@ -16,7 +16,7 @@ module Getch
       private
 
       def accounts
-        account = Account.new
+        account = Config::Account.new
         account.root
         account.new_user
       end

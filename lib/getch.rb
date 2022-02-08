@@ -48,6 +48,7 @@ module Getch
     post_config: false,
     terraform: false,
     bootloader: false,
+    services: false,
     finalize: false,
   }
 
@@ -102,9 +103,11 @@ module Getch
 
     def terraform
       @assembly.terraform
+      @assembly.services
     end
 
     def bootloader
+      @assembly.luks_keys
       @assembly.bootloader
     end
 

@@ -49,6 +49,16 @@ module Getch
       save
     end
 
+    def services
+      STATES[:services] = true
+      save
+    end
+
+    def luks_keys
+      STATES[:luks_keys] = true
+      save
+    end
+
     def bootloader
       STATES[:bootloader] = true
       save

@@ -1,48 +1,14 @@
 # frozen_string_literal: true
 
-require 'nito'
-require_relative 'config/gentoo'
-require_relative 'config/void'
-
-CONFIG_LOAD = {
-  gentoo: Getch::Config::Gentoo,
-  void: Getch::Config::Void
-}.freeze
-
 module Getch
   module Config
-    class Main
-      include NiTo
+    def sysctl
+      pwd = File.expand_path(File.dirname(__FILE__))
+      dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
-      def initialize
-        os = OPTIONS[:os].to_sym
-        @load = CONFIG_LOAD[os].new
-      end
-
-      def ethernet
-        @load.ethernet
-      end
-
-      def dns
-        @load.dns
-      end
-
-      def wifi
-        @load.wifi
-      end
-
-      def sysctl
-        pwd = File.expand_path(File.dirname(__FILE__))
-        dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
-
-        mkdir dest
-        Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
-        Helpers.cp("#{pwd}/../../assets/system.conf", dest)
-      end
-
-      def shell
-        @load.shell
-      end
+      mkdir dest
+      Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
+      Helpers.cp("#{pwd}/../../assets/system.conf", dest)
     end
   end
 end
@@ -54,3 +20,5 @@ require_relative 'config/keymap'
 require_relative 'config/timezone'
 require_relative 'config/grub'
 require_relative 'config/account'
+require_relative 'config/iwd'
+require_relative 'config/dhcp'

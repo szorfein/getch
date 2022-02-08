@@ -99,9 +99,8 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
     # vgremove -f vg0
     # pvremove -f /dev/sdb
 
-#### Encryption enable on BIOS with ext4
-To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
-Also with GRUB, only a `us` keymap is working.
+#### Encryption with GRUB
+To decrypt your disk on GRUB, only the `us` keymap is working for now.
 
 #### ZFS for Void Linux - Enable the boot pool
 You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.

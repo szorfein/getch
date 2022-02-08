@@ -27,7 +27,7 @@ module Fstab
       write_root
       write_home
       write_tmp
-      @log.result 'Ok'
+      @log.result_ok
     end
 
     protected
