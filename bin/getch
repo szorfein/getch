@@ -6,7 +6,7 @@ getch = Getch::Main.new(
   cli: Getch::Options.new(ARGV)
 )
 
-#getch.resume
+getch.resume
 
 getch.prepare_disk
 
@@ -17,5 +17,3 @@ getch.terraform
 getch.bootloader
 
 getch.finalize
-
-#getch.configure

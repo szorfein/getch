@@ -130,7 +130,7 @@ module Getch
       bootloader = @os::Bootloader.new
       bootloader.dependencies
       @fs::Config.new
-      #bootloader.install
+      bootloader.install
       @state.bootloader
     end
 

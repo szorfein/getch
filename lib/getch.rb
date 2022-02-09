@@ -63,6 +63,8 @@ module Getch
     end
 
     def resume
+      STATES[:partition] && return
+
       @log.fatal 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
 
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
