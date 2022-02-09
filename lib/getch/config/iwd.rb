@@ -1,6 +1,8 @@
 module Getch
   module Config
     class Iwd
+      include NiTo
+
       def initialize
         x
       end
@@ -47,7 +49,8 @@ module Getch
           content << "NameResolvingService=resolvconf\n"
         content << "[Scan]\n"
         content << "DisablePeriodicScan=true\n"
-        File.write conf, "#{content}\n"
+        mkdir "#{OPTIONS[:mountpoint]}/etc/iwd"
+        echo conf, "#{content}\n"
       end
     end
   end

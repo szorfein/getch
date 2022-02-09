@@ -26,7 +26,7 @@ module Getch
       end
 
       def emerge_deep
-        Chroot.new('emerge --deep --newuse @world')
+        ChrootOutput.new('emerge --deep --newuse @world')
       end
     end
   end

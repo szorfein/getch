@@ -70,7 +70,7 @@ module Getch
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
-      puts "\tZoneinfo: #{OPTIONS[:zoneinfo]}"
+      puts "\tTimezone: #{OPTIONS[:timezone]}"
       puts "\tKeymap: #{OPTIONS[:keymap]}"
       puts "\tDisk: #{OPTIONS[:disk]}"
       puts "\tFilesystem: #{OPTIONS[:fs]}"
