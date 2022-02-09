@@ -35,17 +35,6 @@ module Dracut
       echo file, "kernel_cmdline=\"#{line}\""
     end
 
-    private
-
-    def get_uuid(dev)
-      device = dev.delete_prefix('/dev/')
-      Dir.glob('/dev/disk/by-uuid/*').each do |f|
-        link = File.readlink(f)
-        return f.delete_prefix('/dev/disk/by-uuid/') if link =~ /#{device}$/
-      end
-      @log.fatal "Dracut - no uuid found for #{dev}"
-    end
-
     def get_line
     end
   end

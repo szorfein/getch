@@ -108,7 +108,7 @@ module Getch
 
     def add_tab(text)
       case text.length
-      when 39..46 then "\t\t"
+      when 39..47 then "\t\t"
       when 31..38 then "\t\t\t"
       when 23..30 then "\t\t\t\t"
       when 16..22 then "\t\t\t\t\t"

@@ -9,8 +9,8 @@ module Fstab
 
     # The swap UUID based on the lvm volume /dev/vg/swap
     def write_swap
-      dm = get_dm 'swap'
-      uuid = gen_uuid dm
+      dm = Getch::Helpers.get_dm "#{@vg}-swap"
+      uuid = Getch::Helpers.uuid dm
       line = "UUID=#{uuid} none swap sw 0 0"
       echo_a @conf, line
     end

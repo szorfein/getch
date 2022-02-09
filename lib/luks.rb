@@ -5,15 +5,6 @@ require 'getch/log'
 require 'getch/command'
 
 module Luks
-  def search_uuid(dev)
-    Dir.glob('/dev/disk/by-uuid/*').each do |f|
-      if File.readlink(f).match(/#{dev}$/)
-        return f.delete_prefix('/dev/disk/by-uuid/')
-      end
-    end
-    raise "No uuid found for #{dev}"
-  end
-
   class Main
     include Luks
     include NiTo
@@ -130,40 +121,24 @@ module Luks
 
     def config
       @key_path = "#{@key_dir}/#{@key_name}"
-      uuid = search_uuid @disk
-      @log.info 'Writing configs...'
+      uuid = Getch::Helpers.uuid @disk
+      @log.info "Writing configs for #{@luks_name}...\n"
 
-      puts " >> Writing #{@mountpoint}/etc/crypttab..."
+      @log.info " * Writing #{@mountpoint}/etc/crypttab..."
       line = "#{@luks_name} UUID=#{uuid} #{@key_path} luks"
       echo_a "#{@mountpoint}/etc/crypttab", line
-
-      puts " >> Writing #{@mountpoint}/etc/fstab..."
-      line = "/dev/mapper/#{@luks_name} #{@mount} #{@format} defaults 0 0"
-      echo_a "#{@mountpoint}/etc/fstab", line
+      @log.result_ok
 
       config_grub
-      config_dracut
     end
 
     def config_grub
       return unless @bootloader
 
-      if File.exist? "#{@mountpoint}/etc/default/grub"
-        @log.info 'Writing to /etc/default/grub...'
+      if Getch::Helpers.grub?
+        @log.info ' * Writing to /etc/default/grub...'
         line = 'GRUB_ENABLE_CRYPTODISK=y'
         echo_a "#{@mountpoint}/etc/default/grub", line
-        @log.result_ok
-      end
-    end
-
-    def config_dracut
-      return unless @bootloader
-
-      @key_path = "#{@key_dir}/#{@key_name}"
-      if Dir.exist? "#{@mountpoint}/etc/dracut.conf.d"
-        @log.info "Writing to /etc/dracut.conf.d/#{@luks_name}.conf..."
-        line = "install_items+=\" #{@key_path} /etc/crypttab \""
-        File.write "#{@mountpoint}/etc/dracut.conf.d/#{@luks_name}.conf", "#{line}\n"
         @log.result_ok
       end
     end

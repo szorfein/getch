@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'luks'
 
 class CryptSetup
@@ -7,7 +5,10 @@ class CryptSetup
     @boot = devs[:boot]
     @root = devs[:root]
     @home = devs[:home]
+    @swap = devs[:swap] ||= nil
     @options = options
+    @luks = options[:luks_name]
+    @vg = options[:vg_name]
     @fs = options[:fs] ||= 'ext4'
     @mountpoint = options[:mountpoint] ||= '/mnt/getch'
   end
@@ -22,6 +23,13 @@ class CryptSetup
     add_boot_key
     add_root_key
     add_home_key
+  end
+
+  def configs
+    config_boot
+    config_root
+    config_home
+    config_swap
   end
 
   protected
@@ -67,6 +75,31 @@ class CryptSetup
 
     luks = Luks::Home.new(@home, @options)
     luks.external_key
+  end
+
+  def config_boot
+    Luks::Boot.new(@boot, @options).write_config
+  end
+
+  def config_root
+    Luks::Root.new(@root, @options).write_config
+  end
+
+  def config_home
+    @home || return
+
+    Luks::Home.new(@home, @options).write_config
+  end
+
+  def config_swap
+    uuid = @options[:lvm] ? '' : Getch::Helpers.uuid(@swap)
+    line = "swap-#{@luks}"
+    @options[:lvm] ?
+      line << " /dev/#{@vg}/swap" :
+      line << " UUID=#{uuid}"
+
+    line << " /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512"
+    NiTo.echo_a "#{@mountpoint}/etc/crypttab", line
   end
 
   private

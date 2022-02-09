@@ -2,6 +2,7 @@
 
 require 'fstab'
 require 'dracut'
+require 'cryptsetup'
 
 module Getch
   module FileSystem
@@ -12,19 +13,12 @@ module Getch
             x
           end
 
-          protected
+          private
 
           def x
             Fstab::Encrypt.new(DEVS, OPTIONS).generate
             Dracut::Encrypt.new(DEVS, OPTIONS).generate
-            grub
-          end
-
-          def grub
-            Helpers.grub? || return
-
-            file = "#{@root_dir}/etc/default/grub"
-            echo_a file, 'GRUB_ENABLE_CRYPTODISK=y'
+            CryptSetup.new(DEVS, OPTIONS).configs
           end
         end
       end
