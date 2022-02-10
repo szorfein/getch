@@ -6,7 +6,7 @@ require 'getch/helpers'
 module Mkfs
   class Root
     def initialize(devs, options)
-      @esp = devs[:esp] ||= nil
+      @efi = devs[:efi] ||= nil
       @boot = devs[:boot] ||= nil
       @swap = devs[:swap] ||= nil
       @root = devs[:root] ||= nil

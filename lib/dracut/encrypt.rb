@@ -17,14 +17,13 @@ module Dracut
 
     def get_line
       root = Getch::Helpers.uuid @root
-      boot = Getch::Helpers.uuid @boot
       dm_root = get_dm_uuid "root-#{@luks}"
-      "rd.luks.uuid=#{root} rd.luks.uuid=#{boot} root=UUID=#{dm_root} rootfstype=#{@fs}"
+      "rd.luks.uuid=#{root} root=UUID=#{dm_root} rootfstype=#{@fs}"
     end
 
     def luks_key
       file = "#{@mountpoint}/etc/dracut.conf.d/luks_key.conf"
-      echo file, 'install_items+=" /boot/boot.key /etc/crypttab "'
+      echo file, 'install_items+=" /boot/boot.key /boot/root.key /etc/crypttab "'
     end
 
     private
