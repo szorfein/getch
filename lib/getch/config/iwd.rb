@@ -41,9 +41,12 @@ module Getch
         Chroot.new('rc-update add iwd default')
       end
 
+      # https://docs.voidlinux.org/config/network/iwd.html#troubleshooting
       def iwd_conf
         conf = "#{OPTIONS[:mountpoint]}/etc/iwd/main.conf"
-        content = "[Network]\n"
+        content = "[General]\n"
+        content << "UseDefaultInterface=true\n"
+        content << "[Network]\n"
         Helpers.systemd? ?
           content << "NameResolvingService=systemd\n" :
           content << "NameResolvingService=resolvconf\n"

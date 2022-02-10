@@ -9,19 +9,26 @@ module Getch
         class Deps
           include NiTo
 
-          def make
+          def initialize
+            x
+          end
+
+          protected
+
+          def x
             unstable_zfs
             install_deps
             zfs_mountpoint
             hostid
-            config_dracut
             zed_update_path
           end
 
           private
 
           def unstable_zfs
-            conf = "#{MOUNTPOINT}/etc/portage/package.accept_keywords/zfs"
+            return unless OPTIONS[:os] == 'gentoo'
+
+            conf = "#{OPTIONS[:mountpoint]}/etc/portage/package.accept_keywords/zfs"
             data = [
               'sys-fs/zfs-kmod',
               'sys-fs/zfs'
@@ -30,8 +37,10 @@ module Getch
           end
 
           def install_deps
-            Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
-            Getch::Emerge.new('sys-fs/zfs').pkg!
+            case OPTIONS[:os]
+            when 'gentoo' then Install.new('sys-fs/zfs')
+            when 'void' then Install.new('zfs')
+            end
           end
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
@@ -40,9 +49,7 @@ module Getch
             Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
             Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
             exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
-            exec('systemctl start zfs-zed.service')
-            exec('systemctl enable zfs-zed.service')
-            exec('systemctl enable zfs.target')
+            add_service
           end
 
           def zed_update_path
@@ -57,10 +64,24 @@ module Getch
             exec 'zgenhostid $(hostid)'
           end
 
-          def config_dracut
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/zfs.conf"
-            content = 'hostonly="yes"'
-            Helpers.echo conf, content
+          def add_service
+            systemd
+            openrc
+          end
+
+          def systemd
+            Helpers.systemd? || return
+
+            exec('systemctl enable zfs-zed.service')
+            exec('systemctl enable zfs.target')
+            exec('systemctl enable zfs-zed.service')
+          end
+
+          def openrc
+            Helpers.openrc? || return
+
+            exec('rc-update add zfs-import boot')
+            exec('rc-update add zfs-zed default')
           end
 
           def exec(cmd)

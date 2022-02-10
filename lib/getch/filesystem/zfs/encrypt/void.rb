@@ -25,40 +25,13 @@ module Getch
           # > /tmp
           def fstab
             conf = "#{MOUNTPOINT}/etc/fstab"
-            File.write(conf, "\n", mode: 'w', chmod: 0644)
-            line_fstab(@dev_esp, "/efi vfat noauto,rw,relatime 0 0") if @dev_esp
-            add_line(conf, '/dev/mapper/cryptswap none swap sw 0 0')
-            add_line(conf, "##{@boot_pool_name}/BOOT/#{@n} /boot zfs defaults 0 0") if @dev_boot
             add_line(conf, 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0')
-          end
-
-          def config_dracut
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/zfs.conf"
-            # dracut: value+= should be surrounding by white space
-            content = [
-              'hostonly="yes"',
-              'omit_dracutmodules+=" btrfs lvm "',
-              'install_items+=" /etc/crypttab "',
-            ]
-            File.write(conf, content.join("\n"), mode: 'w', chmod: 0644)
-          end
-
-          def kernel_cmdline_dracut
-            #command "zfs set mountpoint=legacy #{@boot_pool_name}/BOOT/#{@n}"
-          end
-
-          def config_grub
-            grub_cmdline("root=zfs:#{@pool_name}/ROOT/#{@n}", 'zfs_force=1', 'zfs.zfs_arc_max=536870912')
           end
 
           def finish
             zed_update_path
             puts '+ Enter in your system: chroot /mnt /bin/bash'
             puts '+ Reboot with: shutdown -r now'
-          end
-
-          def crypttab
-            line_crypttab('cryptswap', @dev_swap, '/dev/urandom', 'swap,discard,cipher=aes-xts-plain64:sha256,size=512')
           end
 
           private

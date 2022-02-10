@@ -5,6 +5,8 @@ module Getch
     class Bootloader
       def initialize
         @esp = '/efi'
+        @boot = DEVS[:boot] ||= nil
+        @encrypt = OPTIONS[:encrypt] ||= false
       end
 
       # Dracut is used by sys-kernel/gentoo-kernel
@@ -18,10 +20,23 @@ module Getch
       def install
         Helpers.grub? ?
           Config::Grub.new :
-          Getch::Chroot.new("bootctl --path #{@esp} install")
+          bootctl
 
         #ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel')
         ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel-bin')
+      end
+
+      def bootctl
+        @boot ?
+          with_boot :
+          Chroot.new("bootctl --path #{@esp} install")
+      end
+
+      def with_boot
+        boot = @encrypt ? '/dev/mapper/boot-luks' : "/dev/#{DEVS[:boot]}"
+        NiTo.umount "#{OPTIONS[:mountpoint]}/boot"
+        Chroot.new("bootctl --path #{@esp} install")
+        NiTo.mount boot, "#{OPTIONS[:mountpoint]}/boot"
       end
     end
   end

@@ -42,6 +42,8 @@ module Getch
       end
 
       def grub_mkconfig
+        return if Helpers.systemd?
+
         file = "#{OPTIONS[:mountpoint]}/etc/kernel/install.d/90-mkconfig.install"
         content = <<~SHELL
 #!/usr/bin/env sh
