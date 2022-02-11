@@ -44,28 +44,6 @@ module Getch
 
             add_line(conf, "#{mapname} PARTUUID=#{device} #{point} #{rest}")
           end
-
-          def zfs_zed
-            service_dir = '/etc/runit/runsvdir/default/'
-
-            mkdir "#{MOUNTPOINT}/etc/zfs/zfs-list.cache"
-            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
-            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
-            fork { command '/etc/sv/zed/run' }
-            command "ln -fs /etc/sv/zed #{service_dir}"
-          end
-
-          def zed_update_path
-            Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each do |f|
-              unless system('sed', '-Ei', "s|#{MOUNTPOINT}/?|/|", f)
-                raise 'System exec sed'
-              end
-            end
-          end
-
-          def hostid
-            command 'zgenhostid $(hostid)'
-          end
         end
       end
     end

@@ -42,6 +42,8 @@ The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
 + [Archaeidae](https://github.com/szorfein/archaeidae): Custom Archiso that includes ZFS support.
 
+You can also use your current `linux` host, just pay attention to the disk that will be used.  
+
 ## Dependencies
 Getch is build without external libs, so it only require `ruby >= 2.5`.
 

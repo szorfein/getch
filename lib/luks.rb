@@ -129,7 +129,19 @@ module Luks
       echo_a "#{@mountpoint}/etc/crypttab", line
       @log.result_ok
 
+      config_openrc
       config_grub
+    end
+
+    # https://wiki.gentoo.org/wiki/Dm-crypt#Configuring_dm-crypt
+    def config_openrc
+      Getch::Helpers.openrc? || return
+
+      conf = "#{@mountpoint}/etc/conf.d/dmcrypt"
+      uuid = Getch::Helpers.uuid @disk
+      echo_a conf, "target=#{@luks_name}"
+      echo_a conf, "source=UUID=\"#{uuid}\""
+      echo_a conf, "key=#{@key_path}"
     end
 
     def config_grub

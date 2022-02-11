@@ -78,10 +78,14 @@ class CryptSetup
   end
 
   def config_boot
+    return if not @boot or @options[:fs] == 'zfs'
+
     Luks::Boot.new(@boot, @options).write_config
   end
 
   def config_root
+    @root || return
+
     Luks::Root.new(@root, @options).write_config
   end
 

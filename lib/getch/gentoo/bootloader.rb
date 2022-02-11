@@ -32,6 +32,8 @@ module Getch
           Chroot.new("bootctl --path #{@esp} install")
       end
 
+      # We need to umount the encrypted /boot first
+      # https://github.com/systemd/systemd/issues/16151
       def with_boot
         boot = @encrypt ? '/dev/mapper/boot-luks' : "/dev/#{DEVS[:boot]}"
         NiTo.umount "#{OPTIONS[:mountpoint]}/boot"

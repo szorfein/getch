@@ -12,21 +12,38 @@ module Getch
           protected
 
           def x
-            case OPTIONS[:os]
-            when 'gentoo' then gentoo_deps
-            when 'void' then void_deps
-            end
+            install
+            service
           end
 
           private
 
-          def gentoo_deps
-            #Getch::Bask.new('-a lvm')
-            Install.new('sys-fs/lvm2')
+          def install
+            case OPTIONS[:os]
+            when 'gentoo' then Install.new('sys-fs/lvm2')
+            when 'void' then Install.new('lvm2')
+            end
+          end
+
+          def service
+            systemd
+            openrc
+            runit
+          end
+
+          def systemd
+            Helpers.systemd? || return
+
             exec('systemctl enable lvm2-monitor')
           end
 
-          def void_deps
+          def openrc
+            Helpers.openrc? || return
+
+            exec('rc-update add lvm boot')
+          end
+
+          def runit
           end
 
           def exec(cmd)
