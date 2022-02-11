@@ -16,12 +16,12 @@ module Fstab
     end
 
     def write_root
-      line = "/dev/#{@vg}/root #{@fs} rw,relatime 0 1"
+      line = "/dev/#{@vg}/root / #{@fs} rw,relatime 0 1"
       echo_a @conf, line
     end
 
     def write_home
-      line = "/dev/#{@vg}/home #{@fs} rw,relatime 0 2"
+      line = "/dev/#{@vg}/home /home #{@fs} rw,relatime 0 2"
       echo_a @conf, line
     end
   end
