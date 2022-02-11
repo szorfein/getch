@@ -26,13 +26,24 @@ module Mkfs
       add_dataset
     end
 
+    # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html#id13
     def format_boot
       @boot || return
 
       id = Getch::Helpers.get_id(@boot)
       ashift = get_ashift @boot
       args = "-f -o ashift=#{ashift} -o autotrim=on"
-      args << ' -o compatibility=grub2'
+      args << ' -o feature@async_destroy=enabled'
+      args << ' -o feature@bookmarks=enabled'
+      args << ' -o feature@embedded_data=enabled'
+      args << ' -o feature@empty_bpobj=enabled'
+      args << ' -o feature@enabled_txg=enabled'
+      args << ' -o feature@extensible_dataset=enabled'
+      args << ' -o feature@filesystem_limits=enabled'
+      args << ' -o feature@hole_birth=enabled'
+      args << ' -o feature@large_blocks=enabled'
+      args << ' -o feature@lz4_compress=enabled'
+      args << ' -o feature@spacemap_histogram=enabled'
       args << ' -O acltype=posixacl -O canmount=off -O compression=lz4'
       args << ' -O devices=off -O normalization=formD -O atime=off -O xattr=sa'
       args << ' -O mountpoint=/boot'
