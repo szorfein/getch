@@ -14,6 +14,7 @@ class Clean
     @cache = args[:cache_disk] ||= nil
     @vg = args[:vg_name] ||= nil
     @luks = args[:luks_name] ||= nil
+    @zfs = args[:zfs_name] ||= 'pool'
     @log = Getch::Log.new
     @mountpoint = args[:mountpoint] ||= '/mnt/getch'
   end
@@ -23,6 +24,7 @@ class Clean
     swap_off
     disable_lvs
     cryptsetup_close
+    old_zfs
     old_lvm
     zap_all @root, @boot, @home, @cache
   end
@@ -54,6 +56,20 @@ class Clean
     close "boot-#{@luks}"
     close "root-#{@luks}"
     close "home-#{@luks}"
+  end
+
+  def old_zfs
+    return unless File.exist? '/usr/bin/zpool'
+
+    destroy_zpool "b#{@zfs}"
+    destroy_zpool "r#{@zfs}"
+    cmd "rm -rf #{@mountpoint}/*" if Dir.exist? @mountpoint
+  end
+
+  def destroy_zpool(name)
+    if system("zpool list | grep #{name}")
+      cmd "zpool destroy -f #{name}"
+    end
   end
 
   def old_lvm

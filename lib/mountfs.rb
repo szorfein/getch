@@ -132,11 +132,20 @@ module MountFs
   end
 
   class Zfs < Minimal
+    def initialize(devs, options)
+      @zfs = options[:zfs_name]
+      @os = options[:os]
+      super
+    end
 
     def mount_root
+      exec("zfs mount z#{@zfs}/ROOT/#{@os}")
     end
 
     def mount_boot
+      @boot || return
+
+      exec("zfs mount b#{@zfs}/BOOT/#{@os}")
     end
 
     def mount_home

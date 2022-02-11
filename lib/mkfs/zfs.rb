@@ -108,6 +108,7 @@ module Mkfs
       zfs_create "#{@rpool}/ROOT/#{@os}/var/log"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/db"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/tmp"
+      zfs_create "#{@rpool}/ROOT/#{@os}/var/lib"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/lib/docker"
 
       boot_dataset
