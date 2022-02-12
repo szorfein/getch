@@ -15,8 +15,8 @@ module Fstab
     def write_swap
       uuid = gen_uuid @swap
       @encrypt ?
-        line = "UUID=#{uuid} swap swap rw,noatime,discard 0 0" :
-        line = "/dev/mapper/swap-luks none swap sw 0 0"
+        line = "/dev/mapper/swap-luks none swap sw 0 0" :
+        line = "UUID=#{uuid} swap swap rw,noatime,discard 0 0"
       echo_a @conf, line
     end
   end

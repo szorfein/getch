@@ -138,14 +138,14 @@ module MountFs
       super
     end
 
+    # Root should be alrealy mounted
     def mount_root
-      exec("zfs mount z#{@zfs}/ROOT/#{@os}")
     end
 
     def mount_boot
       @boot || return
 
-      exec("zfs mount b#{@zfs}/BOOT/#{@os}")
+      Getch::Command.new("zfs mount b#{@zfs}/BOOT/#{@os}")
     end
 
     def mount_home

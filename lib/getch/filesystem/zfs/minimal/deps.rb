@@ -52,8 +52,8 @@ module Getch
             exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
             add_service
             mkdir "#{@mountpoint}/etc/zfs/zfs-list.cache"
-            touch("#{@mountpoint}/etc/zfs/zfs-list.cache/b#{@zfs}") if DEVS[:boot]
-            touch("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}")
+            touch "#{@mountpoint}/etc/zfs/zfs-list.cache/b#{@zfs}" if DEVS[:boot]
+            touch "#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}"
           end
 
           def zed_update_path

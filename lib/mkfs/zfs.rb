@@ -100,6 +100,7 @@ module Mkfs
     def add_dataset
       zfs_create "-o canmount=off -o mountpoint=none #{@rpool}/ROOT"
       zfs_create "-o canmount=noauto -o mountpoint=/ #{@rpool}/ROOT/#{@os}"
+      Getch::Command.new("zfs mount #{@rpool}/ROOT/#{@os}")
 
       zfs_create "-o canmount=off #{@rpool}/ROOT/#{@os}/usr"
       zfs_create "#{@rpool}/ROOT/#{@os}/usr/src"
@@ -126,11 +127,11 @@ module Mkfs
       if @home
         zfs_create "-o canmount=off -o mountpoint=/ #{@hpool}/USERDATA"
         zfs_create "-o canmount=on -o mountpoint=/root #{@hpool}/USERDATA/root"
-        zfs_create "-o canmount=on -o mountpoint=/home/#{@user} #{@hpool}/USERDATA/home"
+        zfs_create "-o canmount=on -o mountpoint=/home #{@hpool}/USERDATA/home"
       else
         zfs_create "-o canmount=off -o mountpoint=/ #{@rpool}/USERDATA"
         zfs_create "-o canmount=on -o mountpoint=/root #{@rpool}/USERDATA/root"
-        zfs_create "-o canmount=on -o mountpoint=/home/#{@user} #{@rpool}/USERDATA/home"
+        zfs_create "-o canmount=on -o mountpoint=/home #{@rpool}/USERDATA/home"
       end
     end
 
