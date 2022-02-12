@@ -12,6 +12,7 @@ module Getch
           def initialize
             @mountpoint = OPTIONS[:mountpoint]
             @zfs = OPTIONS[:zfs_name] ||= 'pool'
+            @os = OPTIONS[:os]
             x
           end
 
@@ -23,6 +24,7 @@ module Getch
             hostid
             zfs_mountpoint
             zed_update_path
+            Command.new("zfs set canmount=on b#{@zfs}/BOOT/#{@os}") if DEVS[:boot]
             Log.new.fatal('zed - no pool') unless grep?("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}", "r#{@zfs}")
           end
 
@@ -58,15 +60,13 @@ module Getch
           end
 
           def zed_update_path
-            Dir.glob("#{@mountpoint}/etc/zfs/zfs-list.cache/*").each { |f|
-              unless system('sed', '-Ei', "s|#{@mountpoint}/?|/|", f)
-                raise 'system exec sed'
-              end
-            }
+            Dir.glob("#{@mountpoint}/etc/zfs/zfs-list.cache/*").each do |f|
+              Command.new('sed', '-Ei', "\"s|#{@mountpoint}/?|/|\"", f)
+            end
           end
 
           def hostid
-            exec 'zgenhostid $(hostid)'
+            exec 'zgenhostid $(hostid)' unless File.exist? "#{@mountpoint}/etc/hostid"
           end
 
           def add_service
@@ -97,16 +97,16 @@ module Getch
           def runit
             Helpers.runit? || return
 
-            exec('ln -s /etc/sv/zed /etc/runit/runsvdir/default/')
+            exec('ln -fs /etc/sv/zed /etc/runit/runsvdir/default/')
             fork_d('/etc/sv/zed/run')
           end
 
           def fork_d(cmd)
             job = fork do
-              #exec cmd
               Getch::Chroot.new(cmd)
             end
             Process.detach(job)
+            puts
           end
 
           def exec(cmd)
