@@ -23,6 +23,7 @@ module Getch
             hostid
             zfs_mountpoint
             zed_update_path
+            Log.new.fatal('zed - no pool') unless grep?("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}", "r#{@zfs}")
           end
 
           private
@@ -47,13 +48,13 @@ module Getch
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
           def zfs_mountpoint
-            exec("zpool set cachefile=/etc/zfs/zpool.cache b#{@zfs}") if DEVS[:boot]
-            exec("zpool set cachefile=/etc/zfs/zpool.cache r#{@zfs}")
+            exec("zpool set cachefile=/etc/zfs/b#{@zfs}.cache b#{@zfs}") if DEVS[:boot]
+            exec("zpool set cachefile=/etc/zfs/r#{@zfs}.cache r#{@zfs}")
             exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
-            add_service
             mkdir "#{@mountpoint}/etc/zfs/zfs-list.cache"
             touch "#{@mountpoint}/etc/zfs/zfs-list.cache/b#{@zfs}" if DEVS[:boot]
             touch "#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}"
+            add_service
           end
 
           def zed_update_path
@@ -82,7 +83,7 @@ module Getch
             exec('systemctl enable zfs-zed.service')
             exec('systemctl enable zfs.target')
             exec('systemctl enable zfs-zed.service')
-            fork { exec('systemctl start zfs-zed.service') }
+            fork_d('systemctl start zfs-zed.service')
           end
 
           def openrc
@@ -90,13 +91,22 @@ module Getch
 
             exec('rc-update add zfs-import boot')
             exec('rc-update add zfs-zed default')
+            fork_d('zed -F')
           end
 
           def runit
             Helpers.runit? || return
 
             exec('ln -s /etc/sv/zed /etc/runit/runsvdir/default/')
-            fork { exec('/etc/sv/zed/run') }
+            fork_d('/etc/sv/zed/run')
+          end
+
+          def fork_d(cmd)
+            job = fork do
+              #exec cmd
+              Getch::Chroot.new(cmd)
+            end
+            Process.detach(job)
           end
 
           def exec(cmd)
