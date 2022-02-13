@@ -36,7 +36,7 @@ Filesystem supported (with or without encryption)
 
 Boot Manager:
 + **Gentoo**: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
-+ **Void**: use only Grub2, encryption for the root fs use luks1.
++ **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
@@ -108,21 +108,17 @@ To decrypt your disk on GRUB, only the `us` keymap is working for now.
 You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
 By default, your /boot is empty because your boot pool is not imported...
 
-    # zpool import -f -d /dev/disk/by-id -N bpool-150ed
-    # zfs mount bpool-150ed/BOOT/void
+    # zpool import -f -d /dev/disk/by-id -N bpool
+    # zfs mount bpool/BOOT/void
     # ls /boot
 
 You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
 
     # xbps-reconfigure -fa
 
-Make the `bpool` available at the boot:
-
-    # zfs set canmount=on bpool-150ed/BOOT/void
-
 And reboot, the `/boot` partition should be mounted automatically after that.
 
-#### ZFS Encrypted with Void
+#### ZFS with and without encryption
 Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
 
     # ls /lib/dracut/hooks/initqueue/finished/*

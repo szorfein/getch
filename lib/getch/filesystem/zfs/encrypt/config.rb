@@ -2,6 +2,7 @@
 
 require 'fstab'
 require 'dracut'
+require 'cryptsetup'
 
 module Getch
   module FileSystem
@@ -17,13 +18,7 @@ module Getch
           def x
             Fstab::Zfs.new(DEVS, OPTIONS).generate
             Dracut::Zfs.new(DEVS, OPTIONS).generate
-          end
-
-          def crypttab
-            datas = [
-              "cryptswap PARTUUID=#{@partuuid_swap} /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512"
-            ]
-            File.write("#{MOUNTPOINT}/etc/crypttab", datas.join("\n"))
+            CryptSetup.new(DEVS, OPTIONS).swap_conf
           end
         end
       end

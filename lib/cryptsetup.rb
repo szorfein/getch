@@ -32,6 +32,10 @@ class CryptSetup
     config_swap
   end
 
+  def swap_conf
+    config_swap
+  end
+
   protected
 
   def format_boot

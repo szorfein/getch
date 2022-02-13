@@ -70,7 +70,9 @@ module Getch
     end
 
     # Used by ZFS for the pool creation
+    # sleep is necessary here at least the first time
     def self.get_id(dev)
+      sleep 3
       Dir.glob('/dev/disk/by-id/*').each do |f|
         if File.readlink(f).match(/#{dev}/)
           return f.delete_prefix('/dev/disk/by-id/')

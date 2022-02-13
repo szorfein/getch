@@ -23,8 +23,10 @@ module Getch
             install_deps
             hostid
             zfs_mountpoint
+            Command.new("zfs set canmount=noauto b#{@zfs}/BOOT/#{@os}") if DEVS[:boot]
+            Command.new("zfs set canmount=noauto r#{@zfs}/ROOT/#{@os}")
+            Command.new("zpool set bootfs=r#{@zfs}/ROOT/#{@os} r#{@zfs}")
             zed_update_path
-            Command.new("zfs set canmount=on b#{@zfs}/BOOT/#{@os}") if DEVS[:boot]
             Log.new.fatal('zed - no pool') unless grep?("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}", "r#{@zfs}")
           end
 
@@ -50,13 +52,13 @@ module Getch
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
           def zfs_mountpoint
-            exec("zpool set cachefile=/etc/zfs/b#{@zfs}.cache b#{@zfs}") if DEVS[:boot]
-            exec("zpool set cachefile=/etc/zfs/r#{@zfs}.cache r#{@zfs}")
+            exec("zpool set cachefile=/etc/zfs/zpool.cache r#{@zfs}")
+            exec("zpool set cachefile=/etc/zfs/zpool.cache b#{@zfs}") if DEVS[:boot]
             exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
+            add_service
             mkdir "#{@mountpoint}/etc/zfs/zfs-list.cache"
             touch "#{@mountpoint}/etc/zfs/zfs-list.cache/b#{@zfs}" if DEVS[:boot]
             touch "#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}"
-            add_service
           end
 
           def zed_update_path
@@ -73,6 +75,7 @@ module Getch
             systemd
             openrc
             runit
+            sleep 3
           end
 
           def systemd
@@ -82,8 +85,7 @@ module Getch
             exec('systemctl enable zfs-import.target')
             exec('systemctl enable zfs-zed.service')
             exec('systemctl enable zfs.target')
-            exec('systemctl enable zfs-zed.service')
-            fork_d('systemctl start zfs-zed.service')
+            fork_d('zed -F')
           end
 
           def openrc

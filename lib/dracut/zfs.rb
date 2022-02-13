@@ -9,6 +9,12 @@ module Dracut
       @os = options[:os]
     end
 
+    def others
+      file = "#{@mountpoint}/etc/dracut.conf.d/zfs.conf"
+      echo file, '"nofsck="yes"'
+      echo_a file, 'omit_dracutmodules+=" btrfs "'
+    end
+
     # See https://wiki.gentoo.org/wiki/ZFS#ZFS_root
     # https://github.com/openzfs/zfs/blob/master/contrib/dracut/README.dracut.markdown
     def get_line

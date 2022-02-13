@@ -18,6 +18,7 @@ module Dracut
     def generate
       host_only
       cmdline
+      others
     end
 
     protected
@@ -36,6 +37,9 @@ module Dracut
     end
 
     def get_line
+    end
+
+    def others
     end
   end
 end

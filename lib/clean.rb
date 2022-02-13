@@ -27,6 +27,7 @@ class Clean
     old_zfs
     old_lvm
     zap_all @root, @boot, @home, @cache
+    dd
   end
 
   protected
@@ -82,6 +83,10 @@ class Clean
 
   def zap_all(*devs)
     devs.each { |d| zap(d) }
+  end
+
+  def dd
+    cmd "dd if=/dev/zero of=/dev/#{@root} bs=1M count=100"
   end
 
   private
