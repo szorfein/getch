@@ -42,9 +42,9 @@ module Getch
       end
 
       def grub_mkconfig
-        return if Helpers.systemd?
+        return if Helpers.systemd? and Helpers.efi?
 
-        file = "#{OPTIONS[:mountpoint]}/etc/kernel/install.d/90-mkconfig.install"
+        file = "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d/90-mkconfig.install"
         content = <<~SHELL
 #!/usr/bin/env sh
 set -o errexit
@@ -54,7 +54,7 @@ if ! hash grub-mkconfig ; then
 fi
 grub-mkconfig -o /boot/grub/grub.cfg
 SHELL
-        mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/install.d"
+        mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d"
         File.write file, content
         File.chmod 0755, file
       end
