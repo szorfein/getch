@@ -41,8 +41,6 @@ module Getch
       def pam
         flags = []
         use = Getch::Gentoo::Use.new('sys-auth/pambase')
-        flags << '-passwdqc'
-        flags << 'pwquality'
         flags << 'sha512'
         use.add(flags)
       end
