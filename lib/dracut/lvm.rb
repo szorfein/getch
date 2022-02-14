@@ -8,7 +8,7 @@ module Dracut
     end
 
     def get_line
-      "rd.lvm.vg=#{@vg} root=/dev/#{@vg}/root resume=/dev/#{@vg}/swap"
+      "rd.lvm.vg=#{@vg} root=/dev/#{@vg}/root resume=/dev/#{@vg}/swap rootfstype=#{@fs}"
     end
   end
 end

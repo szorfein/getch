@@ -22,9 +22,15 @@ module Getch
 
       # Trouble to find host github
       def github
-        git = `ping -c1 github.com`.match(/\([0-9]*.[0-9]*.[0-9]*.[0-9]*\)/)
-        ip_only = git[0].tr('()','')
-        echo_a "#{OPTIONS[:mountpoint]}/etc/hosts", "#{ip_only} github.com"
+        github = check_ip 'github.com'
+        codeload = check_ip 'codeload.github.com'
+        echo_a "#{OPTIONS[:mountpoint]}/etc/hosts", "#{github} github.com"
+        echo_a "#{OPTIONS[:mountpoint]}/etc/hosts", "#{codeload} codeload.github.com"
+      end
+
+      def check_ip(host)
+        ip = `ping -c1 #{host}`.match(/\([0-9]*.[0-9]*.[0-9]*.[0-9]*\)/)
+        ip[0].tr('()','')
       end
     end
   end

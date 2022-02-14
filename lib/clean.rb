@@ -14,6 +14,7 @@ class Clean
     @cache = args[:cache_disk] ||= nil
     @vg = args[:vg_name] ||= nil
     @luks = args[:luks_name] ||= nil
+    @zfs = args[:zfs_name] ||= 'pool'
     @log = Getch::Log.new
     @mountpoint = args[:mountpoint] ||= '/mnt/getch'
   end
@@ -23,8 +24,11 @@ class Clean
     swap_off
     disable_lvs
     cryptsetup_close
+    old_zfs
     old_lvm
     zap_all @root, @boot, @home, @cache
+    wipe_all @root, @boot, @home, @cache
+    dd
   end
 
   protected
@@ -41,7 +45,7 @@ class Clean
 
   def swap_off
     swapoff @root
-    swapoff_dm "#{@vg}-swap"
+    File.exist?("/dev/#{@vg}/swap") && swapoff_dm("#{@vg}-swap")
   end
 
   def disable_lvs
@@ -56,6 +60,20 @@ class Clean
     close "home-#{@luks}"
   end
 
+  def old_zfs
+    return unless File.exist? '/usr/bin/zpool'
+
+    destroy_zpool "b#{@zfs}"
+    destroy_zpool "r#{@zfs}"
+    cmd "rm -rf #{@mountpoint}/*" if Dir.exist? @mountpoint
+  end
+
+  def destroy_zpool(name)
+    if system("zpool list | grep #{name}")
+      cmd "zpool destroy -f #{name}"
+    end
+  end
+
   def old_lvm
     lvm = `lvs | grep #{@vg}`
     lvm.match?(/#{@vg}/) || return
@@ -68,7 +86,21 @@ class Clean
     devs.each { |d| zap(d) }
   end
 
+  def wipe_all(*devs)
+    devs.each { |d| wipe(d) }
+  end
+
+  def dd
+    cmd "dd if=/dev/zero of=/dev/#{@root} bs=1M count=100"
+  end
+
   private
+
+  def wipe(dev)
+    dev || return
+
+    cmd "wipefs --all /dev/#{dev}"
+  end
 
   def umount_r(dir)
     dir || return

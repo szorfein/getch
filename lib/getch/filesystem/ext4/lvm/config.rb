@@ -9,17 +9,14 @@ module Getch
       module Lvm
         class Config
           def initialize
-            @devs = {
-              esp: @dev_esp, root: @dev_root
-            }
             x
           end
 
           private
 
           def x
-            Fstab::Lvm.new(@devs, OPTIONS).generate
-            Dracut::Lvm.new(@devs, OPTIONS).generate
+            Fstab::Lvm.new(DEVS, OPTIONS).generate
+            Dracut::Lvm.new(DEVS, OPTIONS).generate
           end
         end
       end

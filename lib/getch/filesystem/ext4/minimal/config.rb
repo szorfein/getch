@@ -9,17 +9,14 @@ module Getch
       module Minimal
         class Config
           def initialize
-            @devs = {
-              esp: @dev_esp, swap: @dev_swap, root: @dev_root, home: @dev_home
-            }
             x
           end
 
           private
 
           def x
-            Fstab::Minimal.new(@devs, OPTIONS).generate
-            Dracut::Minimal.new(@devs, OPTIONS).generate
+            Fstab::Minimal.new(DEVS, OPTIONS).generate
+            Dracut::Minimal.new(DEVS, OPTIONS).generate
           end
         end
       end

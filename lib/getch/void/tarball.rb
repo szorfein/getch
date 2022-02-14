@@ -45,7 +45,7 @@ module Getch
 
         @log.info "Downloading #{@xbps[1]}..."
         Helpers.get_file_online("#{@url}/#{@xbps[1]}", @xbps[1])
-        @log.result 'Ok'
+        @log.result_ok
       end
 
       def checksum
@@ -54,7 +54,7 @@ module Getch
         command = "echo #{@xbps[3]}  #{@xbps[1]} | sha256sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
-          @log.result 'Ok'
+          @log.result_ok
           return
         end
         cleaning
@@ -73,7 +73,7 @@ module Getch
         cmd = "tar xpf #{@xbps[1]} --xattrs-include=\'*.*\' --numeric-owner"
         _, stderr, status = Open3.capture3(cmd)
         if status.success? then
-          @log.result 'Ok'
+          @log.result_ok
           return
         end
         cleaning

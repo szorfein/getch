@@ -19,6 +19,14 @@ module Getch
       File.exist? "#{OPTIONS[:mountpoint]}/etc/conf.d/keymaps"
     end
 
+    def self.runit?
+      Dir.exist? "#{OPTIONS[:mountpoint]}/etc/runit"
+    end
+
+    def self.grub?
+      File.exist? "#{OPTIONS[:mountpoint]}/etc/default/grub"
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, "wb") { |f| f.write(l.read) }
@@ -58,11 +66,13 @@ module Getch
           return File.readlink(f).tr('../', '')
         end
       end
-      nil
+      Log.new.fatal("Dm for #{name} is no found")
     end
 
     # Used by ZFS for the pool creation
+    # sleep is necessary here at least the first time
     def self.get_id(dev)
+      sleep 3
       Dir.glob('/dev/disk/by-id/*').each do |f|
         if File.readlink(f).match(/#{dev}/)
           return f.delete_prefix('/dev/disk/by-id/')
@@ -99,17 +109,6 @@ module Getch
     end
 
     module Void
-      def command(args)
-        print " => Exec: #{args}..."
-        cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
-        _, stderr, status = Open3.capture3(cmd)
-        if status.success?
-          puts "\s[OK]"
-          return
-        end
-        raise "\n[-] Fail cmd #{args} - #{stderr}."
-      end
-
       def command_output(args)
         print " => Exec: #{args}..."
         cmd = "chroot #{Getch::MOUNTPOINT} /bin/bash -c \"#{args}\""
@@ -122,19 +121,6 @@ module Getch
             raise "\n[-] Fail cmd #{args} - #{stdout_err}."
           end
         end
-      end
-
-      def add_line(file, line)
-        raise "No file #{file} found !" unless File.exist? file
-
-        File.write(file, "#{line}\n", mode: 'a')
-      end
-
-      def search(file, text)
-        File.open(file).each do |line|
-          return true if line.match(/#{text}/)
-        end
-        false
       end
 
       # Used only when need password
@@ -159,42 +145,6 @@ module Getch
         raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
 
         add_line(conf, "PARTUUID=#{device} #{rest}")
-      end
-
-      def grub_cmdline(*args)
-        conf = "#{Getch::MOUNTPOINT}/etc/default/grub"
-        list = args.join(' ')
-        secs = "GRUB_CMDLINE_LINUX=\"#{list} init_on_alloc=1 init_on_free=1"
-        secs += ' slab_nomerge pti=on slub_debug=ZF vsyscall=none"'
-        raise 'No default/grub found' unless File.exist? conf
-
-        unless search(conf, 'GRUB_CMDLINE_LINUX=')
-          File.write(conf, "#{secs}\n", mode: 'a')
-        end
-      end
-    end
-
-    module Cryptsetup
-      def encrypt(dev)
-        raise "No device #{dev}" unless File.exist? dev
-
-        puts " => Encrypting device #{dev}..."
-        if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
-          Helpers.sys("cryptsetup luksFormat --type luks #{dev}")
-        else
-          Helpers.sys("cryptsetup luksFormat --type luks1 #{dev}")
-        end
-      end
-
-      def open_crypt(dev, map_name)
-        raise "No device #{dev}" unless File.exist? dev
-
-        puts " => Opening encrypted device #{dev}..."
-        if Helpers.efi? && Getch::OPTIONS[:os] == 'gentoo'
-          Helpers.sys("cryptsetup open --type luks #{dev} #{map_name}")
-        else
-          Helpers.sys("cryptsetup open --type luks1 #{dev} #{map_name}")
-        end
       end
     end
   end

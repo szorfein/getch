@@ -9,7 +9,7 @@ module Fstab
 
     def initialize(devs, options)
       @log = Getch::Log.new
-      @esp = devs[:esp]   ||= nil
+      @efi = devs[:efi]   ||= nil
       @boot = devs[:boot] ||= nil
       @swap = devs[:swap] ||= nil
       @root = devs[:root] ||= nil
@@ -21,21 +21,21 @@ module Fstab
 
     def generate
       @log.info 'Generating fstab...'
-      write_esp
+      write_efi
       write_boot
       write_swap
       write_root
       write_home
       write_tmp
-      @log.result 'Ok'
+      @log.result_ok
     end
 
     protected
 
-    def write_esp
-      @esp || return
+    def write_efi
+      @efi || return
 
-      uuid = gen_uuid @esp
+      uuid = gen_uuid @efi
       line = "UUID=#{uuid} /efi vfat noauto,rw,relatime 0 0"
       echo_a @conf, line
     end
@@ -73,7 +73,7 @@ module Fstab
     end
 
     def write_tmp
-      systemd? && return
+      Getch::Helpers.systemd? && return
 
       line = 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0'
       echo_a @conf, line
@@ -88,10 +88,6 @@ module Fstab
         return f.delete_prefix('/dev/disk/by-uuid/') if link.match(/#{device}$/)
       end
       @log.fatal "No uuid found for #{device}"
-    end
-
-    def systemd?
-      Dir.exist? "#{@mountpoint}/etc/systemd"
     end
   end
 end

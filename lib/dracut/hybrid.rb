@@ -8,9 +8,8 @@ module Dracut
     end
 
     def get_line
-      root = get_uuid @root
-      boot = get_uuid @boot
-      "rd.luks.uuid=#{root} rd.luks.uuid=#{boot} rd.lvm.vg=#{@vg} root=/dev/#{@vg}/root"
+      root = Getch::Helpers.uuid @root
+      "rd.luks.uuid=#{root} rd.lvm.vg=#{@vg} root=/dev/#{@vg}/root"
     end
   end
 end

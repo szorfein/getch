@@ -37,7 +37,7 @@ module Getch
         end
 
         if code.success?
-          @log.result 'Ok'
+          @log.result_ok
           @res = stdout.read.chomp
           return
         end
@@ -83,7 +83,7 @@ module Getch
   class Bask
     def initialize(cmd)
       @cmd = cmd
-      @log = Getch::Log.new
+      @log = Log.new
       @version = '0.6'
       @config = "#{MOUNTPOINT}/etc/kernel/config.d"
       download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
@@ -104,7 +104,7 @@ module Getch
     private
 
     def download_bask
-      @log.info 'Installing Bask...'
+      @log.info "Installing Bask...\n"
       url = "https://github.com/szorfein/bask/archive/refs/tags/#{@version}.tar.gz"
       file = "bask-#{@version}.tar.gz"
 

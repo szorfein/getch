@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'nito'
 
 module Getch
@@ -9,19 +7,49 @@ module Getch
         class Deps
           include NiTo
 
-          def make
+          def initialize
+            @mountpoint = OPTIONS[:mountpoint]
+            @zfs = OPTIONS[:zfs_name] ||= 'pool'
+            @os = OPTIONS[:os]
+            x
+          end
+
+          protected
+
+          def x
             unstable_zfs
             install_deps
-            zfs_mountpoint
             hostid
-            config_dracut
+            zfs_mountpoint
+            sleep 6
+            zfs_set
             zed_update_path
+            Log.new.fatal('zed - no pool') unless grep?("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}", "r#{@zfs}")
+            grub_broken_root
           end
 
           private
 
+          def zfs_set
+            Command.new("zfs set canmount=noauto b#{@zfs}/BOOT/#{@os}") if DEVS[:boot]
+            Command.new("zfs set canmount=noauto r#{@zfs}/ROOT/#{@os}")
+            Command.new("zpool set bootfs=r#{@zfs}/ROOT/#{@os} r#{@zfs}")
+          end
+
+          # https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS#Using_GRUB_for_EFI/BIOS
+          def grub_broken_root
+            return unless Helpers.grub?
+
+            file = "#{@mountpoint}/etc/default/grub"
+            content = "GRUB_CMDLINE_LINUX=\"$GRUB_CMDLINE_LINUX"
+            content << " root=ZFS=r#{@zfs}/ROOT/#{@os}\""
+            echo_a file, content
+          end
+
           def unstable_zfs
-            conf = "#{MOUNTPOINT}/etc/portage/package.accept_keywords/zfs"
+            return unless OPTIONS[:os] == 'gentoo'
+
+            conf = "#{@mountpoint}/etc/portage/package.accept_keywords/zfs"
             data = [
               'sys-fs/zfs-kmod',
               'sys-fs/zfs'
@@ -30,37 +58,70 @@ module Getch
           end
 
           def install_deps
-            Getch::Emerge.new('sys-kernel/gentoo-kernel').pkg!
-            Getch::Emerge.new('sys-fs/zfs').pkg!
+            case OPTIONS[:os]
+            when 'gentoo' then Install.new('sys-fs/zfs')
+            when 'void' then Install.new('zfs')
+            end
           end
 
           # See: https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
           def zfs_mountpoint
-            mkdir "#{MOUNTPOINT}/etc/zfs/zfs-list.cache"
-            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@boot_pool_name}") if @dev_boot
-            Helpers.touch("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/#{@pool_name}")
+            exec("zpool set cachefile=/etc/zfs/zpool.cache r#{@zfs}")
+            exec("zpool set cachefile=/etc/zfs/zpool.cache b#{@zfs}") if DEVS[:boot]
             exec('ln -fs /usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d/')
-            exec('systemctl start zfs-zed.service')
-            exec('systemctl enable zfs-zed.service')
-            exec('systemctl enable zfs.target')
+            add_service
+            mkdir "#{@mountpoint}/etc/zfs/zfs-list.cache"
+            touch "#{@mountpoint}/etc/zfs/zfs-list.cache/b#{@zfs}" if DEVS[:boot]
+            touch "#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}"
           end
 
           def zed_update_path
-            Dir.glob("#{MOUNTPOINT}/etc/zfs/zfs-list.cache/*").each { |f|
-              unless system('sed', '-Ei', "s|#{MOUNTPOINT}/?|/|", f)
-                raise 'system exec sed'
-              end
-            }
+            Dir.glob("#{@mountpoint}/etc/zfs/zfs-list.cache/*").each do |f|
+              Command.new('sed', '-Ei', "\"s|#{@mountpoint}/?|/|\"", f)
+            end
           end
 
           def hostid
-            exec 'zgenhostid $(hostid)'
+            exec 'zgenhostid -f $(hostid)'
           end
 
-          def config_dracut
-            conf = "#{MOUNTPOINT}/etc/dracut.conf.d/zfs.conf"
-            content = 'hostonly="yes"'
-            Helpers.echo conf, content
+          def add_service
+            systemd
+            openrc
+            runit
+          end
+
+          def systemd
+            Helpers.systemd? || return
+
+            exec('systemctl enable zfs-import-cache')
+            exec('systemctl enable zfs-import.target')
+            exec('systemctl enable zfs-zed.service')
+            exec('systemctl enable zfs.target')
+            fork_d('zed -F')
+          end
+
+          def openrc
+            Helpers.openrc? || return
+
+            exec('rc-update add zfs-import boot')
+            exec('rc-update add zfs-zed default')
+            fork_d('zed -F')
+          end
+
+          def runit
+            Helpers.runit? || return
+
+            exec('ln -fs /etc/sv/zed /etc/runit/runsvdir/default/')
+            fork_d('/etc/sv/zed/run')
+          end
+
+          def fork_d(cmd)
+            job = fork do
+              Getch::Chroot.new(cmd)
+            end
+            Process.detach(job)
+            puts
           end
 
           def exec(cmd)

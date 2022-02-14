@@ -4,6 +4,8 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
+        def self.end
+        end
       end
     end
   end

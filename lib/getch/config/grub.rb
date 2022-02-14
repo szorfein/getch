@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Config
     class Grub
@@ -20,6 +22,7 @@ module Getch
       private
 
       def grub_efi
+        mount_efivars
         cmd = "#{@prefix} grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=\"#{@os_name}\""
         ChrootOutput.new(cmd)
       end
@@ -27,6 +30,12 @@ module Getch
       def grub_bios
         cmd = "#{@prefix} grub-install /dev/#{@disk}"
         ChrootOutput.new(cmd)
+      end
+
+      # In case where efivars is not mounted
+      # avoid error with grub
+      def mount_efivars
+        NiTo.mount '-t efivarfs', 'efivarfs', '/sys/firmware/efi/efivars'
       end
     end
   end

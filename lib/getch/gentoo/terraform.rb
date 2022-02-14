@@ -10,6 +10,7 @@ module Getch
       def x
         Gentoo::Sources.new
         install_pkgs
+        emerge_deep
       end
 
       def install_pkgs
@@ -18,10 +19,14 @@ module Getch
         @pkgs << ' app-editors/vim'
         @pkgs << ' net-firewall/iptables'
         @pkgs << ' net-wireless/iwd'
-        @pkgs << ' net-misc/dhcpcd'
+        @pkgs << ' net-misc/dhcpcd' unless Helpers.systemd?
         @pkgs << ' sys-firmware/intel-microcode'
         @pkgs << ' sys-fs/dosfstools' if Helpers.efi?
         Install.new(@pkgs)
+      end
+
+      def emerge_deep
+        ChrootOutput.new('emerge --deep --newuse @world')
       end
     end
   end

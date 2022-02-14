@@ -4,6 +4,8 @@ module Getch
   module FileSystem
     module Zfs
       module Minimal
+        def self.end
+        end
       end
     end
   end

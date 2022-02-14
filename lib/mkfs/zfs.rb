@@ -26,13 +26,24 @@ module Mkfs
       add_dataset
     end
 
+    # https://openzfs.github.io/openzfs-docs/Getting%20Started/Ubuntu/Ubuntu%2020.04%20Root%20on%20ZFS.html#id13
     def format_boot
       @boot || return
 
       id = Getch::Helpers.get_id(@boot)
       ashift = get_ashift @boot
       args = "-f -o ashift=#{ashift} -o autotrim=on"
-      args << ' -o compatibility=grub2'
+      args << ' -o feature@async_destroy=enabled'
+      args << ' -o feature@bookmarks=enabled'
+      args << ' -o feature@embedded_data=enabled'
+      args << ' -o feature@empty_bpobj=enabled'
+      args << ' -o feature@enabled_txg=enabled'
+      args << ' -o feature@extensible_dataset=enabled'
+      args << ' -o feature@filesystem_limits=enabled'
+      args << ' -o feature@hole_birth=enabled'
+      args << ' -o feature@large_blocks=enabled'
+      args << ' -o feature@lz4_compress=enabled'
+      args << ' -o feature@spacemap_histogram=enabled'
       args << ' -O acltype=posixacl -O canmount=off -O compression=lz4'
       args << ' -O devices=off -O normalization=formD -O atime=off -O xattr=sa'
       args << ' -O mountpoint=/boot'
@@ -89,6 +100,7 @@ module Mkfs
     def add_dataset
       zfs_create "-o canmount=off -o mountpoint=none #{@rpool}/ROOT"
       zfs_create "-o canmount=noauto -o mountpoint=/ #{@rpool}/ROOT/#{@os}"
+      Getch::Command.new("zfs mount #{@rpool}/ROOT/#{@os}")
 
       zfs_create "-o canmount=off #{@rpool}/ROOT/#{@os}/usr"
       zfs_create "#{@rpool}/ROOT/#{@os}/usr/src"
@@ -97,6 +109,7 @@ module Mkfs
       zfs_create "#{@rpool}/ROOT/#{@os}/var/log"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/db"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/tmp"
+      zfs_create "#{@rpool}/ROOT/#{@os}/var/lib"
       zfs_create "#{@rpool}/ROOT/#{@os}/var/lib/docker"
 
       boot_dataset
@@ -114,11 +127,11 @@ module Mkfs
       if @home
         zfs_create "-o canmount=off -o mountpoint=/ #{@hpool}/USERDATA"
         zfs_create "-o canmount=on -o mountpoint=/root #{@hpool}/USERDATA/root"
-        zfs_create "-o canmount=on -o mountpoint=/home/#{@user} #{@hpool}/USERDATA/home"
+        zfs_create "-o canmount=on -o mountpoint=/home #{@hpool}/USERDATA/home"
       else
         zfs_create "-o canmount=off -o mountpoint=/ #{@rpool}/USERDATA"
         zfs_create "-o canmount=on -o mountpoint=/root #{@rpool}/USERDATA/root"
-        zfs_create "-o canmount=on -o mountpoint=/home/#{@user} #{@rpool}/USERDATA/home"
+        zfs_create "-o canmount=on -o mountpoint=/home #{@rpool}/USERDATA/home"
       end
     end
 

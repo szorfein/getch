@@ -27,7 +27,7 @@ module Getch
       def create_user
         @log.info "Creating a new user #{@user}..."
         Getch::Chroot.new("useradd -m -G users,wheel,audio,video #{@user}")
-        @log.result 'Ok'
+        @log.result_ok
       end
 
       def fix_perm

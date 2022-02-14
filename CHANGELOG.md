@@ -1,8 +1,10 @@
 ## Next release...
-* ZFS create pool with disk `/dev/disk/by-id`.
-* New option `--lvm` rather than `-f lvm`.
+* No more need to enter password twice with Grub and encrypted system.
+* Can restart the whole installation from scratch with the option `--restart`
+* ZFS create pool with disk id `/dev/disk/by-id`.
+* New option `--lvm` instead of `-f lvm`.
 * Rename option `-z | --zoneinfo` for `-t | --timezone`. Default use `UTC`.
-* Use a generic hostname 'host' rather than '{os}-hatch-{randomID}'
+* Use a generic hostname `host` rather than '{os}-hatch-{randomID}'
 * Musl can be installed with the `--musl` option.
 * Use colors in the script, look better.
 

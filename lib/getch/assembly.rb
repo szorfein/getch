@@ -2,6 +2,7 @@
 
 require 'clean'
 require 'nito'
+require 'cryptsetup'
 
 module Getch
   class Assembly
@@ -92,6 +93,7 @@ module Getch
 
     # terraform
     # Install all the required packages
+    # Also add services
     def terraform
       return if STATES[:terraform]
 
@@ -101,14 +103,34 @@ module Getch
       @state.terraform
     end
 
+    def services
+      return if STATES[:services]
+
+      @os::Services.new
+      @state.services
+    end
+
+    # Luks_keys
+    # Install external keys to avoid enter password multiple times
+    def luks_keys
+      return if not OPTIONS[:encrypt] or OPTIONS[:fs] == 'zfs'
+
+      return if STATES[:luks_keys]
+
+      CryptSetup.new(DEVS, OPTIONS).keys
+      @state.luks_keys
+    end
+
     # bootloader
     # Install and configure Grub2 or Systemd-boot with Dracut
     # Adding keys for Luks
     def bootloader
       return if STATES[:bootloader]
 
+      bootloader = @os::Bootloader.new
+      bootloader.dependencies
       @fs::Config.new
-      @os::Bootloader.new
+      bootloader.install
       @state.bootloader
     end
 

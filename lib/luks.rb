@@ -5,15 +5,6 @@ require 'getch/log'
 require 'getch/command'
 
 module Luks
-  def search_uuid(dev)
-    Dir.glob('/dev/disk/by-uuid/*').each do |f|
-      if File.readlink(f).match(/#{dev}$/)
-        return f.delete_prefix('/dev/disk/by-uuid/')
-      end
-    end
-    raise "No uuid found for #{dev}"
-  end
-
   class Main
     include Luks
     include NiTo
@@ -25,7 +16,6 @@ module Luks
       @format = options[:fs]
       @mountpoint = options[:mountpoint]
       @luks_type = nil
-      @key = true
       @key_dir = nil
       @key_name = nil
       @mount = nil
@@ -82,10 +72,8 @@ module Luks
     end
 
     def external_key
-      return unless @key
-
       make_key
-      @log.info "Adding key to #{@disk}...\n"
+      @log.info "Adding key for #{@luks_name}...\n"
       cmd_crypt 'cryptsetup', 'luksAddKey', "/dev/#{@disk}", @full_key_path
     end
 
@@ -133,41 +121,37 @@ module Luks
 
     def config
       @key_path = "#{@key_dir}/#{@key_name}"
-      uuid = search_uuid @disk
-      @log.info 'Writing configs...'
+      uuid = Getch::Helpers.uuid @disk
+      @log.info "Writing configs for #{@luks_name}...\n"
 
-      puts " >> Writing #{@mountpoint}/etc/crypttab..."
+      @log.info " * Writing #{@mountpoint}/etc/crypttab..."
       line = "#{@luks_name} UUID=#{uuid} #{@key_path} luks"
       echo_a "#{@mountpoint}/etc/crypttab", line
+      @log.result_ok
 
-      puts " >> Writing #{@mountpoint}/etc/fstab..."
-      line = "/dev/mapper/#{@luks_name} #{@mount} #{@format} defaults 0 0"
-      echo_a "#{@mountpoint}/etc/fstab", line
-
+      config_openrc
       config_grub
-      config_dracut
+    end
+
+    # https://wiki.gentoo.org/wiki/Dm-crypt#Configuring_dm-crypt
+    def config_openrc
+      Getch::Helpers.openrc? || return
+
+      conf = "#{@mountpoint}/etc/conf.d/dmcrypt"
+      uuid = Getch::Helpers.uuid @disk
+      echo_a conf, "target=#{@luks_name}"
+      echo_a conf, "source=UUID=\"#{uuid}\""
+      echo_a conf, "key=#{@key_path}"
     end
 
     def config_grub
       return unless @bootloader
 
-      if File.exist? "#{@mountpoint}/etc/default/grub"
-        @log.info 'Writing to /etc/default/grub...'
+      if Getch::Helpers.grub?
+        @log.info ' * Writing to /etc/default/grub...'
         line = 'GRUB_ENABLE_CRYPTODISK=y'
         echo_a "#{@mountpoint}/etc/default/grub", line
-        @log.result 'Ok'
-      end
-    end
-
-    def config_dracut
-      return unless @bootloader
-
-      @key_path = "#{@key_dir}/#{@key_name}"
-      if Dir.exist? "#{@mountpoint}/etc/dracut.conf.d"
-        @log.info "Writing to /etc/dracut.conf.d/#{@luks_name}.conf..."
-        line = "install_items+=\" #{@key_path} /etc/crypttab \""
-        File.write "#{@mountpoint}/etc/dracut.conf.d/#{@luks_name}.conf", "#{line}\n"
-        @log.result 'Ok'
+        @log.result_ok
       end
     end
 
@@ -178,7 +162,7 @@ module Luks
       File.chmod 0400, "#{@mountpoint}#{@key_dir}"
       File.chmod 0000, @full_key_path
       File.chown 0, 0, @full_key_path
-      @log.result 'Ok'
+      @log.result_ok
     end
 
     private
@@ -214,7 +198,8 @@ module Luks
     def initialize(disk, options)
       super
       @luks_type = 'luks1'
-      @key = false
+      @key_dir = '/boot'
+      @key_name = 'boot.key'
       @bootloader = true
       @mount = '/boot'
       @luks = options[:luks_name]

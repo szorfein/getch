@@ -48,6 +48,7 @@ module Getch
     post_config: false,
     terraform: false,
     bootloader: false,
+    services: false,
     finalize: false,
   }
 
@@ -62,17 +63,20 @@ module Getch
     end
 
     def resume
+      STATES[:partition] && return
+
       @log.fatal 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
 
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
-      puts "\tZoneinfo: #{OPTIONS[:zoneinfo]}"
+      puts "\tTimezone: #{OPTIONS[:timezone]}"
       puts "\tKeymap: #{OPTIONS[:keymap]}"
       puts "\tDisk: #{OPTIONS[:disk]}"
       puts "\tFilesystem: #{OPTIONS[:fs]}"
       puts "\tUsername: #{OPTIONS[:username]}"
       puts "\tEncrypt: #{OPTIONS[:encrypt]}"
+      puts "\tMusl: #{OPTIONS[:musl]}"
       puts
       puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"
@@ -102,9 +106,11 @@ module Getch
 
     def terraform
       @assembly.terraform
+      @assembly.services
     end
 
     def bootloader
+      @assembly.luks_keys
       @assembly.bootloader
     end
 

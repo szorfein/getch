@@ -5,37 +5,44 @@ module Getch
     module Ext4
       module Hybrid
         class Deps
-          def make
-            install_deps
-            options_make
-            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all')
+          def initialize
+            x
           end
 
-          private
+          protected
 
-          def options_make
-            grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
-            datas = [
-              '',
-              grub,
-              'INSTALL="yes"',
-              'MENUCONFIG="no"',
-              'CLEAN="yes"',
-              'KEYMAP="yes"',
-              'SAVE_CONFIG="yes"',
-              'MOUNTBOOT="yes"',
-              'MRPROPER="no"',
-              'LVM="yes"',
-              'LUKS="yes"',
-            ]
-            file = "#{MOUNTPOINT}/etc/genkernel.conf"
-            File.write(file, datas.join("\n"), mode: 'a')
+          def x
+            install
+            service
           end
 
-          def install_deps
-            # lvm2, cryptsetup alrealy installed
-            Getch::Bask.new('-a lvm')
+          def install
+            case OPTIONS[:os]
+            when 'gentoo' then Install.new('sys-fs/cryptsetup sys-fs/lvm2')
+            when 'void' then Install.new('cryptsetup lvm2')
+            end
+          end
+
+          def service
+            systemd
+            openrc
+            runit
+          end
+
+          def systemd
+            Helpers.systemd? || return
+
             exec('systemctl enable lvm2-monitor')
+          end
+
+          def openrc
+            Helpers.openrc? || return
+
+            exec('rc-update add lvm boot')
+            exec('rc-update add dmcrypt boot')
+          end
+
+          def runit
           end
 
           def exec(cmd)

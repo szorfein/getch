@@ -132,11 +132,20 @@ module MountFs
   end
 
   class Zfs < Minimal
+    def initialize(devs, options)
+      @zfs = options[:zfs_name]
+      @os = options[:os]
+      super
+    end
 
+    # Root should be alrealy mounted
     def mount_root
     end
 
     def mount_boot
+      @boot || return
+
+      Getch::Command.new("zfs mount b#{@zfs}/BOOT/#{@os}")
     end
 
     def mount_home

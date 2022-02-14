@@ -18,6 +18,7 @@ module Dracut
     def generate
       host_only
       cmdline
+      others
     end
 
     protected
@@ -35,18 +36,10 @@ module Dracut
       echo file, "kernel_cmdline=\"#{line}\""
     end
 
-    private
-
-    def get_uuid(dev)
-      device = dev.delete_prefix('/dev/')
-      Dir.glob('/dev/disk/by-uuid/*').each do |f|
-        link = File.readlink(f)
-        return f.delete_prefix('/dev/disk/by-uuid/') if link =~ /#{device}$/
-      end
-      @log.fatal "Dracut - no uuid found for #{dev}"
+    def get_line
     end
 
-    def get_line
+    def others
     end
   end
 end
