@@ -27,6 +27,7 @@ class Clean
     old_zfs
     old_lvm
     zap_all @root, @boot, @home, @cache
+    wipe_all @root, @boot, @home, @cache
     dd
   end
 
@@ -85,11 +86,21 @@ class Clean
     devs.each { |d| zap(d) }
   end
 
+  def wipe_all(*devs)
+    devs.each { |d| wipe(d) }
+  end
+
   def dd
     cmd "dd if=/dev/zero of=/dev/#{@root} bs=1M count=100"
   end
 
   private
+
+  def wipe(dev)
+    dev || return
+
+    cmd "wipefs --all /dev/#{dev}"
+  end
 
   def umount_r(dir)
     dir || return

@@ -76,6 +76,7 @@ module Getch
       puts "\tFilesystem: #{OPTIONS[:fs]}"
       puts "\tUsername: #{OPTIONS[:username]}"
       puts "\tEncrypt: #{OPTIONS[:encrypt]}"
+      puts "\tMusl: #{OPTIONS[:musl]}"
       puts
       puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"

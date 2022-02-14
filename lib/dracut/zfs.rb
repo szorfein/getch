@@ -11,7 +11,7 @@ module Dracut
 
     def others
       file = "#{@mountpoint}/etc/dracut.conf.d/zfs.conf"
-      echo file, '"nofsck="yes"'
+      echo file, 'nofsck="yes"'
       echo_a file, 'omit_dracutmodules+=" btrfs "'
     end
 

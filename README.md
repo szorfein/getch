@@ -126,3 +126,9 @@ Well, another weird issue, the first time you boot on your encrypted pool, nothi
     # exit
 
 Dracut should finally start `mount-zfs.sh` and ask for your password. After you first login, follow instructions above for recompile the initramfs and mount the boot pool and your good.
+
+If it doesn't work, try to start script manually (always in the shell):
+
+    # sh /lib/dracut/hooks/mount/98-mount-zsh.sh
+    # sh /lib/dracut/hooks/mount/99-mount-root.sh
+    # exit
