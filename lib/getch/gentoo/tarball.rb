@@ -52,7 +52,7 @@ module Getch
 
       def control_files
         @log.info "Download other files..."
-        ['DIGESTS', 'DIGESTS.asc', 'CONTENTS.gz'].each do |f|
+        ['DIGESTS', 'asc', 'CONTENTS.gz'].each do |f|
           Helpers.get_file_online("#{@mirror}/releases/amd64/autobuilds/#{file}.#{f}", "#{@stage_file}.#{f}")
         end
         @log.result_ok
@@ -60,7 +60,7 @@ module Getch
 
       def checksum
         @log.info 'Checking SHA512 checksum...'
-        command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS.asc | sha512sum --check"
+        command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS | sha512sum --check"
         _, stderr, status = Open3.capture3(command)
         if status.success? then
           @log.result_ok

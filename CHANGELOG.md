@@ -1,4 +1,5 @@
 ## Next release...
+* Gentoo use the kernel `sys-kernel/gentoo-kernel-bin` to install more quickly.
 * No more need to enter password twice with Grub and encrypted system.
 * Can restart the whole installation from scratch with the option `--restart`
 * ZFS create pool with disk id `/dev/disk/by-id`.
