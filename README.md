@@ -104,11 +104,10 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
 #### Encryption with GRUB
 To decrypt your disk on GRUB, only the `us` keymap is working for now.
 
-#### ZFS for Void Linux - Enable the boot pool
-You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
-By default, your /boot is empty because your boot pool is not imported...
+#### ZFS with Grub - mount the boot pool
+By default, your /boot is empty because your boot pool is not mounted...
 
-    # zpool import -f -d /dev/disk/by-id -N bpool
+    # zpool status
     # zfs mount bpool/BOOT/void
     # ls /boot
 
@@ -119,7 +118,7 @@ You should see something in the boot (initramfs, vmlinuz).. Recreate the initram
 And reboot, the `/boot` partition should be mounted automatically after that.
 
 #### ZFS with and without encryption
-Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
+Well, another weird issue with Dracut, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
 
     # ls /lib/dracut/hooks/initqueue/finished/*
     # rm /lib/dracut/hooks/initqueue/finished/dev*
