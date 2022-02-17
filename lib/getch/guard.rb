@@ -27,8 +27,8 @@ module Getch
 
     def self.format(name)
       raise InvalidFormat, 'No format specified.' unless name
-      raise InvalidFormat, "Format #{name} not yet available." if name.match(/btrfs/)
-      raise InvalidFormat, "Format #{name} not supported." unless name.match(/zfs|lvm|ext4/)
+      raise InvalidFormat, "Format #{name} not yet available." if name.match(/btrfs|xfs/)
+      raise InvalidFormat, "Format #{name} not supported." unless name.match(/zfs|ext4/)
 
       name
     rescue InvalidFormat => e

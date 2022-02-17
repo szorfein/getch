@@ -1,24 +1,20 @@
 # frozen_string_literal: true
 
+require 'mountfs'
+
 module Getch
   module FileSystem
     module Ext4
       module Encrypt
-        class Mount < Getch::FileSystem::Ext4::Encrypt::Device
+        class Mount
           def initialize
-            super
-            @mount = Getch::FileSystem::Mount.new
-            @state = Getch::States.new
+            x
           end
 
-          def run
-            return if STATES[:mount]
+          private
 
-            @mount.root(@luks_root)
-            @mount.boot(@dev_boot)
-            @mount.esp(@dev_esp)
-            @mount.home(@luks_home)
-            @state.mount
+          def x
+            MountFs::Encrypt.new(DEVS, OPTIONS)
           end
         end
       end

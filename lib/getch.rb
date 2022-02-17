@@ -5,7 +5,10 @@ require_relative 'getch/options'
 require_relative 'getch/states'
 require_relative 'getch/gentoo'
 require_relative 'getch/void'
+require_relative 'getch/device'
 require_relative 'getch/filesystem'
+require_relative 'getch/tree'
+require_relative 'getch/assembly'
 require_relative 'getch/command'
 require_relative 'getch/log'
 require_relative 'getch/config'
@@ -15,72 +18,65 @@ require_relative 'getch/version'
 module Getch
 
   OPTIONS = {
-    :language => 'en_US',
-    :zoneinfo => 'US/Eastern',
-    :keymap => 'us',
-    :disk => false,
-    :fs => 'ext4',
-    :username => false,
-    :os => 'gentoo',
-    :boot_disk => false,
-    :cache_disk => false,
-    :home_disk => false,
-    :encrypt => false,
-    :verbose => false
+    boot_disk: false,
+    disk: false,
+    cache_disk: false,
+    encrypt: false,
+    fs: 'ext4',
+    home_disk: false,
+    keymap: 'us',
+    language: 'en_US',
+    luks_name: 'luks',
+    lvm: false,
+    mountpoint: '/mnt/getch',
+    musl: false,
+    os: 'gentoo',
+    timezone: 'UTC',
+    username: false,
+    verbose: false,
+    vg_name: 'vg4',
+    zfs_name: 'pool'
   }
 
   STATES = {
-    :partition => false,
-    :format => false,
-    :mount => false,
-    :gentoo_base => false,
-    :gentoo_config => false,
-    :gentoo_update => false,
-    :gentoo_bootloader => false,
-    :gentoo_kernel => false
+    partition: false,
+    format: false,
+    mount: false,
+    tarball: false,
+    pre_config: false,
+    update: false,
+    post_config: false,
+    terraform: false,
+    bootloader: false,
+    services: false,
+    finalize: false,
   }
 
-  MOUNTPOINT = '/mnt/gentoo'
-
-  DEFAULT_FS = {
-    true => {
-      ext4: FileSystem::Ext4::Encrypt,
-      lvm: FileSystem::Lvm::Encrypt,
-      zfs: FileSystem::Zfs::Encrypt
-    },
-    false => {
-      ext4: FileSystem::Ext4,
-      lvm: FileSystem::Lvm,
-      zfs: FileSystem::Zfs,
-    }
-  }.freeze
-
-  def self.select_fs
-    encrypt = OPTIONS[:encrypt]
-    fs_sym = OPTIONS[:fs].to_sym
-    DEFAULT_FS[encrypt][fs_sym]
-  end
+  MOUNTPOINT = '/mnt/getch'
+  DEVS = {}
 
   class Main
     def initialize(argv)
       argv[:cli]
-      @class_fs = Getch::select_fs
       @log = Log.new
-      Getch::States.new # Update States
+      @assembly = Assembly.new
     end
 
     def resume
-      raise 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
+      STATES[:partition] && return
+
+      @log.fatal 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
 
       puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
-      puts "\tZoneinfo: #{OPTIONS[:zoneinfo]}"
+      puts "\tTimezone: #{OPTIONS[:timezone]}"
       puts "\tKeymap: #{OPTIONS[:keymap]}"
       puts "\tDisk: #{OPTIONS[:disk]}"
       puts "\tFilesystem: #{OPTIONS[:fs]}"
       puts "\tUsername: #{OPTIONS[:username]}"
       puts "\tEncrypt: #{OPTIONS[:encrypt]}"
+      puts "\tMusl: #{OPTIONS[:musl]}"
       puts
       puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"
@@ -89,67 +85,39 @@ module Getch
       print 'Continue? (y,N) '
       case gets.chomp
       when /^y|^Y/
-        return
       else
         exit
       end
     end
 
-    def partition
-      return if STATES[:partition]
-
-      puts
-      print "Partition and format disk #{OPTIONS[:disk]}, this will erase all data, continue? (y,N) "
-      case gets.chomp
-      when /^y|^Y/
-        @log.info('Partition start')
-        @class_fs::Partition.new
-      else
-        exit
-      end
+    def prepare_disk
+      @assembly.clean
+      @assembly.partition
+      @assembly.format
+      @assembly.mount
     end
 
-    def format
-      return if STATES[:format]
-
-      @class_fs::Format.new
+    def install_system
+      @assembly.tarball
+      @assembly.pre_config
+      @assembly.update
+      @assembly.post_config
     end
 
-    def mount
-      return if STATES[:mount]
-
-      @class_fs::Mount.new.run
+    def terraform
+      @assembly.terraform
+      @assembly.services
     end
 
-    def install
-      if OPTIONS[:os] == 'gentoo'
-        install_gentoo
-      elsif OPTIONS[:os] == 'void'
-        install_void
-      else
-        puts "Options #{OPTIONS[:os]} not supported...."
-        exit 1
-      end
+    def bootloader
+      @assembly.luks_keys
+      @assembly.bootloader
     end
 
-    def install_gentoo
-      gentoo = Getch::Gentoo::Main.new
-      gentoo.stage3
-      gentoo.config
-      gentoo.chroot
-      gentoo.bootloader
-      gentoo.kernel
-      gentoo.boot
+    def finalize
+      @assembly.finalize
     end
 
-    def install_void
-      void = Getch::Void::Main.new
-      void.root_fs
-      void.config
-      void.chroot
-      void.boot
-    end
-    
     def configure
       config = Getch::Config::Main.new
       config.ethernet

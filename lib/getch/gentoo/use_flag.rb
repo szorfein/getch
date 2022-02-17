@@ -4,13 +4,15 @@ module Getch
   module Gentoo
     class UseFlag
       def initialize
-        @efi = Helpers.efi?
+        x
       end
 
-      def apply
+      protected
+
+      def x
+        dist_kernel
         systemd
         pam
-        kernel
         kmod
         grub
         zfs
@@ -20,26 +22,27 @@ module Getch
 
       private
 
+      # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel#Trying_it_out
+      def dist_kernel
+        use = Getch::Gentoo::Use.new
+        use.add_global('dist-kernel')
+      end
+
       def systemd
+        return unless Helpers.systemd?
+
         flags = []
         use = Getch::Gentoo::Use.new('sys-apps/systemd')
         flags << 'dns-over-tls'
-        flags << 'gnuefi' if @efi
+        flags << 'gnuefi' if Helpers.efi?
         use.add(flags)
       end
 
       def pam
         flags = []
         use = Getch::Gentoo::Use.new('sys-auth/pambase')
-        flags << '-passwdqc'
-        flags << 'pwquality'
         flags << 'sha512'
         use.add(flags)
-      end
-
-      def kernel
-        use = Getch::Gentoo::Use.new('sys-kernel/gentoo-kernel')
-        use.add('hardened')
       end
 
       def kmod
@@ -48,13 +51,11 @@ module Getch
       end
 
       def grub
-        return if @efi
-
         flags = []
         use = Getch::Gentoo::Use.new('sys-boot/grub')
-        flags << '-grub_platforms_efi-64'
-        flags << 'libzfs' if Getch::OPTIONS[:fs] == 'zfs'
-        flags << 'device-mapper' if Getch::OPTIONS[:fs] == 'lvm'
+        flags << '-grub_platforms_efi-64' unless Helpers.efi?
+        flags << 'libzfs' if OPTIONS[:fs] == 'zfs'
+        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm' or OPTIONS[:encrypt]
         use.add(flags)
       end
 
@@ -65,10 +66,6 @@ module Getch
         use.add('rootfs')
         use = Getch::Gentoo::Use.new('sys-fs/zfs')
         use.add('rootfs')
-
-        # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
-        use = Getch::Gentoo::Use.new
-        use.add_global('dist-kernel')
       end
 
       def lvm

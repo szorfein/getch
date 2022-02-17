@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
+require 'nito'
+
 module Getch
   module Gentoo
     class Use
+      include NiTo
+
       def initialize(pkg = nil)
-        @use_dir = "#{MOUNTPOINT}/etc/portage/package.use"
+        @use_dir = "#{OPTIONS[:mountpoint]}/etc/portage/package.use"
         @pkg = pkg
         @file = @pkg ? @pkg.match(/[\w]+$/) : nil
-        @make = "#{MOUNTPOINT}/etc/portage/make.conf"
+        @make = "#{OPTIONS[:mountpoint]}/etc/portage/make.conf"
       end
 
       def add(*flags)
@@ -24,15 +28,14 @@ module Getch
 
       def write
         content = "#{@pkg} #{@flags}\n"
-        File.write("#{@use_dir}/#{@file}", content, mode: 'w')
+        echo "#{@use_dir}/#{@file}", content
       end
 
       def write_global
         list = []
-        @flags.each { |f| list << f unless Helpers.grep?(@make, /#{f}/) }
+        @flags.each { |f| list << f unless grep?(@make, f) }
         use = list.join(' ')
-        line = "USE=\"${USE} #{use}\"\n"
-        File.write(@make, line, mode: 'a')
+        echo_a @make, "USE=\"${USE} #{use}\""
       end
     end
   end

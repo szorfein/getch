@@ -5,38 +5,28 @@ module Getch
     module Ext4
       module Encrypt
         class Deps
-          def make
-            install_deps
-            genkernel
-            Getch::Make.new('genkernel --kernel-config=/usr/src/linux/.config all').run!
+          def initialize
+            install
+            service
           end
 
-          private
+          protected
 
-          def genkernel
-            grub = Helpers.efi? ? 'BOOTLOADER="no"' : 'BOOTLOADER="grub2"'
-            datas = [
-              '',
-              grub,
-              'INSTALL="yes"',
-              'MENUCONFIG="no"',
-              'CLEAN="yes"',
-              'KEYMAP="yes"',
-              'SAVE_CONFIG="yes"',
-              'MOUNTBOOT="yes"',
-              'MRPROPER="no"',
-              'LUKS="yes"',
-            ]
-            file = "#{MOUNTPOINT}/etc/genkernel.conf"
-            File.write(file, datas.join("\n"), mode: 'a')
+          def install
+            case OPTIONS[:os]
+            when 'gentoo' then Install.new('sys-fs/cryptsetup')
+            when 'void' then Install.new('cryptsetup')
+            end
           end
 
-          def install_deps
-            Getch::Emerge.new('genkernel').pkg!
+          def service
+            openrc
           end
 
-          def exec(cmd)
-            Getch::Chroot.new(cmd).run!
+          def openrc
+            Helpers.openrc? || return
+
+            Chroot.new('rc-update add dmcrypt boot')
           end
         end
       end

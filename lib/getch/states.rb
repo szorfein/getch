@@ -24,28 +24,48 @@ module Getch
       save
     end
 
-    def stage3
-      STATES[:gentoo_base] = true
+    def tarball
+      STATES[:tarball] = true
       save
     end
 
-    def config
-      STATES[:gentoo_config] = true
+    def pre_config
+      STATES[:pre_config] = true
       save
     end
 
     def update
-      STATES[:gentoo_update] = true
+      STATES[:update] = true
+      save
+    end
+
+    def post_config
+      STATES[:post_config] = true
+      save
+    end
+
+    def terraform
+      STATES[:terraform] = true
+      save
+    end
+
+    def services
+      STATES[:services] = true
+      save
+    end
+
+    def luks_keys
+      STATES[:luks_keys] = true
       save
     end
 
     def bootloader
-      STATES[:gentoo_bootloader] = true
+      STATES[:bootloader] = true
       save
     end
 
-    def kernel
-      STATES[:gentoo_kernel] = true
+    def finalize
+      STATES[:finalize] = true
       save
     end
 

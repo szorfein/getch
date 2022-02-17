@@ -1,3 +1,15 @@
+## 0.3.0, release 2022-02-17
+* Gentoo with musl use an additional repo https://github.com/gentoo/musl.git.
+* Gentoo use the kernel `sys-kernel/gentoo-kernel-bin` to install more quickly.
+* No more need to enter password twice with Grub and encrypted system.
+* Can restart the whole installation from scratch with the option `--restart`
+* ZFS create pool with disk id `/dev/disk/by-id`.
+* New option `--lvm` instead of `-f lvm`.
+* Rename option `-z | --zoneinfo` for `-t | --timezone`. Default use `UTC`.
+* Use a generic hostname `host` rather than '{os}-hatch-{randomID}'
+* Musl can be installed with the `--musl` option.
+* Use colors in the script, look better.
+
 ## 0.1.9, release 2022-01-26
 * Gentoo use now the kernel `sys-kernel/gentoo-kernel` [project](https://wiki.gentoo.org/wiki/Project:Distribution_Kernel), updates are automatic.
 * Correct the download of the `rootfs tarball` for VoidLinux.

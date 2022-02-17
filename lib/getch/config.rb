@@ -1,45 +1,24 @@
 # frozen_string_literal: true
 
-require_relative 'config/gentoo'
-require_relative 'config/void'
-
-CONFIG_LOAD = {
-  gentoo: Getch::Config::Gentoo,
-  void: Getch::Config::Void
-}.freeze
-
 module Getch
   module Config
-    class Main
-      def initialize
-        os = OPTIONS[:os].to_sym
-        @load = CONFIG_LOAD[os].new
-      end
+    def sysctl
+      pwd = File.expand_path(File.dirname(__FILE__))
+      dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
-      def ethernet
-        @load.ethernet
-      end
-
-      def dns
-        @load.dns
-      end
-
-      def wifi
-        @load.wifi
-      end
-
-      def sysctl
-        pwd = File.expand_path(File.dirname(__FILE__))
-        dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
-
-        Helpers.mkdir dest
-        Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
-        Helpers.cp("#{pwd}/../../assets/system.conf", dest)
-      end
-      
-      def shell
-        @load.shell
-      end
+      mkdir dest
+      Helpers.cp("#{pwd}/../../assets/network-stack.conf", dest)
+      Helpers.cp("#{pwd}/../../assets/system.conf", dest)
     end
   end
 end
+
+require_relative 'config/portage'
+require_relative 'config/locale'
+require_relative 'config/pre_network'
+require_relative 'config/keymap'
+require_relative 'config/timezone'
+require_relative 'config/grub'
+require_relative 'config/account'
+require_relative 'config/iwd'
+require_relative 'config/dhcp'

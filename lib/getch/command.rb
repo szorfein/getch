@@ -1,161 +1,71 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'nito'
 
 module Getch
   class Command
-    def initialize(cmd)
-      @cmd = cmd
-      @block_size = 1024
+    attr_reader :res
+
+    def initialize(*args)
+      @cmd = args.join(' ')
       @log = Getch::Log.new
+      x
     end
 
-    def run!
-      @log.info 'Running command: ' + @cmd.gsub(/\"/, '')
+    def to_s
+      @res
+    end
 
-      Open3.popen3(@cmd) do |stdin, stdout, stderr, wait_thr|
+    protected
+
+    def x
+      @log.info 'Exec: ' + @cmd
+      cmd = build_cmd
+
+      Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         stdin.close_write
         code = wait_thr.value
 
-        # only stderr
-        begin
-          @log.debug stderr.readline until stderr.eof.nil?
-        rescue
-        end
-
-        begin
-          files = [stdout, stderr]
-
-          until all_eof(files) do
-            ready = IO.select(files)
-
-            if ready
-              readable = ready[0]
-              # writable = ready[1]
-              # exceptions = ready[2]
-
-              display_lines(readable)
-            end
-          end
-        rescue IOError => e
-          puts "IOError: #{e}"
-        end
-
         unless code.success?
-          @log.fatal "Running #{@cmd}"
-          exit 1
+          begin
+            @log.debug stderr.readline until stderr.eof.nil?
+          rescue EOFError
+            print
+          end
         end
 
-        @log.debug "Done - #{@cmd} - #{code}"
-      end
-    end
-
-    private
-
-    # Returns true if all files are EOF
-    def all_eof(files)
-      files.find { |f| !f.eof }.nil?
-    end
-
-    def display_lines(block)
-      block.each do |f|
-        begin
-          data = f.read_nonblock(@block_size)
-          puts data if OPTIONS[:verbose]
-        rescue EOFError
-          puts
-        rescue => e
-          puts "Fatal - #{e}"
+        if code.success?
+          @log.result_ok
+          @res = stdout.read.chomp
+          return
         end
-      end
-    end
-  end
 
-  # Use system, the only ruby method to display stdout with colors !
-  class Emerge
-    def initialize(cmd)
-      @gentoo = MOUNTPOINT
-      @cmd = cmd
-      @log = Getch::Log.new
-    end
-
-    def run!
-      @log.info "Running emerge: #{@cmd}"
-      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && #{@cmd}")
-      read_exit
-    end
-
-    def pkg!
-      @log.info "Running emerge pkg: #{@cmd}"
-      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
-      read_exit
-    end
-
-    private
-
-    def read_exit
-      if $?.exitstatus > 0
+        puts
+        @log.error "#{@cmd} - #{code}"
         @log.fatal "Running #{@cmd}"
-      else
-        @log.info "Done #{@cmd}"
       end
     end
-  end
 
-  class Make
-    def initialize(cmd)
-      @gentoo = MOUNTPOINT
-      @cmd = cmd
-      @log = Getch::Log.new
-    end
+    private
 
-    def run!
-      @log.info "Running Make: #{@cmd}"
-      cmd = "chroot #{@gentoo} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /usr/src/linux \
-        && #{@cmd}\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-          exit 1
-        end
-      end
+    def build_cmd
+      @cmd
     end
   end
 
   class Bask
     def initialize(cmd)
       @cmd = cmd
-      @log = Getch::Log.new
+      @log = Log.new
       @version = '0.6'
       @config = "#{MOUNTPOINT}/etc/kernel/config.d"
       download_bask unless Dir.exist? "#{MOUNTPOINT}/root/bask-#{@version}"
     end
 
-    def run!
-      @log.info "Running Bask: #{@cmd}"
-      cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile \
-        && env-update \
-        && cd /root/bask-#{@version} \
-        && ./bask.sh #{@cmd} -k /usr/src/linux\""
-      Open3.popen2e(cmd) do |_, stdout_err, wait_thr|
-        stdout_err.each { |l| puts l }
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          @log.fatal "Running #{cmd}"
-          exit 1
-        end
-      end
-    end
-
     def cp
-      Helpers.mkdir @config
-      Helpers.cp(
+      NiTo.mkdir @config
+      NiTo.cp(
         "#{MOUNTPOINT}/root/bask-#{@version}/config.d/#{@cmd}",
         "#{@config}/#{@cmd}"
       )
@@ -168,20 +78,70 @@ module Getch
     private
 
     def download_bask
-      @log.info 'Installing Bask...'
+      @log.info "Installing Bask...\n"
       url = "https://github.com/szorfein/bask/archive/refs/tags/#{@version}.tar.gz"
       file = "bask-#{@version}.tar.gz"
 
       Dir.chdir("#{MOUNTPOINT}/root")
       Helpers.get_file_online(url, file)
-      Getch::Command.new("tar xzf #{file}").run!
+      Getch::Command.new("tar xzf #{file}")
     end
   end
 
   class Chroot < Command
-    def initialize(cmd)
-      super
-      @cmd = "chroot #{MOUNTPOINT} /bin/bash -c \"source /etc/profile; #{cmd}\""
+    def build_cmd
+      dest = OPTIONS[:mountpoint]
+      case OPTIONS[:os]
+      when 'gentoo'
+        "chroot #{dest} /bin/bash -c \"source /etc/profile; #{@cmd}\""
+      when 'void'
+        "chroot #{dest} /bin/bash -c \"#{@cmd}\""
+      end
+    end
+  end
+
+  class ChrootOutput
+    def initialize(*args)
+      @cmd = args.join(' ')
+      @log = Log.new
+      x
+    end
+
+    private
+
+    def x
+      msg
+      system('chroot', OPTIONS[:mountpoint], '/bin/bash', '-c', other_args)
+      $?.success? && return
+
+      @log.fatal "Running #{@cmd}"
+    end
+
+    def msg
+      @log.info "Exec: #{@cmd}...\n"
+    end
+
+    def other_args
+      case OPTIONS[:os]
+      when 'gentoo' then "source /etc/profile && #{@cmd}"
+      when 'void' then @cmd
+      end
+    end
+  end
+
+  # Install
+  # use system() to install packages
+  # Usage: Install.new(pkg_name)
+  class Install < ChrootOutput
+    def msg
+      @log.info "Installing #{@cmd}...\n"
+    end
+
+    def other_args
+      case OPTIONS[:os]
+      when 'gentoo' then "source /etc/profile && emerge --changed-use #{@cmd}"
+      when 'void' then "/usr/bin/xbps-install -y #{@cmd}"
+      end
     end
   end
 end

@@ -3,15 +3,17 @@
 require 'getch'
 
 getch = Getch::Main.new(
-  :cli => Getch::Options.new(ARGV)
+  cli: Getch::Options.new(ARGV)
 )
 
 getch.resume
 
-getch.partition
-getch.format
-getch.mount
+getch.prepare_disk
 
-getch.install
+getch.install_system
 
-getch.configure
+getch.terraform
+
+getch.bootloader
+
+getch.finalize

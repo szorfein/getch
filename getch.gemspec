@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name = 'getch'
   s.version = Getch::VERSION
   s.platform = Gem::Platform::RUBY
-  s.summary = 'A CLI tool to install Gentoo'
+  s.summary = 'A CLI tool to install Gentoo or VoidLinux.'
   s.authors = ['szorfein']
   s.email = ['szorfein@protonmail.com']
   s.homepage = 'https://github.com/szorfein/getch'

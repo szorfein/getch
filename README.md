@@ -6,7 +6,7 @@
 [![Gem Version](https://badge.fury.io/rb/getch.svg)](https://badge.fury.io/rb/getch)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/szorfein/getch/Rubocop/develop)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
-![GitHub](https://img.shields.io/github/license/szorfein/ardecy)
+![GitHub](https://img.shields.io/github/license/szorfein/getch)
 
 </div>
 
@@ -22,11 +22,12 @@ Hardened System:
 + sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
 + Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
 + Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
++ Musl optionnal
 
 ## Description
-Actually, Getch support only the `x86_64` architecture and only with the following archives:
-+ **Gentoo**: `stage3-amd64-systemd` [Gentoo](https://www.gentoo.org/downloads/).
-+ **Void**: `rootfs glibc` [Void](https://voidlinux.org/download/).
+Actually, Getch support only the `x86_64` architecture with the following archives:
++ **Gentoo**: `stage3-amd64-systemd` or `stage3-amd64-musl` [Gentoo](https://www.gentoo.org/downloads/).
++ **Void**: `rootfs tarball glibc` or `rootfs tarball musl` [Void](https://voidlinux.org/download/).
 
 Filesystem supported (with or without encryption)
 + Ext4
@@ -34,12 +35,14 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ **Gentoo**: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
-+ **Void**: use only Grub2, encryption for the root fs use luks1.
++ **Gentoo**: `BIOS` and `musl` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
 + [Archaeidae](https://github.com/szorfein/archaeidae): Custom Archiso that includes ZFS support.
+
+You can also use your current `linux` host, just pay attention to the disk that will be used.  
 
 ## Dependencies
 Getch is build without external libs, so it only require `ruby >= 2.5`.
@@ -71,11 +74,11 @@ For a french user:
 
 Install Gentoo on LVM and use a different root disk `/dev/sdc`
 
-    # getch --format lvm --disk sdc
+    # getch --format ext4 --lvm --disk sdc
 
 Encrypt your disk with LVM with a french keymap
 
-    # getch --format lvm --encrypt --keymap fr
+    # getch --format ext4 --lvm --encrypt --keymap fr
 
 Encrypt with ext4 and create a new user `ninja`:
 
@@ -85,9 +88,9 @@ With ZFS, if used with `--encrypt`, it use the native ZFS encryption:
 
     # getch --format zfs
 
-With `Void Linux`:
+With `Void Linux` and `Musl` enable:
 
-    # getch --os void --encrypt -k fr
+    # getch --os void --encrypt -k fr --musl
 
 ## Troubleshooting
 
@@ -98,33 +101,36 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
     # vgremove -f vg0
     # pvremove -f /dev/sdb
 
-#### Encryption enable on BIOS with ext4
-To decrypt your disk on BIOS system, you have to enter your password twice. One time for Grub and another time for Genkernel. [post](https://wiki.archlinux.org/index.php/GRUB#Encrypted_/boot).  
-Also with GRUB, only a `us` keymap is working.
+#### Encryption with GRUB
+To decrypt your disk on GRUB, only the `us` keymap is working for now.
 
-#### ZFS for Void Linux - Enable the boot pool
-You have some extras step to do after booting to enable the boot pool, you need this pool when you update your system. It's used mainly by Grub and Dracut.
-By default, your /boot is empty because your boot pool is not imported...
+#### ZFS with Grub
+By default, if you use ZFS with `musl` or `voidlinux` the `/boot` partition is not mounted automatically, so before an update, mout the partition.
 
-    # zpool import -f -d /dev/disk/by-id -N bpool-150ed
-    # zfs mount bpool-150ed/BOOT/void
+    # zpool status
+    # zfs mount bpool/BOOT/void
     # ls /boot
 
-You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
+#### ZFS with and without encryption
+First time on ZFS after 5min
 
-    # xbps-reconfigure -fa
+```txt
+dracut Warning: /dev/disk/by-uuid/<DISK> does not exist
+```
 
-Make the `bpool` available at the boot:
-
-    # zfs set canmount=on bpool-150ed/BOOT/void
-
-And reboot, the `/boot` partition should be mounted automatically after that.
-
-#### ZFS Encrypted with Void
-Well, another weird issue, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
+Dracut try to mount inexistent device. Just wait for enter in the shell and remove the disk uuid from `/lib/dracut/hooks/initqueue/finished/`
 
     # ls /lib/dracut/hooks/initqueue/finished/*
     # rm /lib/dracut/hooks/initqueue/finished/dev*
     # exit
 
-Dracut should finally start `mount-zfs.sh` and ask for your password. After you first login, follow instructions above for recompile the initramfs and mount the boot pool and your good.
+Dracut should finally start `mount-zfs.sh` and ask for a password if encrypted. After you first login, mount the `/boot` partition and recompile the initramfs and your good.
+
++ For Gentoo: `emerge --config sys-kernel/gentoo-kernel-bin`
++ For Voidlinux: `xbps-reconfigure -fa`
+
+If it doesn't work, try to start script manually (always in the shell):
+
+    # . /lib/dracut/hooks/mount/98-mount-zsh.sh
+    # . /lib/dracut/hooks/mount/99-mount-root.sh
+    # exit
