@@ -28,7 +28,7 @@ module Getch
       def cpuflags
         conf = "#{OPTIONS[:mountpoint]}/etc/portage/package.use/00cpuflags"
         Install.new('app-portage/cpuid2cpuflags')
-        cpuflags = Getch::Chroot.new('cpuid2cpuflags')
+        cpuflags = Chroot.new('cpuid2cpuflags')
         File.write(conf, "*/* #{cpuflags}\n")
       end
 

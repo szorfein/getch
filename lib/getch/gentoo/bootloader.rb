@@ -12,7 +12,9 @@ module Getch
       # Dracut is used by sys-kernel/gentoo-kernel
       def dependencies
         Install.new('app-shells/dash')
-        if not Helpers.efi? and not Helpers.systemd?
+        if Helpers.systemd? and Helpers.efi?
+          Log.new.info "Systemd-boot alrealy installed...\n"
+        else
           ChrootOutput.new('emerge --update --newuse sys-boot/grub')
         end
       end

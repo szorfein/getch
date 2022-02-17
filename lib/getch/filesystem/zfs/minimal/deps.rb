@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'nito'
 
 module Getch
@@ -25,7 +27,6 @@ module Getch
             zfs_set
             zed_update_path
             Log.new.fatal('zed - no pool') unless grep?("#{@mountpoint}/etc/zfs/zfs-list.cache/r#{@zfs}", "r#{@zfs}")
-            grub_broken_root
           end
 
           private
@@ -34,16 +35,6 @@ module Getch
             Command.new("zfs set canmount=noauto b#{@zfs}/BOOT/#{@os}") if DEVS[:boot]
             Command.new("zfs set canmount=noauto r#{@zfs}/ROOT/#{@os}")
             Command.new("zpool set bootfs=r#{@zfs}/ROOT/#{@os} r#{@zfs}")
-          end
-
-          # https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS#Using_GRUB_for_EFI/BIOS
-          def grub_broken_root
-            return unless Helpers.grub?
-
-            file = "#{@mountpoint}/etc/default/grub"
-            content = "GRUB_CMDLINE_LINUX=\"$GRUB_CMDLINE_LINUX"
-            content << " root=ZFS=r#{@zfs}/ROOT/#{@os}\""
-            echo_a file, content
           end
 
           def unstable_zfs
@@ -105,6 +96,7 @@ module Getch
             Helpers.openrc? || return
 
             exec('rc-update add zfs-import boot')
+            exec('rc-update add zfs-mount boot')
             exec('rc-update add zfs-zed default')
             fork_d('zed -F')
           end

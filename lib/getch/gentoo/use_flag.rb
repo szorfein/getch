@@ -41,8 +41,6 @@ module Getch
       def pam
         flags = []
         use = Getch::Gentoo::Use.new('sys-auth/pambase')
-        flags << '-passwdqc'
-        flags << 'pwquality'
         flags << 'sha512'
         use.add(flags)
       end
@@ -57,7 +55,7 @@ module Getch
         use = Getch::Gentoo::Use.new('sys-boot/grub')
         flags << '-grub_platforms_efi-64' unless Helpers.efi?
         flags << 'libzfs' if OPTIONS[:fs] == 'zfs'
-        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm'
+        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm' or OPTIONS[:encrypt]
         use.add(flags)
       end
 

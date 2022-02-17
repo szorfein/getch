@@ -8,17 +8,12 @@ module Getch
   module FileSystem
     module Zfs
       module Encrypt
-        class Config
-          def initialize
-            x
-          end
-
-          private
-
+        class Config < Minimal::Config
           def x
             Fstab::Zfs.new(DEVS, OPTIONS).generate
             Dracut::Zfs.new(DEVS, OPTIONS).generate
             CryptSetup.new(DEVS, OPTIONS).swap_conf
+            grub_broken_root
           end
         end
       end

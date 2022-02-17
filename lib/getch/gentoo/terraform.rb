@@ -20,6 +20,7 @@ module Getch
         @pkgs << ' net-firewall/iptables'
         @pkgs << ' net-wireless/iwd'
         @pkgs << ' net-misc/dhcpcd' unless Helpers.systemd?
+        @pkgs << ' sys-kernel/linux-firmware'
         @pkgs << ' sys-firmware/intel-microcode'
         @pkgs << ' sys-fs/dosfstools' if Helpers.efi?
         Install.new(@pkgs)
