@@ -35,7 +35,7 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ **Gentoo**: `BIOS` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Gentoo**: `BIOS` and `musl` will use `Grub2` and `systemd-boot` for `UEFI`.
 + **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:
@@ -104,30 +104,33 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
 #### Encryption with GRUB
 To decrypt your disk on GRUB, only the `us` keymap is working for now.
 
-#### ZFS with Grub - mount the boot pool
-By default, your /boot is empty because your boot pool is not mounted...
+#### ZFS with Grub
+By default, if you use ZFS with `musl` or `voidlinux` the `/boot` partition is not mounted automatically, so before an update, mout the partition.
 
     # zpool status
     # zfs mount bpool/BOOT/void
     # ls /boot
 
-You should see something in the boot (initramfs, vmlinuz).. Recreate the initramfs.
-
-    # xbps-reconfigure -fa
-
-And reboot, the `/boot` partition should be mounted automatically after that.
-
 #### ZFS with and without encryption
-Well, another weird issue with Dracut, the first time you boot on your encrypted pool, nothing append. Dracut try to mount inexistent device. Just wait for enter in the shell:
+First time on ZFS after 5min
+
+```txt
+dracut Warning: /dev/disk/by-uuid/<DISK> does not exist
+```
+
+Dracut try to mount inexistent device. Just wait for enter in the shell and remove the disk uuid from `/lib/dracut/hooks/initqueue/finished/`
 
     # ls /lib/dracut/hooks/initqueue/finished/*
     # rm /lib/dracut/hooks/initqueue/finished/dev*
     # exit
 
-Dracut should finally start `mount-zfs.sh` and ask for your password. After you first login, follow instructions above for recompile the initramfs and mount the boot pool and your good.
+Dracut should finally start `mount-zfs.sh` and ask for a password if encrypted. After you first login, mount the `/boot` partition and recompile the initramfs and your good.
+
++ For Gentoo: `emerge --config sys-kernel/gentoo-kernel-bin`
++ For Voidlinux: `xbps-reconfigure -fa`
 
 If it doesn't work, try to start script manually (always in the shell):
 
-    # sh /lib/dracut/hooks/mount/98-mount-zsh.sh
-    # sh /lib/dracut/hooks/mount/99-mount-root.sh
+    # . /lib/dracut/hooks/mount/98-mount-zsh.sh
+    # . /lib/dracut/hooks/mount/99-mount-root.sh
     # exit

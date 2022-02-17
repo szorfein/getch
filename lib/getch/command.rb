@@ -9,7 +9,6 @@ module Getch
 
     def initialize(*args)
       @cmd = args.join(' ')
-      @block_size = 1024
       @log = Getch::Log.new
       x
     end
@@ -52,31 +51,6 @@ module Getch
 
     def build_cmd
       @cmd
-    end
-  end
-
-  # Use system, the only ruby method to display stdout with colors !
-  class Emerge
-    def initialize(cmd)
-      @gentoo = MOUNTPOINT
-      @cmd = cmd
-      @log = Getch::Log.new
-    end
-
-    def pkg!
-      @log.info "Running emerge pkg: #{@cmd}\n"
-      system('chroot', @gentoo, '/bin/bash', '-c', "source /etc/profile && emerge --changed-use #{@cmd}")
-      read_exit
-    end
-
-    private
-
-    def read_exit
-      if $?.exitstatus > 0
-        @log.fatal "Running #{@cmd}"
-      else
-        @log.info "Done #{@cmd}\n"
-      end
     end
   end
 
