@@ -16,7 +16,7 @@ module Getch
   module Guard
     def self.disk(name)
       raise InvalidDisk, 'No disk.' unless name
-      raise InvalidDisk, "Bad device name #{name}." unless name.match(/^sd[a-z]{1}$/)
+      raise InvalidDisk, "Bad device name #{name}." unless name.match(/^?d[a-z]{1}$/)
       raise InvalidDisk, "Disk /dev/#{name} no found." unless File.exist? "/dev/#{name}"
 
       name

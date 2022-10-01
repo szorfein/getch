@@ -1,3 +1,5 @@
+* Support vdx disk.
+
 ## 0.3.0, release 2022-02-17
 * Gentoo with musl use an additional repo https://github.com/gentoo/musl.git.
 * Gentoo use the kernel `sys-kernel/gentoo-kernel-bin` to install more quickly.
