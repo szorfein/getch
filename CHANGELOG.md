@@ -1,4 +1,4 @@
-## 0.3.2
+## 0.3.2, release 2022-10-01
 * Support disk with a sector size of 512.
 * Support vdx disk.
 
