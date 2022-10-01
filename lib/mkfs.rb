@@ -74,7 +74,11 @@ module Mkfs
 
     def mkfs_ext4(path)
       bs = Getch::Helpers.get_bs(path)
-      Getch::Command.new('mkfs.ext4', '-F', '-b', bs, path)
+      if bs == '512'
+        Getch::Command.new('mkfs.ext4', '-F', path)
+      else
+        Getch::Command.new('mkfs.ext4', '-F', '-b', bs, path)
+      end
     end
 
     def mkfs_xfs(path)
