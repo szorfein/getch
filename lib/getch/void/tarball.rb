@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'open-uri'
 require 'open3'
 
 module Getch
@@ -15,7 +14,7 @@ module Getch
       end
 
       def x
-        search_archive
+        @xbps = search_archive
         download
         checksum
         install
@@ -29,14 +28,19 @@ module Getch
           /void-x86_64-ROOTFS-[\d._]+.tar.xz/
       end
 
-      # Search only the glibc x86_64 for now
+      # Search the name of the last release in @file 'sha256sum.txt'
+      # Should find a line like this:
+      # SHA256 (void-x86_64-ROOTFS-20210930.tar.xz) = 8681b060e39e173682e1721a6088280c2b6eade628f5e5e3e8e4b74163d187f6
       def search_archive
         yurl = "#{@url}/#{@file}"
         @log.info "Opening #{yurl}...\n"
         Helpers.get_file_online(yurl, @file)
         File.open(@file).each do |l|
-          @xbps = l.tr('()', '').split(' ') if l.match(tarball)
+          matchrule = l.tr('()', '').split(' ') if l.match(tarball)
+          return matchrule if matchrule && matchrule[1] =~ /^void/
         end
+
+        raise "No valid archive found on #{@file}."
       end
 
       def download
@@ -55,10 +59,10 @@ module Getch
         _, stderr, status = Open3.capture3(command)
         if status.success? then
           @log.result_ok
-          return
+        else
+          cleaning
+          @log.fatal "Problem with the checksum, stderr\n#{stderr}"
         end
-        cleaning
-        @log.fatal "Problem with the checksum, stderr\n#{stderr}"
       end
 
       def install
@@ -74,10 +78,9 @@ module Getch
         _, stderr, status = Open3.capture3(cmd)
         if status.success? then
           @log.result_ok
-          return
+        else
+          @log.fatal "Fail to decompressing #{@xbps[1]} - #{stderr}."
         end
-        cleaning
-        @log.fatal "Fail to decompressing #{@xbps[1]} - #{stderr}."
       end
 
       def cleaning
