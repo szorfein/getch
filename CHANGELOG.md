@@ -1,4 +1,7 @@
-## 0.3.2, release 2022-10-01
+## 0.3.4, release 2022-10-10
+* Can work on a Live image of Voidlinux
+
+## 0.3.3, release 2022-10-01
 * Support disk with a sector size of 512.
 * Support vdx disk.
 

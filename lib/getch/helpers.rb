@@ -29,7 +29,7 @@ module Getch
 
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
-        File.open(dest, "wb") { |f| f.write(l.read) }
+        File.open(dest, 'wb') { |f| f.write(l.read) }
       end
     rescue Net::OpenTimeout => e
       abort "DNS error #{e}"

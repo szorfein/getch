@@ -40,12 +40,15 @@ Boot Manager:
 
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
-+ [Archaeidae](https://github.com/szorfein/archaeidae): Custom Archiso that includes ZFS support.
++ [Portia](https://github.com/szorfein/portia/releases): Custom Archiso that includes ZFS support and Ruby.
+* [Voidlinux](https://voidlinux.org/download/)
 
 You can also use your current `linux` host, just pay attention to the disk that will be used.  
 
 ## Dependencies
 Getch is build without external libs, so it only require `ruby >= 2.5`.
+
+On a live image of Void, you need to install `xbps-install -S ruby xz gptfdisk`.
 
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
