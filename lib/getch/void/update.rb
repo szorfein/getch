@@ -25,7 +25,7 @@ module Getch
 
       def update
         ChrootOutput.new '/usr/bin/xbps-install -uy'
-        ChrootOutput.new '/usr/bin/xbps-install', '-Sy', base-system
+        ChrootOutput.new '/usr/bin/xbps-install', '-Sy', 'base-system'
         ChrootOutput.new '/usr/bin/xbps-remove -y base-voidstrap'
       end
     end

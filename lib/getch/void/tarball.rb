@@ -61,7 +61,7 @@ module Getch
           @log.result_ok
         else
           cleaning
-          @log.fatal "Problem with the checksum, stderr\n#{stderr}"
+          @log.fatal "Problem with the checksum, relaunch getch.\n#{stderr}"
         end
       end
 
