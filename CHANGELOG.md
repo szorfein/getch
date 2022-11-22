@@ -1,3 +1,6 @@
+## 0.3.5
+* Can display the version with `-v`, `--version`.
+
 ## 0.3.4, release 2022-10-10
 * Can work on a Live image of Voidlinux
 
