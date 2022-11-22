@@ -55,12 +55,12 @@ module NiTo
 
   # Like echo 'content' > to_file
   def echo(file, content)
-    File.write file, "#{content}\n", mode: 'w'
+    File.write(file, "#{content}\n")
   end
 
   # Like echo 'content' >> to_file
   def echo_a(file, content)
-    File.write file, "#{content}\n", mode: 'a' unless grep? file, content
+    File.write(file, "#{content}\n", mode: 'a') unless grep? file, content
   end
 
   def cp(src, dest)
@@ -69,7 +69,7 @@ module NiTo
 
   # create a void file
   def touch(file)
-    File.write file, '' unless File.exist? file
+    File.write(file, '') unless File.exist? file
   end
 
   # Like sed -i /old:new/ file
