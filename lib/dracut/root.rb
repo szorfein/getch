@@ -24,6 +24,7 @@ module Dracut
     protected
 
     def host_only
+      mkdir "#{@mountpoint}/etc/dracut.conf.d"
       file = "#{@mountpoint}/etc/dracut.conf.d/host.conf"
       echo file, 'hostonly="yes"'
       echo_a file, 'use_fstab="yes"'
