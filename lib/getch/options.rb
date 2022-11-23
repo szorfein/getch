@@ -84,6 +84,11 @@ module Getch
           OPTIONS[:verbose] = true
         end
 
+        opts.on('-v', '--version', 'Display the version.') do
+          puts "Getch v#{VERSION}"
+          exit
+        end
+
         opts.on('-h', '--help', 'Display this') do
           puts opts
           exit

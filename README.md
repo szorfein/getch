@@ -41,6 +41,7 @@ Boot Manager:
 The ISO images i was able to test and that works:
 + [Archlinux](https://www.archlinux.org/download/)
 + [Portia](https://github.com/szorfein/portia/releases): Custom Archiso that includes ZFS support and Ruby.
+* [Ubuntu 22.10](https://cdimage.ubuntu.com/releases/22.10/release/)
 * [Voidlinux](https://voidlinux.org/download/)
 
 You can also use your current `linux` host, just pay attention to the disk that will be used.  

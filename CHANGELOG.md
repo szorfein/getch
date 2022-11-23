@@ -1,3 +1,8 @@
+## 0.3.5, release 2022-11-21
+* Tested on a live Ubuntu 22.10.
+* Ensure `dracut.conf.d` exist before writing to it.
+* Display the version with `-v`, `--version`.
+
 ## 0.3.4, release 2022-10-10
 * Can work on a Live image of Voidlinux
 
