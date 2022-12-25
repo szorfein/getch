@@ -110,7 +110,7 @@ module Luks
     # https://wiki.archlinux.org/title/Advanced_Format#File_systems
     def format_ext4
       @log.info "Formating disk with #{@format}...\n"
-      sh 'mkfs.ext4', '-F', '-b', @bs, "/dev/mapper/#{@luks_name}"
+      Mkfs.ext4 "/dev/mapper/#{@luks_name}"
     end
 
     # https://wiki.archlinux.org/title/Advanced_Format#File_systems
