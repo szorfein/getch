@@ -31,7 +31,7 @@ module Getch
       def bootctl
         @boot ?
           with_boot :
-          Chroot.new("bootctl --path #{@esp} install")
+          Chroot.new("bootctl --esp-path=#{@esp} install")
       end
 
       # We need to umount the encrypted /boot first
@@ -39,7 +39,7 @@ module Getch
       def with_boot
         boot = @encrypt ? '/dev/mapper/boot-luks' : "/dev/#{DEVS[:boot]}"
         NiTo.umount "#{OPTIONS[:mountpoint]}/boot"
-        Chroot.new("bootctl --path #{@esp} install")
+        Chroot.new("bootctl --esp-path=#{@esp} install")
         NiTo.mount boot, "#{OPTIONS[:mountpoint]}/boot"
       end
     end
