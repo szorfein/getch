@@ -4,6 +4,19 @@ require 'getch/command'
 require 'getch/helpers'
 
 module Mkfs
+
+  # Format a path using mkfs.ext4.
+  # @param [string] path, full path e.g /dev/sda1
+  #
+  def self.ext4(path)
+    bs = Getch::Helpers.get_bs(path)
+    if bs == '512'
+      Getch::Command.new('mkfs.ext4', '-F', path)
+    else
+      Getch::Command.new('mkfs.ext4', '-F', '-b', bs, path)
+    end
+  end
+
   class Root
     def initialize(devs, options)
       @efi = devs[:efi] ||= nil
@@ -59,7 +72,7 @@ module Mkfs
 
     def mkfs(path)
       case @fs
-      when 'ext4' then mkfs_ext4 path
+      when 'ext4' then Mkfs.ext4 path
       when 'xfs' then mkfs_xfs path
       end
     end
@@ -70,15 +83,6 @@ module Mkfs
 
     def mk_swap(path)
       Getch::Command.new('mkswap', '-f', path)
-    end
-
-    def mkfs_ext4(path)
-      bs = Getch::Helpers.get_bs(path)
-      if bs == '512'
-        Getch::Command.new('mkfs.ext4', '-F', path)
-      else
-        Getch::Command.new('mkfs.ext4', '-F', '-b', bs, path)
-      end
     end
 
     def mkfs_xfs(path)

@@ -11,7 +11,7 @@ module Fstab
     # The swap UUID based on the lvm volume /dev/vg/swap
     def write_swap
       # The both use /etc/crypttab
-      if Helpers.runit? or Helpers.systemd?
+      if Getch::Helpers.runit? || Getch::Helpers.systemd?
         echo_a @conf, "/dev/mapper/swap-#{@luks} none swap sw 0 0"
       else
         dm = Getch::Helpers.get_dm "#{@vg}-swap"
