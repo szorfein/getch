@@ -1,3 +1,7 @@
+## 2023-11
+* makeopts on Gentoo now use the value of nproc.
+* Correct install on Gentoo with systemd (update kernel name and more).
+
 ## 0.3.5, release 2022-11-21
 * Tested on a live Ubuntu 22.10.
 * Ensure `dracut.conf.d` exist before writing to it.

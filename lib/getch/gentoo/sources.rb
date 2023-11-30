@@ -67,7 +67,7 @@ SHELL
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel#Alternative:_Using_distribution_kernels
       def make
         Helpers.systemd? ?
-          Install.new('sys-kernel/installkernel-systemd-boot') :
+          Install.new('sys-kernel/installkernel-systemd') :
           Install.new('sys-kernel/installkernel-gentoo')
 
         #Install.new 'sys-kernel/gentoo-kernel'

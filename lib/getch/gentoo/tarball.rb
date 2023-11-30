@@ -30,9 +30,13 @@ module Getch
           @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt'
       end
 
+      # release check line like bellow and return 20231126T163200Z:
+      # 20231126T163200Z/stage3-amd64-systemd-20231126T163200Z.tar.xz 276223256
       def release
         URI.open(stage3) do |file|
-          file.read.match(/^[[:alnum:]]+/)
+          file.each do |line|
+            return line.split('/')[0] if line.match(%r{^[\w]+[/](.*)tar.xz})
+          end
         end
       rescue Net::OpenTimeout => e
         @log.fatal "Problem with DNS? #{e}"

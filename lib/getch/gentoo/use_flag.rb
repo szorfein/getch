@@ -33,8 +33,10 @@ module Getch
 
         flags = []
         use = Getch::Gentoo::Use.new('sys-apps/systemd')
-        flags << 'dns-over-tls'
+        flags << 'boot'
         flags << 'gnuefi' if Helpers.efi?
+        flags << 'kernel-install'
+        flags << 'dns-over-tls'
         use.add(flags)
       end
 
