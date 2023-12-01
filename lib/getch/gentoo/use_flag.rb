@@ -2,6 +2,7 @@
 
 module Getch
   module Gentoo
+    # Configure use flag before compiling all the packages
     class UseFlag
       def initialize
         x
@@ -23,9 +24,11 @@ module Getch
       private
 
       # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel#Trying_it_out
+      # https://wiki.gentoo.org/wiki/Signed_kernel_module_support
       def dist_kernel
         use = Getch::Gentoo::Use.new
         use.add_global('dist-kernel')
+        use.add_global('modules-sign')
       end
 
       def systemd
@@ -57,7 +60,7 @@ module Getch
         use = Getch::Gentoo::Use.new('sys-boot/grub')
         flags << '-grub_platforms_efi-64' unless Helpers.efi?
         flags << 'libzfs' if OPTIONS[:fs] == 'zfs'
-        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm' or OPTIONS[:encrypt]
+        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm' || OPTIONS[:encrypt]
         use.add(flags)
       end
 

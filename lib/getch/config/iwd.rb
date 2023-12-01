@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Getch
   module Config
+    # Configure iwd if wifi is detected
     class Iwd
       include NiTo
 
@@ -47,11 +50,7 @@ module Getch
         content = "[General]\n"
         content << "UseDefaultInterface=true\n"
         content << "[Network]\n"
-        Helpers.systemd? ?
-          content << "NameResolvingService=systemd\n" :
-          content << "NameResolvingService=resolvconf\n"
-        content << "[Scan]\n"
-        content << "DisablePeriodicScan=true\n"
+        content << Helpers.systemd? ? "NameResolvingService=systemd\n" : "NameResolvingService=resolvconf\n"
         mkdir "#{OPTIONS[:mountpoint]}/etc/iwd"
         echo conf, "#{content}\n"
       end

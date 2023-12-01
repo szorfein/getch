@@ -1,4 +1,5 @@
-## 2023-11
+## 2023-12
+* Add global use="modules-sign" for Gentoo.
 * makeopts on Gentoo now use the value of nproc.
 * Correct install on Gentoo with systemd (update kernel name and more).
 
@@ -8,11 +9,11 @@
 * Display the version with `-v`, `--version`.
 
 ## 0.3.4, release 2022-10-10
-* Can work on a Live image of Voidlinux
+* Can work on a Live image of Voidlinux.
 
 ## 0.3.3, release 2022-10-01
 * Support disk with a sector size of 512.
-* Support vdx disk.
+* Support vdx disk (disk on virtualization).
 
 ## 0.3.0, release 2022-02-17
 * Gentoo with musl use an additional repo https://github.com/gentoo/musl.git.

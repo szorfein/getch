@@ -35,7 +35,7 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ **Gentoo**: `BIOS` and `musl` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Gentoo**: `BIOS`, `crypted disk` and `musl` will use `Grub2` and `systemd-boot` for `UEFI`.
 + **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:

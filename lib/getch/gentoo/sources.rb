@@ -5,6 +5,8 @@ require 'nito'
 
 module Getch
   module Gentoo
+    # Here we install the kernel linux.
+    # We compile source, enable and disable few modules for the new system.
     class Sources
       include NiTo
 
@@ -26,12 +28,12 @@ module Getch
 
       def bask
         @log.info "Kernel hardening...\n"
-        #Getch::Bask.new('10_kspp.config').cp
+        # Getch::Bask.new('10_kspp.config').cp
         Getch::Bask.new('11-kspp-gcc.config').cp
         Getch::Bask.new('12-kspp-x86_64.config').cp
-        #Getch::Bask.new('20-clipos.config').cp
+        # Getch::Bask.new('20-clipos.config').cp
         Getch::Bask.new('30-grsecurity.config').cp
-        #Getch::Bask.new('40-kconfig-hardened.config').cp
+        # Getch::Bask.new('40-kconfig-hardened.config').cp
         Getch::Bask.new('50-blacklist.config').cp
         Getch::Bask.new('51-blacklist-madaidans.config').cp
       end
@@ -42,21 +44,13 @@ module Getch
       end
 
       def grub_mkconfig
-        return if Helpers.systemd? and Helpers.efi?
+        return if Helpers.systemd? && Helpers.efi?
 
         file = "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d/90-mkconfig.install"
-        content = <<~SHELL
-#!/usr/bin/env sh
-set -o errexit
-
-if ! hash grub-mkconfig ; then
- exit 0
-fi
-grub-mkconfig -o /boot/grub/grub.cfg
-SHELL
+        content = grub_script
         mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d"
         File.write file, content
-        File.chmod 0755, file
+        File.chmod('0755', file)
       end
 
       def use_flags
@@ -66,11 +60,13 @@ SHELL
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel#Alternative:_Using_distribution_kernels
       def make
-        Helpers.systemd? ?
-          Install.new('sys-kernel/installkernel-systemd') :
+        if Helpers.systemd?
+          Install.new('sys-kernel/installkernel-systemd')
+        else
           Install.new('sys-kernel/installkernel-gentoo')
+        end
 
-        #Install.new 'sys-kernel/gentoo-kernel'
+        # Install.new 'sys-kernel/gentoo-kernel'
         Install.new 'sys-kernel/gentoo-kernel-bin'
       end
 
@@ -93,6 +89,7 @@ SHELL
 
         module_load('iwlmvm', conf)
         module_load('ath9k', conf)
+        module_load('rt73usb', conf)
       end
 
       def flash_mod
@@ -111,6 +108,19 @@ SHELL
         return unless ismatch?(name)
 
         File.write(file, "#{name}\n", mode: 'a')
+      end
+
+      def grub_script
+        <<~SHELL
+#!/usr/bin/env sh
+set -o errexit
+
+if ! hash grub-mkconfig ; then
+ exit 0
+fi
+
+grub-mkconfig -o /boot/grub/grub.cfg
+        SHELL
       end
     end
   end
