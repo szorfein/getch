@@ -6,6 +6,7 @@ require 'fileutils'
 require 'nito'
 
 module Getch
+  # Various helpers function defined here
   module Helpers
     def self.efi?
       Dir.exist? '/sys/firmware/efi/efivars'
@@ -37,9 +38,9 @@ module Getch
 
     def self.exec_or_die(cmd)
       _, stderr, status = Open3.capture3(cmd)
-      unless status.success?
-        abort "Problem running #{cmd}, stderr was:\n#{stderr}"
-      end
+      return if status.success?
+
+      abort "Problem running #{cmd}, stderr was:\n#{stderr}"
     end
 
     def self.sys(cmd)
@@ -53,11 +54,18 @@ module Getch
 
     def self.uuid(dev)
       Dir.glob('/dev/disk/by-uuid/*').each do |f|
-        if File.readlink(f).match(/#{dev}/)
-          return f.delete_prefix('/dev/disk/by-uuid/')
-        end
+        p = File.readlink(f)
+        return f.delete_prefix('/dev/disk/by-uuid/') if p.match?(/#{dev}/)
       end
       Log.new.fatal("UUID on #{dev} is no found")
+    end
+
+    def self.id(dev)
+      Dir.glob('/dev/disk/by-id/*').each do |f|
+        p = File.readlink(f)
+        return f.delete_prefix('/dev/disk/by-id/') if p.match?(/#{dev}/)
+      end
+      Log.new.fatal("ID on #{dev} is no found")
     end
 
     def self.get_dm(name)
@@ -74,9 +82,8 @@ module Getch
     def self.get_id(dev)
       sleep 3
       Dir.glob('/dev/disk/by-id/*').each do |f|
-        if File.readlink(f).match(/#{dev}/)
-          return f.delete_prefix('/dev/disk/by-id/')
-        end
+        p = File.readlink(f)
+        return f.delete_prefix('/dev/disk/by-id/') if p.match?(/#{dev}/)
       end
       Log.new.fatal("ID on #{dev} is no found")
     end
@@ -85,7 +92,7 @@ module Getch
     def self.mount_all
       dest = OPTIONS[:mountpoint]
       NiTo.mount '--types proc /proc', "#{dest}/proc"
-      ['dev', 'sys', 'run'].each do |d|
+      %w[dev sys run].each do |d|
         NiTo.mount '--rbind', "/#{d}", "#{dest}/#{d}"
         NiTo.mount '--make-rslave', "#{dest}/#{d}"
       end
@@ -108,6 +115,7 @@ module Getch
       cmd.res
     end
 
+    # Helpers specific to void
     module Void
       def command_output(args)
         print " => Exec: #{args}..."
@@ -117,17 +125,15 @@ module Getch
           stdout_err.each { |l| puts l }
 
           exit_status = wait_thr.value
-          unless exit_status.success?
-            raise "\n[-] Fail cmd #{args} - #{stdout_err}."
-          end
+          raise("\n[-] Fail cmd #{args} - #{stdout_err}.") unless exit_status.success?
         end
       end
 
       # Used only when need password
       def chroot(cmd)
-        unless system('chroot', Getch::MOUNTPOINT, '/bin/bash', '-c', cmd)
-          raise "[-] Error with: #{cmd}"
-        end
+        return if system('chroot', Getch::MOUNTPOINT, '/bin/bash', '-c', cmd)
+
+        raise "[-] Error with: #{cmd}"
       end
 
       def s_uuid(dev)
@@ -142,7 +148,7 @@ module Getch
         conf = "#{Getch::MOUNTPOINT}/etc/fstab"
         device = s_uuid(dev)
         raise "No partuuid for #{dev} #{device}" unless device
-        raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
+        raise "Bad partuuid for #{dev} #{device}" if device.is_a?(Array)
 
         add_line(conf, "PARTUUID=#{device} #{rest}")
       end
