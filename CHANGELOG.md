@@ -1,4 +1,5 @@
 ## 2023-12
+* Update url of the Void tarball.
 * Add global use="modules-sign" for Gentoo.
 * makeopts on Gentoo now use the value of nproc.
 * Correct install on Gentoo with systemd (update kernel name and more).
