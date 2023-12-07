@@ -4,10 +4,11 @@ require 'open3'
 
 module Getch
   module Void
+    # Download the last tarball of void
     class Tarball
       def initialize
         @log = Log.new
-        @url = 'https://alpha.de.repo.voidlinux.org/live/current'
+        @url = 'https://repo-default.voidlinux.org/live/current'
         @file = 'sha256sum.txt'
         @xbps = false
         Dir.chdir OPTIONS[:mountpoint]
@@ -23,9 +24,11 @@ module Getch
       protected
 
       def tarball
-        OPTIONS[:musl] ?
-          /void-x86_64-musl-ROOTFS-[\d._]+.tar.xz/ :
+        if OPTIONS[:musl]
+          /void-x86_64-musl-ROOTFS-[\d._]+.tar.xz/
+        else
           /void-x86_64-ROOTFS-[\d._]+.tar.xz/
+        end
       end
 
       # Search the name of the last release in @file 'sha256sum.txt'
@@ -57,7 +60,7 @@ module Getch
         # Should contain 2 spaces...
         command = "echo #{@xbps[3]}  #{@xbps[1]} | sha256sum --check"
         _, stderr, status = Open3.capture3(command)
-        if status.success? then
+        if status.success?
           @log.result_ok
         else
           cleaning
@@ -76,7 +79,7 @@ module Getch
         @log.info "Decompressing #{@xbps[1]}..."
         cmd = "tar xpf #{@xbps[1]} --xattrs-include=\'*.*\' --numeric-owner"
         _, stderr, status = Open3.capture3(cmd)
-        if status.success? then
+        if status.success?
           @log.result_ok
         else
           @log.fatal "Fail to decompressing #{@xbps[1]} - #{stderr}."
