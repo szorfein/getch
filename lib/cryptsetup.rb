@@ -1,5 +1,6 @@
 require 'luks'
 
+# Used to interact with dmcrypt
 class CryptSetup
   def initialize(devs, options)
     @boot = devs[:boot]
@@ -82,7 +83,7 @@ class CryptSetup
   end
 
   def config_boot
-    return if not @boot or @options[:fs] == 'zfs'
+    return if !@boot || @options[:fs] == 'zfs'
 
     Luks::Boot.new(@boot, @options).write_config
   end
@@ -100,13 +101,14 @@ class CryptSetup
   end
 
   def config_swap
-    uuid = @options[:lvm] ? '' : Getch::Helpers.uuid(@swap)
+    id = @options[:lvm] ? '' : Getch::Helpers.id(@swap)
     line = "swap-#{@luks}"
-    @options[:lvm] ?
-      line << " /dev/#{@vg}/swap" :
-      line << " UUID=#{uuid}"
-
-    line << " /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512"
+    line << if @options[:lvm]
+              " /dev/#{@vg}/swap"
+            else
+              " /dev/disk/by-id/#{id}"
+            end
+    line << ' /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512'
     NiTo.echo_a "#{@mountpoint}/etc/crypttab", line
   end
 

@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 module Getch
   module Config
+    # Configure iwd if wifi is detected
     class Iwd
       include NiTo
 
       def initialize
+        @options = "[General]\nUseDefaultInterface=true\n"
         x
       end
 
@@ -44,14 +48,13 @@ module Getch
       # https://docs.voidlinux.org/config/network/iwd.html#troubleshooting
       def iwd_conf
         conf = "#{OPTIONS[:mountpoint]}/etc/iwd/main.conf"
-        content = "[General]\n"
-        content << "UseDefaultInterface=true\n"
+        content = @options.dup
         content << "[Network]\n"
-        Helpers.systemd? ?
-          content << "NameResolvingService=systemd\n" :
-          content << "NameResolvingService=resolvconf\n"
-        content << "[Scan]\n"
-        content << "DisablePeriodicScan=true\n"
+        content << if Helpers.systemd?
+                     "NameResolvingService=systemd\n"
+                   else
+                     "NameResolvingService=resolvconf\n"
+                   end
         mkdir "#{OPTIONS[:mountpoint]}/etc/iwd"
         echo conf, "#{content}\n"
       end

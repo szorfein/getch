@@ -52,12 +52,11 @@ module Getch
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#MAKEOPTS
       def make_conf
-        mem = get_memory
-        makeopts = mem[0].to_i / 2
+        nproc = `nproc`.chomp
 
         echo_a "#{@dest}/make.conf", 'ACCEPT_KEYWORDS="amd64"'
         echo_a "#{@dest}/make.conf", 'INPUT_DEVICES="libinput"'
-        echo_a "#{@dest}/make.conf", "MAKEOPTS=\"-j#{makeopts}\""
+        echo_a "#{@dest}/make.conf", "MAKEOPTS=\"-j#{nproc} -l#{nproc}\""
       end
 
       # https://www.gentoo.org/downloads/mirrors/
@@ -73,17 +72,6 @@ module Getch
         conf = "#{@dest}/package.license/kernel"
         echo conf, 'sys-kernel/linux-firmware @BINARY-REDISTRIBUTABLE'
         echo_a conf, 'sys-firmware/intel-microcode intel-ucode'
-      end
-
-      private
-
-      def get_memory
-        mem = '2048'
-        File.open('/proc/meminfo').each do |l|
-          t = l.split(' ') if l =~ /memtotal/i
-          t && mem = t[1]
-        end
-        mem
       end
     end
   end
