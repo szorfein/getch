@@ -1,8 +1,9 @@
 ## 2023-12
-* Update url of the Void tarball.
+* Update Voidlinux url https://repo-default.voidlinux.org.
 * Add global use="modules-sign" for Gentoo.
-* makeopts on Gentoo now use the value of nproc.
+* makeopts on Gentoo use the value of `nproc`.
 * Correct install on Gentoo with systemd (update kernel name and more).
+* More rubocop style.
 
 ## 0.3.5, release 2022-11-21
 * Tested on a live Ubuntu 22.10.

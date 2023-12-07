@@ -103,7 +103,11 @@ class CryptSetup
   def config_swap
     id = @options[:lvm] ? '' : Getch::Helpers.id(@swap)
     line = "swap-#{@luks}"
-    line << @options[:lvm] ? " /dev/#{@vg}/swap" : " /dev/disk/by-id/#{id}"
+    line << if @options[:lvm]
+              " /dev/#{@vg}/swap"
+            else
+              " /dev/disk/by-id/#{id}"
+            end
     line << ' /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512'
     NiTo.echo_a "#{@mountpoint}/etc/crypttab", line
   end
