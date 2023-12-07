@@ -1,8 +1,8 @@
-## 2023-12
+## 0.5.0, release 2023-12
 * Update Voidlinux url https://repo-default.voidlinux.org.
 * Add global use="modules-sign" for Gentoo.
 * makeopts on Gentoo use the value of `nproc`.
-* Correct install on Gentoo with systemd (update kernel name and more).
+* Correct the install on Gentoo with systemd (kernel name and more).
 * More rubocop style.
 
 ## 0.3.5, release 2022-11-21
