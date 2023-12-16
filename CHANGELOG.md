@@ -1,3 +1,5 @@
+* Add support for ssd disk `/dev/nvme*`
+
 ## 0.5.0, release 2023-12
 * Update Voidlinux url https://repo-default.voidlinux.org.
 * Add global use="modules-sign" for Gentoo.
