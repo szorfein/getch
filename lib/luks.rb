@@ -132,7 +132,6 @@ module Luks
       @log.result_ok
 
       config_openrc
-      config_grub
     end
 
     # https://wiki.gentoo.org/wiki/Dm-crypt#Configuring_dm-crypt
@@ -144,15 +143,6 @@ module Luks
       echo_a conf, "target=#{@luks_name}"
       echo_a conf, "source=UUID=\"#{uuid}\""
       echo_a conf, "key=#{@key_path}"
-    end
-
-    def config_grub
-      return if !Getch::Helpers.grub? || !@bootloader
-
-      @log.info ' * Writing to /etc/default/grub...'
-      line = 'GRUB_ENABLE_CRYPTODISK=y'
-      echo_a "#{@mountpoint}/etc/default/grub", line
-      @log.result_ok
     end
 
     def perm
