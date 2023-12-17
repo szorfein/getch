@@ -3,6 +3,7 @@
 require 'nito'
 require 'getch/log'
 require 'getch/command'
+require 'English'
 
 module Luks
   # define luks name, path, etc...
@@ -33,7 +34,7 @@ module Luks
 
     def encrypt_with_key
       make_key
-      args = if luks_type == 'luks2'
+      args = if @luks_type == 'luks2'
                "#{@command_args} -q --sector-size #{@bs} -d #{@full_key_path}"
              else
                "#{@command_args} -q -d #{@full_key_path}"
@@ -158,8 +159,8 @@ module Luks
       @key_path = "#{@key_dir}/#{@key_name}"
       @full_key_path = "#{@mountpoint}#{@key_path}"
       @log.info "Enforcing permission on #{@full_key_path}..."
-      File.chmod('0400', "#{@mountpoint}#{@key_dir}")
-      File.chmod('0000', @full_key_path)
+      File.chmod(0400, "#{@mountpoint}#{@key_dir}")
+      File.chmod(0000, @full_key_path)
       File.chown(0, 0, @full_key_path)
       @log.result_ok
     end
@@ -174,10 +175,10 @@ module Luks
 
     def cmd_crypt_raw(*args)
       system args.join(' ')
-      return if $?.exitstatus == 0
+      return if $CHILD_STATUS.success?
 
       @log.dbg args.join(' ')
-      @log.dbg $?
+      @log.dbg $CHILD_STATUS.success
       @log.fatal 'die'
     end
 
