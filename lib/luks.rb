@@ -5,6 +5,7 @@ require 'getch/log'
 require 'getch/command'
 
 module Luks
+  # define luks name, path, etc...
   class Main
     include Luks
     include NiTo
@@ -21,7 +22,7 @@ module Luks
       @mount = nil
       @bootloader = false
       @log = Getch::Log.new
-      @bs = get_bs
+      @bs = sector_size
     end
 
     def encrypt
@@ -32,9 +33,11 @@ module Luks
 
     def encrypt_with_key
       make_key
-      args = @luks_type == 'luks2' ?
-        "#{@command_args} -q --sector-size #{@bs} -d #{@full_key_path}" :
-        "#{@command_args} -q -d #{@full_key_path}"
+      args = if luks_type == 'luks2'
+               "#{@command_args} -q --sector-size #{@bs} -d #{@full_key_path}"
+             else
+               "#{@command_args} -q -d #{@full_key_path}"
+             end
       @log.info "Encrypting #{@luks_name} with #{@full_key_path}...\n"
       cmd_crypt 'cryptsetup', 'luksFormat', args, "/dev/#{@disk}"
     end
@@ -44,9 +47,8 @@ module Luks
 
       @log.info "Opening #{@luks_name} > #{@disk}...\n"
       cmd_crypt 'cryptsetup', 'open', @command_args, "/dev/#{@disk}", @luks_name
-      unless File.exist? "/dev/mapper/#{@luks_name}"
-        raise "No dev /dev/mapper/#{@luks_name}, open it first..."
-      end
+
+      raise "No dev /dev/mapper/#{@luks_name}, open it first..." unless File.exist? "/dev/mapper/#{@luks_name}"
     end
 
     def open_with_key(file = nil)
@@ -94,8 +96,7 @@ module Luks
       cmd_crypt 'cryptsetup', 'close', @luks_name
     end
 
-    def gen_datas
-    end
+    def gen_datas; end
 
     protected
 
@@ -145,29 +146,27 @@ module Luks
     end
 
     def config_grub
-      return unless @bootloader
+      return if !Getch::Helpers.grub? || !@bootloader
 
-      if Getch::Helpers.grub?
-        @log.info ' * Writing to /etc/default/grub...'
-        line = 'GRUB_ENABLE_CRYPTODISK=y'
-        echo_a "#{@mountpoint}/etc/default/grub", line
-        @log.result_ok
-      end
+      @log.info ' * Writing to /etc/default/grub...'
+      line = 'GRUB_ENABLE_CRYPTODISK=y'
+      echo_a "#{@mountpoint}/etc/default/grub", line
+      @log.result_ok
     end
 
     def perm
       @key_path = "#{@key_dir}/#{@key_name}"
       @full_key_path = "#{@mountpoint}#{@key_path}"
       @log.info "Enforcing permission on #{@full_key_path}..."
-      File.chmod 0400, "#{@mountpoint}#{@key_dir}"
-      File.chmod 0000, @full_key_path
-      File.chown 0, 0, @full_key_path
+      File.chmod('0400', "#{@mountpoint}#{@key_dir}")
+      File.chmod('0000', @full_key_path)
+      File.chown(0, 0, @full_key_path)
       @log.result_ok
     end
 
     private
 
-    def get_bs
+    def sector_size
       @disk || @log.fatal("No disk for #{@luks_name}.")
 
       sh 'blockdev', '--getpbsz', "/dev/#{@disk}"
@@ -184,7 +183,7 @@ module Luks
 
     def cmd_crypt(*args)
       cmd_crypt_raw args
-    rescue => e
+    rescue StandardError => e
       @log.fatal e
     end
 
@@ -193,13 +192,13 @@ module Luks
     end
   end
 
-  # Boot can decrypt the root (/)
+  # Boot can decrypt all other partitions.
   class Boot < Main
     def initialize(disk, options)
       super
       @luks_type = 'luks1'
-      @key_dir = '/boot'
-      @key_name = 'boot.key'
+      @key_dir = nil
+      @key_name = nil
       @bootloader = true
       @mount = '/boot'
       @luks = options[:luks_name]
@@ -223,6 +222,7 @@ module Luks
     end
   end
 
+  # define home partition for luks
   class Home < Main
     def initialize(disk, options)
       super

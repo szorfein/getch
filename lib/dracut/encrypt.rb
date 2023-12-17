@@ -1,6 +1,7 @@
-# frozen_string_litteral: true
+# frozen_string_literal: true
 
 module Dracut
+  # configure dracut for encypted system
   class Encrypt < Root
     def initialize(devs, options)
       @luks = options[:luks_name]
@@ -23,7 +24,7 @@ module Dracut
 
     def luks_key
       file = "#{@mountpoint}/etc/dracut.conf.d/luks_key.conf"
-      echo file, 'install_items+=" /boot/boot.key /boot/root.key /etc/crypttab "'
+      echo file, 'install_items+=" /boot/root.key /etc/crypttab "'
     end
 
     private
