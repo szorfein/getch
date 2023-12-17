@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'luks'
 
 # Used to interact with dmcrypt
