@@ -27,6 +27,11 @@ module Dracut
       echo file, 'install_items+=" /boot/root.key /etc/crypttab "'
     end
 
+    def others
+      file = "#{@mountpoint}/etc/dracut.conf.d/mods.conf"
+      echo file, 'add_dracutmodules+=" crypt "'
+    end
+
     private
 
     def get_dm_uuid(name)

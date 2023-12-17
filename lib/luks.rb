@@ -147,7 +147,7 @@ module Luks
     end
 
     def config_grub
-      return unless @bootloader && !Getch::Helpers.systemd_minimal?
+      return unless Getch::Helpers.grub? && !Getch::Helpers.systemd_minimal?
 
       @log.info ' * Writing to /etc/default/grub...'
       line = 'GRUB_ENABLE_CRYPTODISK=y'

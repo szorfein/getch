@@ -1,4 +1,4 @@
-# frozen_string_litteral: true
+# frozen_string_literal: true
 
 require 'nito'
 require_relative '../getch/log'
@@ -27,7 +27,6 @@ module Dracut
       mkdir "#{@mountpoint}/etc/dracut.conf.d"
       file = "#{@mountpoint}/etc/dracut.conf.d/host.conf"
       echo file, 'hostonly="yes"'
-      echo_a file, 'use_fstab="yes"'
     end
 
     # man dracut.cmdline(7)
@@ -37,10 +36,8 @@ module Dracut
       echo file, "kernel_cmdline=\"#{line}\""
     end
 
-    def get_line
-    end
+    def get_line; end
 
-    def others
-    end
+    def others; end
   end
 end
