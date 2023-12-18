@@ -147,7 +147,8 @@ module Luks
     end
 
     def config_grub
-      return unless Getch::Helpers.grub? && !Getch::Helpers.systemd_minimal?
+      # return unless Getch::Helpers.grub? && !Getch::Helpers.systemd_minimal?
+      return unless @bootloader && Getch::Helpers.grub?
 
       @log.info ' * Writing to /etc/default/grub...'
       line = 'GRUB_ENABLE_CRYPTODISK=y'
@@ -198,8 +199,8 @@ module Luks
     def initialize(disk, options)
       super
       @luks_type = 'luks1'
-      @key_dir = nil
-      @key_name = nil
+      @key_dir = '/boot'
+      @key_name = 'boot.key'
       @bootloader = true
       @mount = '/boot'
       @luks = options[:luks_name]

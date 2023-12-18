@@ -4,6 +4,7 @@ require 'nito'
 require_relative '../getch/log'
 
 module Dracut
+  # base for other dracut child
   class Root
     include NiTo
 
@@ -27,6 +28,7 @@ module Dracut
       mkdir "#{@mountpoint}/etc/dracut.conf.d"
       file = "#{@mountpoint}/etc/dracut.conf.d/host.conf"
       echo file, 'hostonly="yes"'
+      echo_a file, 'use_fstab="yes"'
     end
 
     # man dracut.cmdline(7)

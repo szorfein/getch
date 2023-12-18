@@ -13,7 +13,7 @@ module Fstab
 
       dm = Getch::Helpers.get_dm "boot-#{@luks}"
       uuid = gen_uuid dm
-      line = "UUID=#{uuid} /boot #{@fs} defaults,nosuid,noexec,nodev,noauto 0 0"
+      line = "UUID=#{uuid} /boot #{@fs} defaults,nosuid,noexec,nodev 0 0"
       echo_a @conf, line
     end
 

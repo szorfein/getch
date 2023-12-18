@@ -22,14 +22,14 @@ class CryptSetup
     format_home
   end
 
-  # keys should be created in /boot
-  # don't create key for boot partition, should keep passphrase only.
   def keys
+    add_boot_key
     add_root_key
     add_home_key
   end
 
   def configs
+    config_boot
     config_root
     config_home
     config_swap
@@ -64,6 +64,11 @@ class CryptSetup
     home_with_pass
   end
 
+  def add_boot_key
+    luks = Luks::Boot.new(@boot, @options)
+    luks.external_key
+  end
+
   # Alrealy used key if they have same disk
   def add_root_key
     return if @boot.split(/[0-9]/) == @root.split(/[0-9]/)
@@ -77,6 +82,12 @@ class CryptSetup
 
     luks = Luks::Home.new(@home, @options)
     luks.external_key
+  end
+
+  def config_boot
+    return if !@boot || @options[:fs] == 'zfs'
+
+    Luks::Boot.new(@boot, @options).write_config
   end
 
   def config_root
