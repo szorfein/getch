@@ -12,7 +12,6 @@ module Getch
 
       # Dracut is used by sys-kernel/gentoo-kernel
       def dependencies
-        Install.new('app-shells/dash')
         if Helpers.systemd_minimal?
           Log.new.info "Systemd-boot alrealy installed...\n"
         else

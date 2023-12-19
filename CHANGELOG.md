@@ -1,4 +1,7 @@
-* Correct install of glibc encrypt on Gentoo.
+* System with systemd may need `systemd-machine-id-setup && systemctl restart systemd-networkd` after the first boot to make the dhcp works.
+* Install of glibc/systemd/encrypt for Gentoo use GRUB instead of bootctl.
+* Luks key for crypted partition are created earlier.
+* Remove `noauto` and update arguments of fstab, this make futur updates more easy.
 
 ## 0.5.0, release 2023-12
 * Update Voidlinux url https://repo-default.voidlinux.org.

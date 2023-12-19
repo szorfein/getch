@@ -91,6 +91,17 @@ module Getch
       @state.post_config
     end
 
+    # Luks_keys
+    # Install external keys to avoid enter password multiple times
+    def luks_keys
+      return unless OPTIONS[:encrypt] && OPTIONS[:fs] != 'zfs'
+
+      return if STATES[:luks_keys]
+
+      CryptSetup.new(DEVS, OPTIONS).keys
+      @state.luks_keys
+    end
+
     # terraform
     # Install all the required packages
     # Also add services
@@ -108,17 +119,6 @@ module Getch
 
       @os::Services.new
       @state.services
-    end
-
-    # Luks_keys
-    # Install external keys to avoid enter password multiple times
-    def luks_keys
-      return if not OPTIONS[:encrypt] or OPTIONS[:fs] == 'zfs'
-
-      return if STATES[:luks_keys]
-
-      CryptSetup.new(DEVS, OPTIONS).keys
-      @state.luks_keys
     end
 
     # bootloader
