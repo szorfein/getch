@@ -23,6 +23,7 @@ module Getch
         @pkgs << ' sys-kernel/linux-firmware'
         @pkgs << ' sys-firmware/intel-microcode'
         @pkgs << ' sys-fs/dosfstools' if Helpers.efi?
+        @pkgs << ' app-shells/dash'
         Install.new(@pkgs)
       end
 

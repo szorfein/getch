@@ -4,7 +4,10 @@ require 'nito'
 
 module Getch
   module Config
+    # install grub
     class Grub
+      include NiTo
+
       def initialize
         @log = Log.new
         @disk = OPTIONS[:boot_disk] ||= OPTIONS[:disk]
@@ -14,10 +17,12 @@ module Getch
         x
       end
 
+      protected
+
       def x
         @log.info "Installing Grub on #{@disk}...\n"
         Helpers.efi? ? grub_efi : grub_bios
-      end 
+      end
 
       private
 
@@ -35,7 +40,7 @@ module Getch
       # In case where efivars is not mounted
       # avoid error with grub
       def mount_efivars
-        NiTo.mount '-t efivarfs', 'efivarfs', '/sys/firmware/efi/efivars'
+        mount '-t efivarfs', 'efivarfs', '/sys/firmware/efi/efivars'
       end
     end
   end

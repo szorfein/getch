@@ -1,9 +1,10 @@
-# frozen_string_litteral: true
+# frozen_string_literal: true
 
 require 'nito'
 require_relative '../getch/log'
 
 module Fstab
+  # Generating /etc/fstab
   class Root
     include NiTo
 
@@ -36,7 +37,7 @@ module Fstab
       @efi || return
 
       uuid = gen_uuid @efi
-      line = "UUID=#{uuid} /efi vfat noauto,rw,relatime 0 0"
+      line = "UUID=#{uuid} /efi vfat defaults,nosuid,nodev 0 0"
       echo_a @conf, line
     end
 
@@ -44,7 +45,7 @@ module Fstab
       @boot || return
 
       uuid = gen_uuid @boot
-      line = "UUID=#{uuid} /boot #{@fs} noauto,rw,relatime 0 0"
+      line = "UUID=#{uuid} /boot #{@fs} defaults,nosuid,noexec,nodev 0 2"
       echo_a @conf, line
     end
 
@@ -60,7 +61,7 @@ module Fstab
       @root || return
 
       uuid = gen_uuid @root
-      line = "UUID=#{uuid} / #{@fs} rw,relatime 0 1"
+      line = "UUID=#{uuid} / #{@fs} defaults 1 1"
       echo_a @conf, line
     end
 
@@ -68,14 +69,14 @@ module Fstab
       @home || return
 
       uuid = gen_uuid @home
-      line = "UUID=#{uuid} /home #{@fs} rw,relatime 0 2"
+      line = "UUID=#{uuid} /home #{@fs} defaults,nosuid,nodev 0 2"
       echo_a @conf, line
     end
 
     def write_tmp
       Getch::Helpers.systemd? && return
 
-      line = 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0'
+      line = 'tmpfs /tmp tmpfs defaults,nosuid,noexec,nodev 0 0'
       echo_a @conf, line
     end
 
