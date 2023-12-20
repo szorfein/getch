@@ -12,11 +12,23 @@ end
 class InvalidKeymap < StandardError
 end
 
+def valid_disk(name)
+  case name
+  when /^sd|^hd|^vd/
+    true
+  when /^nvm/
+    true
+  else
+    false
+  end
+end
+
 module Getch
+  # various guard
   module Guard
     def self.disk(name)
       raise InvalidDisk, 'No disk.' unless name
-      raise InvalidDisk, "Bad device name #{name}." unless name.match(/^?d[a-z]{1}$/)
+      raise InvalidDisk, "Bad device name #{name}." unless valid_disk(name)
       raise InvalidDisk, "Disk /dev/#{name} no found." unless File.exist? "/dev/#{name}"
 
       name
