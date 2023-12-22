@@ -1,8 +1,10 @@
-* Add support for ssd disk `/dev/nvme*`
+## 0.7.0, release 2023-12
+* Add support for ssd disk `/dev/nvme*` #5
 * System with systemd may need `systemd-machine-id-setup && systemctl restart systemd-networkd` after the first boot to make the dhcp works.
-* Install of glibc/systemd/encrypt for Gentoo use GRUB instead of bootctl.
-* Luks key for crypted partition are created earlier.
-* Remove `noauto` and update arguments of fstab, this make futur updates more easy.
+* Install of systemd/encrypt for Gentoo use GRUB instead of bootctl.
+* Luks key if `--encrypt` are created earlier.
+* Remove `noauto` and update arguments of fstab, this make futur system updates more easy.
+* Correct lvm `OPTIONS[:lvm]`instead of the old `OPTIONS[:fs] == 'lvm'`.
 
 ## 0.5.0, release 2023-12
 * Update Voidlinux url https://repo-default.voidlinux.org.

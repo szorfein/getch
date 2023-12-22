@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Getch
+  # configurations for the new system
   module Config
     def sysctl
-      pwd = File.expand_path(File.dirname(__FILE__))
+      pwd = File.expand_path(__dir__)
       dest = "#{Getch::MOUNTPOINT}/etc/sysctl.d/"
 
       mkdir dest

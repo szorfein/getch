@@ -3,8 +3,8 @@
 require 'logger'
 
 module Getch
+  # Display message to stdout and write in a log file.
   class Log
-
     WHITE   = "\033[37m"
     CYAN    = "\033[36m"
     MAGENTA = "\033[35m"
@@ -16,13 +16,13 @@ module Getch
     BOLD    = "\033[1m"
     CLEAR   = "\033[0m"
 
-    def initialize(verbose = false)
+    def initialize(verbose: false)
       @log_file = '/tmp/log_install.txt'
       @verbose = verbose
       init
     end
 
-    # TODO remove length
+    # TODO, remove length
     def info(msg)
       tab = msg.match("\n") ? '' : add_tab(msg)
       l = msg.length
@@ -62,32 +62,32 @@ module Getch
 
     def init_res
       @result = Logger.new $stdout, level: 'INFO'
-      @result.formatter = proc do | _, _, _, msg | msg end
+      @result.formatter = proc do |_, _, _, msg| msg end
     end
 
     def init_debug
       @debug = Logger.new $stdout
-      @debug.formatter = proc do | severity, _, _, msg |
+      @debug.formatter = proc do |severity, _, _, msg|
         "\n#{BLUE}#{BOLD}#{severity[0]}#{CLEAR} [#{Process.pid}]#{CLEAR}#{msg}"
       end
     end
 
     def init_error
       @error = Logger.new $stdout
-      @error.formatter = proc do | severity, _, _, msg |
+      @error.formatter = proc do |severity, _, _, msg|
         "#{RED}#{BOLD}#{severity[0]}#{CLEAR}#{msg}\t"
       end
     end
 
     def init_fatal
       @fatal = Logger.new $stdout
-      @fatal.formatter = proc do | severity, _, _, msg |
+      @fatal.formatter = proc do |severity, _, _, msg|
         "\n#{YELLOW}#{BOLD}#{severity[0]}#{CLEAR}#{msg}"
       end
     end
 
     def init_save
-      File.exist? @log_file || puts("Creating log at #{@log_file}")
+      File.exist?(@log_file) || puts("Creating log at #{@log_file}")
       @save = Logger.new(@log_file, 1)
       @save.level = Logger::DEBUG
       @save.formatter = proc { |severity, datetime, _, msg|
@@ -108,7 +108,7 @@ module Getch
 
     def add_tab(text)
       case text.length
-      when 39..47 then "\t\t"
+      when 39..46 then "\t\t"
       when 31..38 then "\t\t\t"
       when 23..30 then "\t\t\t\t"
       when 16..22 then "\t\t\t\t\t"
