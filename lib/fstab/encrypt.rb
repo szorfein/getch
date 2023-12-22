@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Fstab
+  # configure fstab for encrypt
   class Encrypt < Root
     def initialize(devs, options)
       super
@@ -12,7 +13,7 @@ module Fstab
 
       dm = Getch::Helpers.get_dm "boot-#{@luks}"
       uuid = gen_uuid dm
-      line = "UUID=#{uuid} /boot #{@fs} noauto,rw,relatime 0 0"
+      line = "UUID=#{uuid} /boot #{@fs} defaults,nosuid,noexec,nodev 0 2"
       echo_a @conf, line
     end
 
@@ -28,7 +29,7 @@ module Fstab
 
       dm = Getch::Helpers.get_dm "root-#{@luks}"
       uuid = gen_uuid dm
-      line = "UUID=#{uuid} / #{@fs} rw,relatime 0 1"
+      line = "UUID=#{uuid} / #{@fs} defaults 1 1"
       echo_a @conf, line
     end
 
@@ -37,7 +38,7 @@ module Fstab
 
       dm = Getch::Helpers.get_dm "home-#{@luks}"
       uuid = gen_uuid dm
-      line = "UUID=#{uuid} /home #{@fs} rw,relatime 0 2"
+      line = "UUID=#{uuid} /home #{@fs} defaults,nosuid,nodev 0 2"
       echo_a @conf, line
     end
   end

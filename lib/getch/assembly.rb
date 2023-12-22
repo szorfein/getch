@@ -5,6 +5,7 @@ require 'nito'
 require 'cryptsetup'
 
 module Getch
+  # define steps/order for getch
   class Assembly
     include NiTo
 
@@ -91,13 +92,24 @@ module Getch
       @state.post_config
     end
 
+    # Luks_keys
+    # Install external keys to avoid enter password multiple times
+    def luks_keys
+      return unless OPTIONS[:encrypt] && OPTIONS[:fs] != 'zfs'
+
+      return if STATES[:luks_keys]
+
+      CryptSetup.new(DEVS, OPTIONS).keys
+      @state.luks_keys
+    end
+
     # terraform
     # Install all the required packages
     # Also add services
     def terraform
       return if STATES[:terraform]
 
-      #@fs::PreDeps.new
+      # @fs::PreDeps.new
       @os::Terraform.new
       @fs::Deps.new
       @state.terraform
@@ -108,17 +120,6 @@ module Getch
 
       @os::Services.new
       @state.services
-    end
-
-    # Luks_keys
-    # Install external keys to avoid enter password multiple times
-    def luks_keys
-      return if not OPTIONS[:encrypt] or OPTIONS[:fs] == 'zfs'
-
-      return if STATES[:luks_keys]
-
-      CryptSetup.new(DEVS, OPTIONS).keys
-      @state.luks_keys
     end
 
     # bootloader

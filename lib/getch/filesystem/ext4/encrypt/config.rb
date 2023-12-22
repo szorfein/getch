@@ -17,8 +17,8 @@ module Getch
 
           def x
             Fstab::Encrypt.new(DEVS, OPTIONS).generate
-            Dracut::Encrypt.new(DEVS, OPTIONS).generate
             CryptSetup.new(DEVS, OPTIONS).configs
+            Dracut::Encrypt.new(DEVS, OPTIONS).generate
           end
         end
       end

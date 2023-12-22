@@ -2,8 +2,8 @@
 
 module Getch
   module Tree
+    # call class depend of the os choosen
     class Os
-
       OS_TREE = {
         gentoo: Gentoo,
         void: Void
@@ -18,26 +18,27 @@ module Getch
         OS_TREE[@os.to_sym] || @log.fatal('OS no found')
       end
     end
-    class FS
 
+    # call class depend on filesystem choosen.
+    class FS
       FS_TREE = {
         true => { # + encrypt
           true => { # + lvm
-            ext4: FileSystem::Ext4::Hybrid,
+            ext4: FileSystem::Ext4::Hybrid
           },
           false => { # - lvm
             ext4: FileSystem::Ext4::Encrypt,
             zfs: FileSystem::Zfs::Encrypt
-          },
+          }
         },
         false => { # - encrypt
           true => { # + lvm
-            ext4: FileSystem::Ext4::Lvm,
+            ext4: FileSystem::Ext4::Lvm
           },
           false => { # - lvm
             ext4: FileSystem::Ext4::Minimal,
-            zfs: FileSystem::Zfs::Minimal,
-          },
+            zfs: FileSystem::Zfs::Minimal
+          }
         }
       }.freeze
 

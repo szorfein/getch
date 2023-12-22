@@ -28,6 +28,11 @@ module Getch
       File.exist? "#{OPTIONS[:mountpoint]}/etc/default/grub"
     end
 
+    # if systemd without encryption
+    def self.systemd_minimal?
+      systemd? && efi? && !OPTIONS[:encrypt]
+    end
+
     def self.get_file_online(url, dest)
       URI.open(url) do |l|
         File.open(dest, 'wb') { |f| f.write(l.read) }

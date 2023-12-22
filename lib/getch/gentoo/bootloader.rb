@@ -2,6 +2,7 @@
 
 module Getch
   module Gentoo
+    # install grub or bootctl
     class Bootloader
       def initialize
         @esp = '/efi'
@@ -11,8 +12,7 @@ module Getch
 
       # Dracut is used by sys-kernel/gentoo-kernel
       def dependencies
-        Install.new('app-shells/dash')
-        if Helpers.systemd? and Helpers.efi?
+        if Helpers.systemd_minimal?
           Log.new.info "Systemd-boot alrealy installed...\n"
         else
           ChrootOutput.new('emerge --update --newuse sys-boot/grub')
@@ -20,18 +20,22 @@ module Getch
       end
 
       def install
-        Helpers.grub? ?
-          Config::Grub.new :
+        if Helpers.grub?
+          Config::Grub.new
+        else
           bootctl
+        end
 
-        #ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel')
-        ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel-bin')
+        # ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel')
+        ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel-bin') # should also reload grub-mkconfig
       end
 
       def bootctl
-        @boot ?
-          with_boot :
+        if @boot
+          with_boot
+        else
           Chroot.new("bootctl --esp-path=#{@esp} install")
+        end
       end
 
       # We need to umount the encrypted /boot first

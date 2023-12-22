@@ -44,13 +44,11 @@ module Getch
       end
 
       def grub_mkconfig
-        return if Helpers.systemd? && Helpers.efi?
+        return if Helpers.systemd_minimal?
 
-        file = "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d/90-mkconfig.install"
-        content = grub_script
-        mkdir "#{OPTIONS[:mountpoint]}/etc/kernel/postinst.d"
-        File.write file, content
-        File.chmod('0755', file)
+        # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
+        use = Getch::Gentoo::Use.new('sys-kernel/installkernel-gentoo')
+        use.add('grub')
       end
 
       def use_flags
@@ -60,7 +58,7 @@ module Getch
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel#Alternative:_Using_distribution_kernels
       def make
-        if Helpers.systemd?
+        if Helpers.systemd_minimal?
           Install.new('sys-kernel/installkernel-systemd')
         else
           Install.new('sys-kernel/installkernel-gentoo')
@@ -108,19 +106,6 @@ module Getch
         return unless ismatch?(name)
 
         File.write(file, "#{name}\n", mode: 'a')
-      end
-
-      def grub_script
-        <<~SHELL
-#!/usr/bin/env sh
-set -o errexit
-
-if ! hash grub-mkconfig ; then
- exit 0
-fi
-
-grub-mkconfig -o /boot/grub/grub.cfg
-        SHELL
       end
     end
   end

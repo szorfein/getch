@@ -21,7 +21,7 @@ module Getch
             puts " => Creating a key for #{dev}, password required:"
             chroot "cryptsetup luksAddKey #{dev} /boot/#{name}"
             command "chmod 000 /boot/#{name}"
-            #command "chmod -R g-rwx,o-rwx /boot"
+            # command "chmod -R g-rwx,o-rwx /boot"
           end
 
           def crypttab
@@ -52,7 +52,7 @@ module Getch
             conf = "#{MOUNTPOINT}/etc/crypttab"
             device = s_uuid(dev)
             raise "No partuuid for #{dev} #{device}" unless device
-            raise "Bad partuuid for #{dev} #{device}" if device.kind_of? Array
+            raise "Bad partuuid for #{dev} #{device}" if device.is_a?(Array)
 
             add_line(conf, "#{mapname} PARTUUID=#{device} #{point} #{rest}")
           end
