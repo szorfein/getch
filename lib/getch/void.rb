@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Getch
+  # All class to install Voidlinux
   module Void
   end
 end

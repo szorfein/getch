@@ -5,6 +5,7 @@ require_relative 'gentoo/use'
 require_relative 'gentoo/use_flag'
 
 module Getch
+  # all class to install Gentoo linux
   module Gentoo
   end
 end

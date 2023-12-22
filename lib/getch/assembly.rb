@@ -5,6 +5,7 @@ require 'nito'
 require 'cryptsetup'
 
 module Getch
+  # define steps/order for getch
   class Assembly
     include NiTo
 
@@ -108,7 +109,7 @@ module Getch
     def terraform
       return if STATES[:terraform]
 
-      #@fs::PreDeps.new
+      # @fs::PreDeps.new
       @os::Terraform.new
       @fs::Deps.new
       @state.terraform

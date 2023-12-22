@@ -60,7 +60,7 @@ module Getch
         use = Getch::Gentoo::Use.new('sys-boot/grub')
         flags << '-grub_platforms_efi-64' unless Helpers.efi?
         flags << 'libzfs' if OPTIONS[:fs] == 'zfs'
-        flags << 'device-mapper' if OPTIONS[:fs] == 'lvm' || OPTIONS[:encrypt]
+        flags << 'device-mapper' if OPTIONS[:lvm] || OPTIONS[:encrypt]
         use.add(flags)
       end
 
@@ -74,7 +74,7 @@ module Getch
       end
 
       def lvm
-        return unless Getch::OPTIONS[:fs] == 'lvm'
+        return unless Getch::OPTIONS[:lvm]
 
         use = Getch::Gentoo::Use.new
         use.add_global('lvm', 'device-mapper')
