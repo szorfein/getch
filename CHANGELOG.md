@@ -1,3 +1,6 @@
+### Fix
+- Voidlinux, remove 'base-container-full' instead of 'base-voidstrap'.
+
 ## 0.7.0, release 2023-12
 * Add support for ssd disk `/dev/nvme*` #5
 * System with systemd may need `systemd-machine-id-setup && systemctl restart systemd-networkd` after the first boot to make the dhcp works.

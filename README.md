@@ -49,7 +49,8 @@ You can also use your current `linux` host, just pay attention to the disk that 
 ## Dependencies
 Getch is build without external libs, so it only require `ruby >= 2.5`.
 
-On a live image of Void, you need to install `xbps-install -S ruby xz gptfdisk`.
+On a live image of Void, you need to install `xbps-install -S ruby xz gptfdisk
+openssl`.
 
 ## Install
 Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
