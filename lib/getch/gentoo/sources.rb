@@ -22,6 +22,7 @@ module Getch
         bask
         gen_cmdline
         grub_mkconfig
+        systemd_mkconfig
         use_flags
         make
       end
@@ -43,12 +44,25 @@ module Getch
         cmdline.main
       end
 
+      # https://wiki.gentoo.org/wiki/Handbook:X86/Installation/Kernel#GRUB
       def grub_mkconfig
         return if Helpers.systemd_minimal?
 
         # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
-        use = Getch::Gentoo::Use.new('sys-kernel/installkernel-gentoo')
+        use = Getch::Gentoo::Use.new('sys-kernel/installkernel')
         use.add('grub')
+        use.add('dracut')
+      end
+
+      #  https://wiki.gentoo.org/wiki/Handbook:X86/Installation/Kernel#systemd-boot
+      def systemd_mkconfig
+        return unless Helpers.systemd_minimal?
+
+        use = Getch::Gentoo::Use.new('sys-apps/systemd')
+        use.add('boot')
+        other_use = Getch::Gentoo::Use.new('sys-kernel/installkernel')
+        other_use.add('systemd-boot')
+        other_use.add('dracut')
       end
 
       def use_flags
@@ -58,11 +72,7 @@ module Getch
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel#Alternative:_Using_distribution_kernels
       def make
-        if Helpers.systemd_minimal?
-          Install.new('sys-kernel/installkernel-systemd')
-        else
-          Install.new('sys-kernel/installkernel-gentoo')
-        end
+        Install.new('sys-kernel/installkernel')
 
         # Install.new 'sys-kernel/gentoo-kernel'
         Install.new 'sys-kernel/gentoo-kernel-bin'
