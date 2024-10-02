@@ -1,5 +1,6 @@
 ### Fix
 - Voidlinux, remove 'base-container-full' instead of 'base-voidstrap'.
+- Gentoo, use sys-kernel/installkernel, sys-kernel/installkernel-systemd was removed.
 
 ## 0.7.0, release 2023-12
 * Add support for ssd disk `/dev/nvme*` #5
