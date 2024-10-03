@@ -1,4 +1,6 @@
-require File.dirname(__FILE__) + '/lib/getch/version'
+# frozen_string_literal: true
+
+require_relative 'lib/getch/version'
 
 Gem::Specification.new do |s|
   s.name = 'getch'
@@ -15,7 +17,7 @@ Gem::Specification.new do |s|
     'wiki_uri' => 'https://github.com/szorfein/getch'
   }
   s.license = 'MIT'
-  s.required_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 2.6'
 
   s.files = Dir.glob('{assets,lib}/**/*', File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
@@ -26,6 +28,6 @@ Gem::Specification.new do |s|
   s.executables << 'getch'
   s.require_paths = ['lib']
 
-  s.cert_chain  = ['certs/szorfein.pem']
-  s.signing_key = File.expand_path('~/.ssh/gem-private_key.pem')
+  #s.cert_chain  = ['certs/szorfein.pem']
+  #s.signing_key = File.expand_path('~/.ssh/gem-private_key.pem')
 end
