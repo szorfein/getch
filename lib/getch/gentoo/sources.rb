@@ -50,8 +50,8 @@ module Getch
 
         # https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
         use = Getch::Gentoo::Use.new('sys-kernel/installkernel')
-        use.add('grub')
-        use.add('dracut')
+
+        use.add(%w[grub dracut])
       end
 
       #  https://wiki.gentoo.org/wiki/Handbook:X86/Installation/Kernel#systemd-boot
@@ -61,8 +61,7 @@ module Getch
         use = Getch::Gentoo::Use.new('sys-apps/systemd')
         use.add('boot')
         other_use = Getch::Gentoo::Use.new('sys-kernel/installkernel')
-        other_use.add('systemd-boot')
-        other_use.add('dracut')
+        other_use.add(%w[systemd-boot dracut])
       end
 
       def use_flags
