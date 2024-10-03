@@ -1,6 +1,9 @@
+## 0.7.3, release 2024-10
+Add a Workflow to build gem on Github
+
 ### Fix
 - Voidlinux, remove 'base-container-full' instead of 'base-voidstrap'.
-- Gentoo, use sys-kernel/installkernel, sys-kernel/installkernel-systemd was removed.
+- Gentoo, use and configure 'sys-kernel/installkernel', sys-kernel/installkernel-systemd was removed from portage.
 
 ## 0.7.0, release 2023-12
 * Add support for ssd disk `/dev/nvme*` #5
