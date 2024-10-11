@@ -30,6 +30,7 @@ module Getch
         mkdir "#{@dest}/package.accept_keywords", 0744
         mkdir "#{@dest}/package.unmask", 0744
         mkdir "#{@dest}/package.license", 0744
+        mkdir "#{@dest}/binrepos.conf", 0744 if OPTIONS[:binary]
 
         touch "#{@dest}/package.use/zzz_via_autounmask"
         touch "#{@dest}/package.accept_keywords/zzz_via_autounmask"
@@ -46,17 +47,28 @@ module Getch
       # -fomit-frame-pointer reduce code compiled
       # but have repercussions on the debugging of applications
       def cpu_conf
-        change = 'COMMON_FLAGS="-march=native -O2 -pipe -fomit-frame-pointer"'
+        change = if OPTIONS[:binary]
+                   'COMMON_FLAGS="-O2 -pipe -march=x86-64 -mtune=generic"'
+                 else
+                   'COMMON_FLAGS="-march=native -O2 -pipe -fomit-frame-pointer"'
+                 end
         sed "#{@dest}/make.conf", /^COMMON_FLAGS/, change
       end
 
       # https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#MAKEOPTS
+      # Gentoo binary
+      # https://wiki.gentoo.org/wiki/Binary_package_guide
+      # https://wiki.gentoo.org/wiki/Gentoo_Binary_Host_Quickstart
       def make_conf
         nproc = `nproc`.chomp
 
         echo_a "#{@dest}/make.conf", 'ACCEPT_KEYWORDS="amd64"'
         echo_a "#{@dest}/make.conf", 'INPUT_DEVICES="libinput"'
         echo_a "#{@dest}/make.conf", "MAKEOPTS=\"-j#{nproc} -l#{nproc}\""
+        return unless OPTIONS[:binary]
+
+        echo_a "#{@dest}/make.conf", 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --getbinpkg"'
+        echo_a "#{@dest}/make.conf", 'FEATURES="getbinpkg binpkg-request-signature'
       end
 
       # https://www.gentoo.org/downloads/mirrors/

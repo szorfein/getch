@@ -80,6 +80,10 @@ module Getch
           OPTIONS[:musl] = true
         end
 
+        opts.on('--binary', 'Prefer to use binary packages instead of compile them (Gentoo).') do
+          OPTIONS[:binary] = true
+        end
+
         opts.on('--verbose', 'Write more messages to the standard output.') do
           OPTIONS[:verbose] = true
         end

@@ -35,7 +35,8 @@ module Getch
     username: false,
     verbose: false,
     vg_name: 'vg4',
-    zfs_name: 'pool'
+    zfs_name: 'pool',
+    binary: false
   }
 
   STATES = {

@@ -1,3 +1,5 @@
+* Support [Gentoo binary](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html), use `--binary`, it make the install of Gentoo faster (like Void :))
+
 ## 0.7.3, release 2024-10
 Add a Workflow to build gem on Github
 
