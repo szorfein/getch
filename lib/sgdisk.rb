@@ -42,7 +42,7 @@ module Sgdisk
     def make_boot
       @boot || return
 
-      partition @boot, @boot_code, '0:+256MiB'
+      partition @boot, @boot_code, "0:+#{OPTIONS[:boot_size]}MiB"
     end
 
     def make_swap

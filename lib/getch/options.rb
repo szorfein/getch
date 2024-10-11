@@ -66,6 +66,11 @@ module Getch
           OPTIONS[:home_disk] = Getch::Guard.disk(home)
         end
 
+        opts.on('--boot-size SIZE', Numeric,
+                'Specifie the boot size in mebibyte (mib), default use 256.') do |size|
+          OPTIONS[:boot_size] = size
+        end
+
         opts.on('--lvm',
                 'System will use LVM, do not work with ZFS.') do
           OPTIONS[:lvm] = true
