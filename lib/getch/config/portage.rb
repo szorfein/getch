@@ -67,8 +67,8 @@ module Getch
         echo_a "#{@dest}/make.conf", "MAKEOPTS=\"-j#{nproc} -l#{nproc}\""
         return unless OPTIONS[:binary]
 
-        echo_a "#{@dest}/make.conf", 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --getbinpkg"'
-        echo_a "#{@dest}/make.conf", 'FEATURES="getbinpkg binpkg-request-signature'
+        echo_a "#{@dest}/make.conf", 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --getbinpkg --binpkg-respect-use=y"'
+        echo_a "#{@dest}/make.conf", 'FEATURES="getbinpkg binpkg-request-signature"'
       end
 
       # https://www.gentoo.org/downloads/mirrors/
