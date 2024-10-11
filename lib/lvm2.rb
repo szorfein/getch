@@ -73,7 +73,7 @@ module Lvm2
 
     # if home is available, we use the whole space.
     def add_lv_root
-      size = "#{OPTIONS[:root_size]}G" # in gigabyte
+      size = "#{Getch::OPTIONS[:root_size]}G" # in gigabyte
       if @home
         @root.match?(/[0-9]/) ? add_root : add_root(nil, @path_root)
       else

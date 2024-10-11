@@ -89,6 +89,10 @@ Encrypt with ext4 and create a new user `ninja`:
 
     # getch --format ext4 --encrypt --username ninja
 
+Change size of root in Gb, swap in Mb with lvm.
+
+    # getch --disk vda -o void --lvm --root-size 10 --swap-size 4096
+
 With ZFS, if used with `--encrypt`, it use the native ZFS encryption:
 
     # getch --format zfs
