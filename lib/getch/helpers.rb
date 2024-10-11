@@ -109,9 +109,9 @@ module Getch
         t = l.split(' ') if l =~ /memtotal/i
         t && mem = t[1]
       end
-      mem || Log.new.fatal('get_memory - failed to get memory')
+      mem_to_mb = mem.to_i / 1024 || Log.new.fatal('get_memory - failed to get memory')
 
-      mem += 'K'
+      mem_to_mb.to_s
     end
 
     # get the sector size of a disk

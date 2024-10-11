@@ -42,13 +42,13 @@ module Sgdisk
     def make_boot
       @boot || return
 
-      partition @boot, @boot_code, "0:+#{OPTIONS[:boot_size]}MiB"
+      partition @boot, @boot_code, "0:+#{Getch::OPTIONS[:boot_size]}MiB"
     end
 
     def make_swap
       @swap || return
 
-      mem = Getch::Helpers.get_memory
+      mem = "#{Getch::OPTIONS[:swap_size]}M"
       partition @swap, @swap_code, "0:+#{mem}"
     end
 
