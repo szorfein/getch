@@ -2,6 +2,7 @@
 
 require 'open3'
 require 'nito'
+require 'stdlib'
 
 module Getch
   class Command
@@ -20,7 +21,7 @@ module Getch
     protected
 
     def x
-      @log.info 'Exec: ' + @cmd
+      @log.info "Exec: #{@cmd}"
       cmd = build_cmd
 
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
@@ -112,7 +113,7 @@ module Getch
     def x
       msg
       system('chroot', OPTIONS[:mountpoint], '/bin/bash', '-c', other_args)
-      $?.success? && return
+      $CHILD_STATUS.success? && return
 
       @log.fatal "Running #{@cmd}"
     end
@@ -137,11 +138,17 @@ module Getch
       @log.info "Installing #{@cmd}...\n"
     end
 
+    # Gentoo binary should not use --changed-use
+    # https://wiki.gentoo.org/wiki/Binary_package_guide
     def other_args
       case OPTIONS[:os]
-      when 'gentoo' then "source /etc/profile && emerge --changed-use #{@cmd}"
-      when 'void' then "/usr/bin/xbps-install -y #{@cmd}"
-      end
+      when 'gentoo'
+        if OPTIONS[:binary]
+          "source /etc/profile && emerge #{@cmd}"
+        else
+          "source /etc/profile && emerge --changed-use #{@cmd}"
+        end
+      when 'void' then "/usr/bin/xbps-install -y #{@cmd}" end
     end
   end
 end
