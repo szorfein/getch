@@ -73,8 +73,11 @@ module Getch
       def make
         Install.new('sys-kernel/installkernel')
 
-        # Install.new 'sys-kernel/gentoo-kernel'
-        Install.new 'sys-kernel/gentoo-kernel-bin'
+        if OPTIONS[:binary]
+          Install.new 'sys-kernel/gentoo-kernel-bin'
+        else
+          Install.new 'sys-kernel/gentoo-kernel'
+        end
       end
 
       def load_modules

@@ -2,7 +2,7 @@
 
 require 'open3'
 require 'nito'
-require 'stdlib'
+require 'English'
 
 module Getch
   class Command

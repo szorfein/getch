@@ -17,10 +17,10 @@ module Getch
       protected
 
       def x
-        gpg
         sync
         add_musl_repo if OPTIONS[:musl]
         update
+        gpg
       end
 
       private
@@ -30,7 +30,7 @@ module Getch
       def gpg
         return unless OPTIONS[:binary]
 
-        mv "#{@dest}/gnupg" "#{@dest}/gnupg.bak"
+        mv "#{@dest}/gnupg", "#{@dest}/gnupg.bak"
         ChrootOutput.new('getuto')
       end
 
