@@ -2,6 +2,7 @@
 
 module Getch
   module Gentoo
+    # last steps
     class Finalize
       def initialize
         x

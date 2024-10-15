@@ -2,6 +2,7 @@
 
 module Getch
   module Void
+    # last steps
     class Finalize
       def initialize
         x

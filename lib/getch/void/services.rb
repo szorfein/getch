@@ -2,6 +2,7 @@
 
 module Getch
   module Void
+    # install/enable services
     class Services
       def initialize
         x

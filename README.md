@@ -35,7 +35,7 @@ Filesystem supported (with or without encryption)
 + ZFS
 
 Boot Manager:
-+ **Gentoo**: `BIOS`, `crypted disk` and `musl` will use `Grub2` and `systemd-boot` for `UEFI`.
++ **Gentoo**: Grub2 except on systemd without encryption.
 + **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:
@@ -47,7 +47,7 @@ The ISO images i was able to test and that works:
 You can also use your current `linux` host, just pay attention to the disk that will be used.  
 
 ## Dependencies
-Getch is build without external libs, so it only require `ruby >= 2.5`.
+Getch is build without external libs, so it only require `ruby >= 2.6`.
 
 On a live image of Void, you need to install `xbps-install -S ruby xz gptfdisk
 openssl`.
@@ -73,40 +73,41 @@ Just ensure than the script is run with a root account.
 After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
 
 ## Examples
-For a french user:
+For a french user on Gentoo:
 
-    # getch --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
+    # getch --disk sda --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
 
-Install Gentoo on LVM and use a different root disk `/dev/sdc`
+Install Gentoo on LVM and use a different root disk `/dev/vdc`
 
-    # getch --format ext4 --lvm --disk sdc
+    # getch --disk vdc --format ext4 --lvm
 
-Encrypt your disk with LVM with a french keymap
+Encrypt your disk with LVM with a french keymap and in binary mode:
 
-    # getch --format ext4 --lvm --encrypt --keymap fr
+    # getch --disk sda --format ext4 --lvm --encrypt --keymap fr --binary
 
 Encrypt with ext4 and create a new user `ninja`:
 
-    # getch --format ext4 --encrypt --username ninja
+    # getch --disk vda --format ext4 --encrypt --username ninja
 
-Change size of root in Gb, swap in Mb with lvm.
+Change size of root in Gb (default 16 on lvm), swap in Mb (default use your
+current total ram) with lvm.
 
-    # getch --disk vda -o void --lvm --root-size 10 --swap-size 4096
+    # getch --disk sda -o void --lvm --root-size 10 --swap-size 4096
 
 With ZFS, if used with `--encrypt`, it use the native ZFS encryption:
 
-    # getch --format zfs
+    # getch --disk vda --format zfs
 
 With `Void Linux` and `Musl` enable:
 
-    # getch --os void --encrypt -k fr --musl
+    # getch --disk sda --os void --encrypt -k fr --musl
 
 ## Troubleshooting
 
 #### Old VG for LVM
 If a old volume group exist, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`. An short example how doing this with a volume group named `vg0`:
 
-    # vgdisplay | grep vg0
+    # vgdisplay | grep vg
     # vgremove -f vg0
     # pvremove -f /dev/sdb
 

@@ -5,14 +5,17 @@ require 'open3'
 
 module Getch
   module Gentoo
+    # Download the last archive rootfs
     class Tarball
       def initialize
         @log = Log.new
         @mirror = 'https://mirror.rackspace.com/gentoo'
         @release = release
-        @stage_file = OPTIONS[:musl] ?
-          "stage3-amd64-musl-#{@release}.tar.xz" :
-          "stage3-amd64-systemd-#{@release}.tar.xz"
+        @stage_file = if OPTIONS[:musl]
+                        "stage3-amd64-musl-#{@release}.tar.xz"
+                      else
+                        "stage3-amd64-systemd-#{@release}.tar.xz"
+                      end
       end
 
       def x
@@ -25,9 +28,11 @@ module Getch
       protected
 
       def stage3
-        OPTIONS[:musl] ?
-          @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-musl.txt' :
-          @mirror + '/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt'
+        if OPTIONS[:musl]
+          "#{@mirror}/releases/amd64/autobuilds/latest-stage3-amd64-musl.txt"
+        else
+          "#{@mirror}/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt"
+        end
       end
 
       # release check line like bellow and return 20231126T163200Z:
@@ -51,11 +56,11 @@ module Getch
         return if File.exist? @stage_file
 
         @log.info "wget #{@stage_file}, please wait...\n"
-        Helpers.get_file_online(@mirror + '/releases/amd64/autobuilds/' + file, @stage_file)
+        Helpers.get_file_online("#{@mirror}/releases/amd64/autobuilds/#{file}", @stage_file)
       end
 
       def control_files
-        @log.info "Download other files..."
+        @log.info 'Download other files...'
         ['DIGESTS', 'asc', 'CONTENTS.gz'].each do |f|
           Helpers.get_file_online("#{@mirror}/releases/amd64/autobuilds/#{file}.#{f}", "#{@stage_file}.#{f}")
         end
@@ -66,7 +71,7 @@ module Getch
         @log.info 'Checking SHA512 checksum...'
         command = "awk '/SHA512 HASH/{getline;print}' #{@stage_file}.DIGESTS | sha512sum --check"
         _, stderr, status = Open3.capture3(command)
-        if status.success? then
+        if status.success?
           @log.result_ok
         else
           cleaning
