@@ -2,6 +2,7 @@
 
 module Getch
   module Void
+    # config before installing the system
     class PreConfig
       def initialize
         x

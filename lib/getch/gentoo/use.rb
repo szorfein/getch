@@ -4,6 +4,7 @@ require 'nito'
 
 module Getch
   module Gentoo
+    # Utility to configure use flag on Gentoo
     class Use
       include NiTo
 

@@ -1,3 +1,4 @@
+## 0.11.0, release 2024-10
 * Add a new option `--boot-size SIZE`, like requested in
   [#6](https://github.com/szorfein/getch/issues/6), actually, it's only used on a
 /boot partition, not /efi.

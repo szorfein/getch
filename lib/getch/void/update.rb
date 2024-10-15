@@ -2,6 +2,7 @@
 
 module Getch
   module Void
+    # system update
     class Update
       def initialize
         @log = Log.new

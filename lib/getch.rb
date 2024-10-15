@@ -69,8 +69,9 @@ module Getch
       STATES[:partition] && return
 
       @log.fatal 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
+      os_cap = OPTIONS[:os].capitalize
 
-      puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
+      puts "\nBuild #{os_cap} Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
       puts "\tTimezone: #{OPTIONS[:timezone]}"
@@ -80,6 +81,7 @@ module Getch
       puts "\tUsername: #{OPTIONS[:username]}"
       puts "\tEncrypt: #{OPTIONS[:encrypt]}"
       puts "\tMusl: #{OPTIONS[:musl]}"
+      puts "\tBinary mode: #{OPTIONS[:binary]}"
       puts
       puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"

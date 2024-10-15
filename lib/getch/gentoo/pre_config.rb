@@ -4,6 +4,7 @@ require 'nito'
 
 module Getch
   module Gentoo
+    # configure before installting the system
     class PreConfig
       include NiTo
 
@@ -30,7 +31,7 @@ module Getch
 
       def check_ip(host)
         ip = `ping -c1 #{host}`.match(/\([0-9]*.[0-9]*.[0-9]*.[0-9]*\)/)
-        ip[0].tr('()','')
+        ip[0].tr('()', '')
       end
     end
   end

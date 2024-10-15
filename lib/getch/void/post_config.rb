@@ -2,6 +2,7 @@
 
 module Getch
   module Void
+    # config after installing the rootfs
     class PostConfig
       def initialize
         x
