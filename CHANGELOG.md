@@ -1,3 +1,9 @@
+* Add a new option `--boot-size SIZE`, like requested in
+  [#6](https://github.com/szorfein/getch/issues/6), actually, it's only used on a
+/boot partition, not /efi.
+* Add a new option `--root-size SIZE`.
+* Add a new option `--swap-size SIZE`.
+
 ## 0.7.3, release 2024-10
 Add a Workflow to build gem on Github
 

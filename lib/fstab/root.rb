@@ -37,7 +37,7 @@ module Fstab
       @efi || return
 
       uuid = gen_uuid @efi
-      line = "UUID=#{uuid} /efi vfat defaults,nosuid,nodev 0 0"
+      line = "UUID=#{uuid} /efi vfat defaults,nosuid,nodev 0 2"
       echo_a @conf, line
     end
 

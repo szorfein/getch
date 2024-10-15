@@ -52,6 +52,8 @@ module Getch
     private
 
     def load_devs
+      raise ArgumentError, 'No disk for root, use --disk DISK.' unless OPTIONS[:disk]
+
       if File.exist? @file
         DEVS.merge! YAML.load_file @file
       else

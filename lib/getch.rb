@@ -16,7 +16,6 @@ require_relative 'getch/guard'
 require_relative 'getch/version'
 
 module Getch
-
   OPTIONS = {
     boot_disk: false,
     disk: false,
@@ -34,8 +33,11 @@ module Getch
     timezone: 'UTC',
     username: false,
     verbose: false,
-    vg_name: 'vg4',
-    zfs_name: 'pool'
+    vg_name: 'vg0',
+    zfs_name: 'pool',
+    boot_size: 260,
+    swap_size: Getch::Helpers.get_memory,
+    root_size: 16
   }
 
   STATES = {
@@ -49,7 +51,7 @@ module Getch
     terraform: false,
     bootloader: false,
     services: false,
-    finalize: false,
+    finalize: false
   }
 
   MOUNTPOINT = '/mnt/getch'
