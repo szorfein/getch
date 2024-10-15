@@ -37,7 +37,8 @@ module Getch
     zfs_name: 'pool',
     boot_size: 260,
     swap_size: Getch::Helpers.get_memory,
-    root_size: 16
+    root_size: 16,
+    binary: false
   }
 
   STATES = {

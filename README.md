@@ -10,7 +10,7 @@
 
 </div>
 
-A CLI tool to install Gentoo or Void Linux with default:
+A CLI tool to install [Gentoo](https://www.gentoo.org/) (by compiling or in [binary](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html)) or [Void](https://voidlinux.org/) Linux with default:
 + DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
 + Vim | Nano installed.
 + Iptables installed (not configured).
