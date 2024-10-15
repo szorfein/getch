@@ -44,7 +44,7 @@ module Getch
         return unless Helpers.systemd?
 
         src = "/usr/share/zoneinfo/#{OPTIONS[:timezone]}"
-        dest = "/etc/localtime"
+        dest = '/etc/localtime'
         Getch::Chroot.new('ln', '-sf', src, dest)
       end
     end

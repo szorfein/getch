@@ -67,6 +67,10 @@ module NiTo
     FileUtils.cp src, dest
   end
 
+  def mv(src, dest)
+    FileUtils.mv src, dest
+  end
+
   # create a void file
   def touch(file)
     File.write(file, '') unless File.exist? file

@@ -1,5 +1,6 @@
 module Getch
   module Gentoo
+    # install required/usefull packages
     class Terraform
       def initialize
         x

@@ -1,3 +1,11 @@
+## 0.11.0, release 2024-10
+* Add a new option `--boot-size SIZE`, like requested in
+  [#6](https://github.com/szorfein/getch/issues/6), actually, it's only used on a
+/boot partition, not /efi.
+* Add a new option `--root-size SIZE`.
+* Add a new option `--swap-size SIZE`.
+* Support [Gentoo binary](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html), use `--binary`, it make the install of Gentoo faster for small system.
+
 ## 0.7.3, release 2024-10
 Add a Workflow to build gem on Github
 

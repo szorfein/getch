@@ -70,7 +70,7 @@ module Getch
           @log.fatal('OPTIONS[:os] not supported yet.')
         end
 
-        File.exist? "#{OPTIONS[:mountpoint]}#{@keymaps_dir}" ||
+        File.exist?("#{OPTIONS[:mountpoint]}#{@keymaps_dir}") ||
           @log.fatal("No dir keymaps #{@keymaps_dir} found.")
       end
     end

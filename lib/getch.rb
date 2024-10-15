@@ -16,7 +16,6 @@ require_relative 'getch/guard'
 require_relative 'getch/version'
 
 module Getch
-
   OPTIONS = {
     boot_disk: false,
     disk: false,
@@ -34,8 +33,12 @@ module Getch
     timezone: 'UTC',
     username: false,
     verbose: false,
-    vg_name: 'vg4',
-    zfs_name: 'pool'
+    vg_name: 'vg0',
+    zfs_name: 'pool',
+    boot_size: 260,
+    swap_size: Getch::Helpers.get_memory,
+    root_size: 16,
+    binary: false
   }
 
   STATES = {
@@ -49,7 +52,7 @@ module Getch
     terraform: false,
     bootloader: false,
     services: false,
-    finalize: false,
+    finalize: false
   }
 
   MOUNTPOINT = '/mnt/getch'
@@ -66,8 +69,9 @@ module Getch
       STATES[:partition] && return
 
       @log.fatal 'No disk, use at least getch with -d DISK' unless OPTIONS[:disk]
+      os_cap = OPTIONS[:os].capitalize
 
-      puts "\nBuild " + OPTIONS[:os].capitalize + " Linux with the following args:\n"
+      puts "\nBuild #{os_cap} Linux with the following args:\n"
       puts
       puts "\tLang: #{OPTIONS[:language]}"
       puts "\tTimezone: #{OPTIONS[:timezone]}"
@@ -77,6 +81,7 @@ module Getch
       puts "\tUsername: #{OPTIONS[:username]}"
       puts "\tEncrypt: #{OPTIONS[:encrypt]}"
       puts "\tMusl: #{OPTIONS[:musl]}"
+      puts "\tBinary mode: #{OPTIONS[:binary]}"
       puts
       puts "\tseparate-boot disk: #{OPTIONS[:boot_disk]}"
       puts "\tseparate-cache disk: #{OPTIONS[:cache_disk]}"

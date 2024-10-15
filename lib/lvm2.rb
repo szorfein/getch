@@ -3,12 +3,13 @@
 require 'getch/command'
 
 module Lvm2
+  # Configure system with lvm
   class Root
     def initialize(devs, options)
       @cache = options[:cache_disk] ||= nil
       @root = devs[:root] ||= nil
       @home = options[:home_disk] ||= nil
-      @vg = options[:vg_name] ||= 'vg1'
+      @vg = options[:vg_name] ||= 'vg0'
     end
 
     def x
@@ -28,14 +29,14 @@ module Lvm2
     end
 
     def pv_create
-      devs = [ @path_root ]
+      devs = [@path_root]
       @cache && devs << @path_cache
       @home && devs << @path_home
       devs.each { |d| d && add_pv(d) }
     end
 
     def vg_create
-      devs = [ @path_root ]
+      devs = [@path_root]
       @cache && devs << @path_cache
       @home && devs << @path_home
       add_vg devs
@@ -56,7 +57,7 @@ module Lvm2
     private
 
     def add_pv(dev)
-      File.exist? dev || @log.fatal("add_pv - no #{dev} exist.")
+      File.exist?(dev) || @log.fatal("add_pv - no #{dev} exist.")
 
       Getch::Command.new('pvcreate', '-f', dev)
     end
@@ -66,15 +67,18 @@ module Lvm2
     end
 
     def add_swap(dev = nil)
-      mem = Getch::Helpers.get_memory
+      mem = "#{Getch::OPTIONS[:swap_size]}M"
       lvcreate('-L', mem, '-n', 'swap', @vg, dev)
     end
 
     # if home is available, we use the whole space.
     def add_lv_root
-      @home ?
-        @root.match?(/[0-9]/) ? add_root : add_root(nil, @path_root) :
-        @root.match?(/[0-9]/) ? add_root('16G') : add_root('16G', @path_root)
+      size = "#{Getch::OPTIONS[:root_size]}G" # in gigabyte
+      if @home
+        @root.match?(/[0-9]/) ? add_root : add_root(nil, @path_root)
+      else
+        @root.match?(/[0-9]/) ? add_root(size) : add_root(size, @path_root)
+      end
     end
 
     def add_root(size = nil, dev = nil)
@@ -97,6 +101,7 @@ module Lvm2
     end
   end
 
+  # Configure hybrid system (encrypt + lvm)
   class Hybrid < Root
     def initialize(devs, options)
       super

@@ -66,6 +66,21 @@ module Getch
           OPTIONS[:home_disk] = Getch::Guard.disk(home)
         end
 
+        opts.on('--boot-size SIZE', Numeric,
+                'Specifie the boot size in mebibyte (mib), default use 256.') do |size|
+          OPTIONS[:boot_size] = size
+        end
+
+        opts.on('--swap-size SIZE', Numeric,
+                "Specifie the swap size in megabyte (mb), default use your current memory #{Getch::OPTIONS[:swap_size]}.") do |size|
+          OPTIONS[:swap_size] = size
+        end
+
+        opts.on('--root-size SIZE', Numeric,
+                'Specifie the root size in gigabyte (G), default use 16 (used only on lvm when --separate-home was not specified.') do |size|
+          OPTIONS[:root_size] = size
+        end
+
         opts.on('--lvm',
                 'System will use LVM, do not work with ZFS.') do
           OPTIONS[:lvm] = true
@@ -78,6 +93,10 @@ module Getch
 
         opts.on('--musl', 'Prefer to install Musl over Glibc.') do
           OPTIONS[:musl] = true
+        end
+
+        opts.on('--binary', 'Prefer to use binary packages instead of compile them (Gentoo).') do
+          OPTIONS[:binary] = true
         end
 
         opts.on('--verbose', 'Write more messages to the standard output.') do

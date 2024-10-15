@@ -2,6 +2,7 @@
 
 module Getch
   module Gentoo
+    # install|enable services for the next boot
     class Services
       def initialize
         x

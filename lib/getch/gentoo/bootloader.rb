@@ -26,8 +26,12 @@ module Getch
           bootctl
         end
 
-        # ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel')
-        ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel-bin') # should also reload grub-mkconfig
+        # should also reload grub-mkconfig
+        if OPTIONS[:binary]
+          ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel-bin')
+        else
+          ChrootOutput.new('emerge --config sys-kernel/gentoo-kernel')
+        end
       end
 
       def bootctl
