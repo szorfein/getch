@@ -35,10 +35,10 @@ module Luks
     def encrypt_with_key
       make_key
       args = if @luks_type == 'luks2'
-               "#{@command_args} -q --sector-size #{@bs} -d #{@full_key_path}"
-             else
-               "#{@command_args} -q -d #{@full_key_path}"
-             end
+          "#{@command_args} -q --sector-size #{@bs} -d #{@full_key_path}"
+        else
+          "#{@command_args} -q -d #{@full_key_path}"
+        end
       @log.info "Encrypting #{@luks_name} with #{@full_key_path}...\n"
       cmd_crypt 'cryptsetup', 'luksFormat', args, "/dev/#{@disk}"
     end
