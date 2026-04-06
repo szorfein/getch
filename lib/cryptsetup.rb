@@ -106,10 +106,10 @@ class CryptSetup
     id = @options[:lvm] ? '' : Getch::Helpers.id(@swap)
     line = "swap-#{@luks}"
     line << if @options[:lvm]
-              " /dev/#{@vg}/swap"
-            else
-              " /dev/disk/by-id/#{id}"
-            end
+      " /dev/#{@vg}/swap"
+    else
+      " /dev/disk/by-id/#{id}"
+    end
     line << ' /dev/urandom swap,discard,cipher=aes-xts-plain64:sha256,size=512'
     NiTo.echo_a "#{@mountpoint}/etc/crypttab", line
   end
@@ -129,7 +129,7 @@ class CryptSetup
   end
 
   def home_with_pass
-    luks = CryptSetup::Home.new(@home, @options)
+    luks = Luks::Home.new(@home, @options)
     luks.encrypt
     luks.open
   end
