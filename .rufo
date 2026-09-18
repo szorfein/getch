@@ -1,2 +1,3 @@
 quote_style :single
-
+align_case_when true
+trailing_commas false
