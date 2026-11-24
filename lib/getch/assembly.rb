@@ -38,58 +38,39 @@ module Getch
     end
 
     def partition
-      return if STATES[:partition]
-
-      @fs::Partition.new
-      @state.partition
+      run_step(:partition) { @fs::Partition.new }
     end
 
     def format
-      return if STATES[:format]
-
-      @fs::Format.new
-      @state.format
+      run_step(:format) { @fs::Format.new }
     end
 
     def mount
-      return if STATES[:mount]
-
-      @fs::Mount.new
-      @state.mount
+      run_step(:mount) { @fs::Mount.new }
     end
 
     def tarball
-      return if STATES[:tarball]
-
-      @os::Tarball.new.x
-      @state.tarball
+      run_step(:tarball) { @os::Tarball.new.x }
     end
 
     # pre_config
     # Pre configuration before updates and install packages
     # Can contain config for a repository, CPU compilation flags, etc...
     def pre_config
-      return if STATES[:pre_config]
-
-      @os::PreConfig.new
-      @state.pre_config
+      run_step(:pre_config) { @os::PreConfig.new }
     end
 
     # update
     # Synchronise and Update the new system
     def update
-      return if STATES[:update]
-
-      Helpers.mount_all
-      @os::Update.new
-      @state.update
+      run_step(:update) do
+        Helpers.mount_all
+        @os::Update.new
+      end
     end
 
     def post_config
-      return if STATES[:post_config]
-
-      @os::PostConfig.new
-      @state.post_config
+      run_step(:post_config) { @os::PostConfig.new }
     end
 
     # Luks_keys
@@ -97,55 +78,54 @@ module Getch
     def luks_keys
       return unless OPTIONS[:encrypt] && OPTIONS[:fs] != 'zfs'
 
-      return if STATES[:luks_keys]
-
-      CryptSetup.new(DEVS, OPTIONS).keys
-      @state.luks_keys
+      run_step(:luks_keys) { CryptSetup.new(DEVS, OPTIONS).keys }
     end
 
     # terraform
     # Install all the required packages
     # Also add services
     def terraform
-      return if STATES[:terraform]
-
-      # @fs::PreDeps.new
-      @os::Terraform.new
-      @fs::Deps.new
-      @state.terraform
+      run_step(:terraform) do
+        @os::Terraform.new
+        @fs::Deps.new
+      end
     end
 
     def services
-      return if STATES[:services]
-
-      @os::Services.new
-      @state.services
+      run_step(:services) { @os::Services.new }
     end
 
     # bootloader
     # Install and configure Grub2 or Systemd-boot with Dracut
     # Adding keys for Luks
     def bootloader
-      return if STATES[:bootloader]
-
-      bootloader = @os::Bootloader.new
-      bootloader.dependencies
-      @fs::Config.new
-      bootloader.install
-      @state.bootloader
+      run_step(:bootloader) do
+        bootloader = @os::Bootloader.new
+        bootloader.dependencies
+        @fs::Config.new
+        bootloader.install
+      end
     end
 
     # finalize
     # Password for root, etc
     def finalize
-      return if STATES[:finalize]
+      run_step(:finalize) do
+        @os::Finalize.new
+        puts
+        puts '[*!*] Installation finished [*!*]'
+        puts
+        @fs.end
+      end
+    end
 
-      @os::Finalize.new
-      puts
-      puts '[*!*] Installation finished [*!*]'
-      puts
-      @fs.end
-      @state.finalize
+    private
+
+    def run_step(step)
+      return if STATES[step]
+
+      yield
+      @state.public_send(step)
     end
   end
 end

@@ -3,11 +3,10 @@
 require 'getch/command'
 require 'getch/helpers'
 
+# Mkfs, partition disks for Ext4, LVM or ZFS and with or without encryption
 module Mkfs
-
   # Format a path using mkfs.ext4.
   # @param [string] path, full path e.g /dev/sda1
-  #
   def self.ext4(path)
     bs = Getch::Helpers.get_bs(path)
     if bs == '512'
@@ -17,6 +16,7 @@ module Mkfs
     end
   end
 
+  # Basic partition plan
   class Root
     def initialize(devs, options)
       @efi = devs[:efi] ||= nil
@@ -91,6 +91,7 @@ module Mkfs
     end
   end
 
+  # Top level LVM, use vg (volume group) in partition name
   class Lvm < Root
     def initialize(devs, options)
       @vg = options[:vg_name]
@@ -117,15 +118,13 @@ module Mkfs
     end
 
     # Boot is alrealy formatted
-    def format_boot
-    end
+    def format_boot; end
 
     # Swap will be encrypted after the reboot
-    def format_swap
-    end
+    def format_swap; end
 
     def format_root
-      File.exist? "/dev/mapper/root-#{@luks}" || abort("No root-#{@luks} found")
+      abort("No root-#{@luks} found") unless File.exist? "/dev/mapper/root-#{@luks}"
 
       mkfs "/dev/mapper/root-#{@luks}"
     end
@@ -138,10 +137,8 @@ module Mkfs
   end
 
   class Hybrid < Lvm
-
     # Boot is alrealy formatted
-    def format_boot
-    end
+    def format_boot; end
   end
 end
 

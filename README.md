@@ -11,49 +11,59 @@
 </div>
 
 A CLI tool to install [Gentoo](https://www.gentoo.org/) (by compiling or in [binary](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html)) or [Void](https://voidlinux.org/) Linux with default:
-+ DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
-+ Vim | Nano installed.
-+ Iptables installed (not configured).
-+ Sudo installed (not configured).
-+ [iwd](https://iwd.wiki.kernel.org/) installed if wifi is detected.
-+ No GUI installed.
+
+- DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
+- Vim | Nano installed.
+- Iptables installed (not configured).
+- Sudo installed (not configured).
+- [iwd](https://iwd.wiki.kernel.org/) installed if wifi is detected.
+- No GUI installed.
 
 Hardened System:
-+ sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
-+ Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
-+ Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
-+ Musl optionnal
+
+- sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
+- Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
+- Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
+- Musl optionnal
 
 ## Description
+
 Actually, Getch support only the `x86_64` architecture with the following archives:
-+ **Gentoo**: `stage3-amd64-systemd` or `stage3-amd64-musl` [Gentoo](https://www.gentoo.org/downloads/).
-+ **Void**: `rootfs tarball glibc` or `rootfs tarball musl` [Void](https://voidlinux.org/download/).
+
+- **Gentoo**: `stage3-amd64-systemd` or `stage3-amd64-musl` [Gentoo](https://www.gentoo.org/downloads/).
+- **Void**: `rootfs tarball glibc` or `rootfs tarball musl` [Void](https://voidlinux.org/download/).
 
 Filesystem supported (with or without encryption)
-+ Ext4
-+ Lvm
-+ ZFS
+
+- Ext4
+- Lvm
+- ZFS
 
 Boot Manager:
-+ **Gentoo**: Grub2 except on systemd without encryption.
-+ **Void**: use only Grub2.
+
+- **Gentoo**: Grub2 except on systemd without encryption.
+- **Void**: use only Grub2.
 
 The ISO images i was able to test and that works:
-+ [Archlinux](https://www.archlinux.org/download/)
-+ [Portia](https://github.com/szorfein/portia/releases): Custom Archiso that includes ZFS support and Ruby.
+
+- [Archlinux](https://www.archlinux.org/download/)
+- [Portia](https://github.com/szorfein/portia/releases): Custom Archiso that includes ZFS support and Ruby.
+
 * [Ubuntu 22.10](https://cdimage.ubuntu.com/releases/22.10/release/)
 * [Voidlinux](https://voidlinux.org/download/)
 
-You can also use your current `linux` host, just pay attention to the disk that will be used.  
+You can also use your current `linux` host, just pay attention to the disk that will be used.
 
 ## Dependencies
+
 Getch is build without external libs, so it only require `ruby >= 2.6`.
 
 On a live image of Void, you need to install `xbps-install -S ruby xz gptfdisk
 openssl`.
 
 ## Install
-Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.  
+
+Getch is cryptographically signed, so add my public key (if you haven’t already) as a trusted certificate.
 With `gem` installed:
 
     $ gem cert --add <(curl -Ls https://raw.githubusercontent.com/szorfein/getch/master/certs/szorfein.pem)
@@ -66,13 +76,17 @@ If you want to try from the source:
     # ruby -I lib bin/getch -h
 
 ## Usage
+
 Just ensure than the script is run with a root account.
 
     # getch -h
 
 After an install by Getch, take a look on the [wiki](https://github.com/szorfein/getch/wiki).
 
+To see a full walkthrough of installing Voidlinux: https://lolthway.vercel.app/posts/install-voidlinux-in-10min/
+
 ## Examples
+
 For a french user on Gentoo:
 
     # getch --disk sda --zoneinfo "Europe/Paris" --language fr_FR --keymap fr
@@ -105,6 +119,7 @@ With `Void Linux` and `Musl` enable:
 ## Troubleshooting
 
 #### Old VG for LVM
+
 If a old volume group exist, `getch` may fail to partition your disk. You have to clean up your device before proceed with `vgremove` and `pvremove`. An short example how doing this with a volume group named `vg0`:
 
     # vgdisplay | grep vg
@@ -112,9 +127,11 @@ If a old volume group exist, `getch` may fail to partition your disk. You have t
     # pvremove -f /dev/sdb
 
 #### Encryption with GRUB
+
 To decrypt your disk on GRUB, only the `us` keymap is working for now.
 
 #### ZFS with Grub
+
 By default, if you use ZFS with `musl` or `voidlinux` the `/boot` partition is not mounted automatically, so before an update, mout the partition.
 
     # zpool status
@@ -122,6 +139,7 @@ By default, if you use ZFS with `musl` or `voidlinux` the `/boot` partition is n
     # ls /boot
 
 #### ZFS with and without encryption
+
 First time on ZFS after 5min
 
 ```txt
@@ -136,8 +154,8 @@ Dracut try to mount inexistent device. Just wait for enter in the shell and remo
 
 Dracut should finally start `mount-zfs.sh` and ask for a password if encrypted. After you first login, mount the `/boot` partition and recompile the initramfs and your good.
 
-+ For Gentoo: `emerge --config sys-kernel/gentoo-kernel-bin`
-+ For Voidlinux: `xbps-reconfigure -fa`
+- For Gentoo: `emerge --config sys-kernel/gentoo-kernel-bin`
+- For Voidlinux: `xbps-reconfigure -fa`
 
 If it doesn't work, try to start script manually (always in the shell):
 

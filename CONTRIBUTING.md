@@ -19,6 +19,22 @@ do so.
 * Commit and push until you are happy with your contribution.
 * Open a [pull request][2] that relates to *only* one subject with a clear title and description in grammatically correct, complete sentences.
 
+## Project layout
+
+* `bin/getch` runs the installation phases exposed by `Getch::Main` in `lib/getch.rb`.
+* `lib/getch/assembly.rb` orchestrates resumable steps; `lib/getch/states.rb`
+  persists their completion in `/tmp/install_gentoo.yaml`. A step is saved only
+  after its work completes.
+* `lib/getch/tree.rb` selects the OS and filesystem implementations from the
+  CLI options. OS-specific steps live in `lib/getch/gentoo/` and
+  `lib/getch/void/`; filesystem-specific steps live in
+  `lib/getch/filesystem/`.
+* Shared system utilities live under `lib/`, and configuration routines live
+  in `lib/getch/config/`.
+
+Run the unit tests with `rake test`. The assembly tests use substitutes for
+installer components and do not partition or format disks.
+
 ## For More Hardware Support
 
 * Include the output of `lspci`:

@@ -35,7 +35,7 @@ module Getch
     verbose: false,
     vg_name: 'vg0',
     zfs_name: 'pool',
-    boot_size: 260,
+    boot_size: 1024,
     swap_size: Getch::Helpers.get_memory,
     root_size: 16,
     binary: false
