@@ -17,23 +17,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby 2.6
-    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
-    # change this to (see https://github.com/ruby/setup-ruby#versioning):
-    # uses: ruby/setup-ruby@v1
-      uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
+      uses: ruby/setup-ruby@78c62f2208e480ce3d5ae4dfd9b9e181acf48b63 # v1
       with:
         ruby-version: 2.6.10
 
+    - name: Build gem
+      run: gem build *.gemspec
+
     - name: Publish to GPR
+      if: github.event_name == 'push'
       run: |
         mkdir -p $HOME/.gem
         touch $HOME/.gem/credentials
         chmod 0600 $HOME/.gem/credentials
         printf -- "---\n:github: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-        gem build *.gemspec
         gem push --KEY github --host https://rubygems.pkg.github.com/${OWNER} *.gem
       env:
-        GEM_HOST_API_KEY: "Bearer ${{secrets.GITHUB_TOKEN}}"
+        GEM_HOST_API_KEY: ${{ secrets.GITHUB_TOKEN }}
         OWNER: ${{ github.repository_owner }}
 
 #   - name: Publish to RubyGems
