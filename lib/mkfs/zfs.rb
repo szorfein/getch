@@ -140,7 +140,7 @@ module Mkfs
     def get_ashift(dev)
       bs = Getch::Helpers.get_bs("/dev/#{dev}")
       case bs
-      when /8096/ then 13
+      when /8192/ then 13
       when /4096/ then 12
       else 9
       end
@@ -151,9 +151,7 @@ module Mkfs
     end
 
     def sh(*args)
-      @encrypt ?
-        cmd_crypt(args) :
-        Getch::Command.new(args)
+      @encrypt ? cmd_crypt(args) : Getch::Command.new(args)
     end
 
     def cmd_crypt(*args)
