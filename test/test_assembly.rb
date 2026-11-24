@@ -54,7 +54,8 @@ class AssemblyTest < Minitest::Test
   end
 
   def test_steps_run_in_order_and_are_skipped_after_completion
-    with_stubbed_method(Getch::Helpers, :mount_all, -> { @events << :mount_all }) do
+    events = @events
+    with_stubbed_method(Getch::Helpers, :mount_all, -> { events << :mount_all }) do
       %i[partition format mount tarball pre_config update post_config terraform
          services bootloader finalize].each do |step|
         capture_io { @assembly.public_send(step) }
@@ -104,15 +105,28 @@ class AssemblyTest < Minitest::Test
       @assembly.luks_keys
       assert_equal %i[keys saved_luks_keys], @events
     end
+  end
 
-    private
+  def test_stubbed_method_is_restored_after_exception
+    object = Object.new
+    object.define_singleton_method(:value) { :original }
 
-    def with_stubbed_method(object, name, replacement)
-      original = object.method(name)
-      object.define_singleton_method(name, replacement)
-      yield
-    ensure
-      object.define_singleton_method(name, original)
+    assert_raises(RuntimeError) do
+      with_stubbed_method(object, :value, -> { :replacement }) do
+        assert_equal :replacement, object.value
+        raise 'stubbed block failed'
+      end
     end
+    assert_equal :original, object.value
+  end
+
+  private
+
+  def with_stubbed_method(object, name, replacement)
+    original = object.method(name)
+    object.define_singleton_method(name, replacement)
+    yield
+  ensure
+    object.define_singleton_method(name, original)
   end
 end
