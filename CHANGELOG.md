@@ -1,3 +1,14 @@
+## 0.15.0, Nov. 2026
+
+- Increase boot partition size to 1G instead of 250M
+- Refactor and test on lib/getch/assembly.rb
+- Improve a bit the sysctl
+- Add a test .github/workflows
+
+### Bug fixes
+
+- ZFS wrong value on disk bs 13 = 8192
+
 ## 0.11.1, mar. 2026
 
 - fixes encrypt on home when choose `--separate-home <disc> --encrypt`
