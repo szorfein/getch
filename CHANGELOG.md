@@ -3,11 +3,12 @@
 - Increase boot partition size to 1G instead of 250M
 - Refactor and test on lib/getch/assembly.rb
 - Improve a bit the sysctl
-- Add a test .github/workflows
+- [beffc59](https://github.com/szorfein/getch/commit/beffc59262293a7b6d38426f9d5d8b9f1b7b056c) Add a test .github/workflows
 
 ### Bug fixes
 
 - ZFS wrong value on disk bs 13 = 8192
+- [08a5127](https://github.com/szorfein/getch/commit/08a5127953c45a1c7e3e2d6edc448628d830d479) Correct workflow publish gem
 
 ## 0.11.1, mar. 2026
 
