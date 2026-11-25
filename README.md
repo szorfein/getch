@@ -10,49 +10,43 @@
 
 </div>
 
-A CLI tool to install [Gentoo](https://www.gentoo.org/) (by compiling or in [binary](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html)) or [Void](https://voidlinux.org/) Linux with default:
+A CLI tool to install [Gentoo](https://www.gentoo.org/) (by compiling or using [binaries](https://www.gentoo.org/news/2023/12/29/Gentoo-binary.html)) or [Void](https://voidlinux.org/) Linux with the following defaults:
 
 - DNS over HTTPS (with [Quad9](https://www.quad9.net/)).
 - Vim | Nano installed.
 - Iptables installed (not configured).
 - Sudo installed (not configured).
-- [iwd](https://iwd.wiki.kernel.org/) installed if wifi is detected.
+- [iwd](https://iwd.wiki.kernel.org/) installed if Wi-Fi is detected.
 - No GUI installed.
 
-Hardened System:
+Hardened system:
 
 - sysctl.conf with TCP/IP stack hardening and more [Arch](https://wiki.archlinux.org/title/Sysctl)
 - Kernel parameters enforced (dmesg restricted, kexec disabled, etc)
-- Kernel source (Gentoo) patched with [bask](https://github.com/szorfein/bask).
-- Musl optionnal
+- Gentoo kernel source patched with [bask](https://github.com/szorfein/bask).
+- Optional Musl support instead of Glibc
 
 ## Description
 
-Actually, Getch support only the `x86_64` architecture with the following archives:
+Getch currently supports only the `x86_64` architecture and the following archives:
 
 - **Gentoo**: `stage3-amd64-systemd` or `stage3-amd64-musl` [Gentoo](https://www.gentoo.org/downloads/).
 - **Void**: `rootfs tarball glibc` or `rootfs tarball musl` [Void](https://voidlinux.org/download/).
 
-Filesystem supported (with or without encryption)
+Supported filesystems (with or without encryption)
 
 - Ext4
-- Lvm
+- LVM
 - ZFS
 
 Boot Manager:
 
-- **Gentoo**: Grub2 except on systemd without encryption.
-- **Void**: use only Grub2.
+- **Gentoo**: GRUB2 except on systemd without encryption.
+- **Voidlinux**: GRUB2 only.
 
-The ISO images i was able to test and that works:
+The recommended live ISO image to use is: [Voidlinux](https://voidlinux.org/download/)
 
-- [Archlinux](https://www.archlinux.org/download/)
-- [Portia](https://github.com/szorfein/portia/releases): Custom Archiso that includes ZFS support and Ruby.
-
-* [Ubuntu 22.10](https://cdimage.ubuntu.com/releases/22.10/release/)
-* [Voidlinux](https://voidlinux.org/download/)
-
-You can also use your current `linux` host, just pay attention to the disk that will be used.
+You can install Gentoo or Voidlinux, install dependencies, without any problems.
 
 ## Dependencies
 
